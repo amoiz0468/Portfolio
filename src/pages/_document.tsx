@@ -46,10 +46,10 @@ export default function Document() {
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090d16" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Muhammad Abdul Moiz" />
-        <meta property="og:title" content="Muhammad Abdul Moiz — AI & Software Engineer" />
+        <meta property="og:title" content="Muhammad Abdul Moiz — Web, DevOps & AI Engineer" />
         <meta
           property="og:description"
-          content="Portfolio of Muhammad Abdul Moiz — Machine Learning Engineer, GenAI Specialist, Full-Stack & DevOps Engineer based in Paris."
+          content="Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris."
         />
         <meta property="og:image" content="/og-image.png" />
         <meta property="og:image:width" content="1200" />
@@ -59,10 +59,10 @@ export default function Document() {
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Muhammad Abdul Moiz — AI & Software Engineer" />
+        <meta name="twitter:title" content="Muhammad Abdul Moiz — Web, DevOps & AI Engineer" />
         <meta
           name="twitter:description"
-          content="Portfolio of Muhammad Abdul Moiz — Machine Learning Engineer, GenAI Specialist, Full-Stack & DevOps Engineer based in Paris."
+          content="Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris."
         />
         <meta name="twitter:image" content="/og-image.png" />
       </Head>

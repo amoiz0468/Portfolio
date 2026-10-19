@@ -70,13 +70,13 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>{`${profile.name} | ${lang === 'fr' ? 'Ingénieur Logiciel & Machine Learning' : 'Software & Machine Learning Engineer'}`}</title>
+        <title>{`${profile.name} | ${lang === 'fr' ? 'Ingénieur Web, DevOps & IA' : 'Web, DevOps & AI Engineer'}`}</title>
         <meta
           name="description"
           content={
             lang === 'fr'
-              ? "Portfolio de Muhammad Abdul Moiz — Ingénieur Machine Learning, spécialiste GenAI & MLOps, Développeur Full-Stack et DevOps basé à Paris."
-              : "Portfolio of Muhammad Abdul Moiz — Machine Learning Engineer, GenAI & MLOps specialist, Full-Stack and DevOps Engineer based in Paris."
+              ? "Portfolio de Muhammad Abdul Moiz — Ingénieur Web, DevOps et IA basé à Paris."
+              : "Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris."
           }
         />
       </Head>

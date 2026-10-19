@@ -22,7 +22,7 @@ export default function AppleHero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -201,7 +201,7 @@ export default function AppleHero() {
                       Muhammad Abdul Moiz
                     </h3>
                     <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-300">
-                      ML &bull; GenAI &bull; DevOps
+                      {lang === 'fr' ? 'Web • DevOps • IA' : 'Web • DevOps • AI'}
                     </p>
                   </div>
 

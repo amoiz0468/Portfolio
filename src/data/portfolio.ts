@@ -1,6 +1,6 @@
 export const profile = {
   name: 'Muhammad Abdul Moiz',
-  title: 'Machine Learning Engineer • GenAI & MLOps Specialist • Full-Stack & DevOps Engineer',
+  title: 'Web, DevOps & AI Engineer',
   location: 'Paris, France',
   origin: 'Pakistan (born and raised in Pakistan, currently living in Paris, France)',
   phone: '+33 7 59 24 79 11',
