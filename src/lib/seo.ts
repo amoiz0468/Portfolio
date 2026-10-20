@@ -41,11 +41,21 @@ export function absoluteUrl(path = '/'): string {
   return clean === '/' ? `${SITE_URL}/` : `${SITE_URL}${clean}`;
 }
 
-/** schema.org Person + WebSite graph for rich results / knowledge panel. */
+/** schema.org ProfilePage + Person + WebSite graph for rich results / knowledge panel. */
 export function buildPersonJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@graph': [
+      {
+        '@type': 'ProfilePage',
+        '@id': `${SITE_URL}/#profilepage`,
+        url: absoluteUrl('/'),
+        name: `${profile.name} — ${profile.title}`,
+        inLanguage: 'en',
+        dateCreated: '2025-09-01T00:00:00+02:00',
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        mainEntity: { '@id': `${SITE_URL}/#person` },
+      },
       {
         '@type': 'Person',
         '@id': `${SITE_URL}/#person`,
