@@ -1,4 +1,5 @@
-import Head from 'next/head';
+import Seo from '../components/Seo';
+import { buildPersonJsonLd } from '../lib/seo';
 import { useState } from 'react';
 import {
   FiClock,
@@ -69,17 +70,16 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>{`${profile.name} | ${lang === 'fr' ? 'Ingénieur Web, DevOps & IA' : 'Web, DevOps & AI Engineer'}`}</title>
-        <meta
-          name="description"
-          content={
-            lang === 'fr'
-              ? "Portfolio de Muhammad Abdul Moiz — Ingénieur Web, DevOps et IA basé à Paris."
-              : "Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris."
-          }
-        />
-      </Head>
+      <Seo
+        title={`${profile.name} | ${lang === 'fr' ? 'Ingénieur Web, DevOps & IA' : 'Web, DevOps & AI Engineer'}`}
+        description={
+          lang === 'fr'
+            ? "Portfolio de Muhammad Abdul Moiz — Ingénieur Web, DevOps et IA basé à Paris. Développement full-stack, cloud, CI/CD et IA générative."
+            : "Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris. Full-stack development, cloud, CI/CD and generative AI."
+        }
+        path="/"
+        jsonLd={buildPersonJsonLd()}
+      />
 
       {/* Global Background Ambient Glow Lights */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden transform-gpu">

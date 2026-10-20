@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import { useState } from 'react';
 import { FiLayers } from 'react-icons/fi';
 import ProjectModal from '../components/ProjectModal';
@@ -14,17 +14,15 @@ export default function ProjectsPage() {
 
   return (
     <>
-      <Head>
-        <title>{`${lang === 'fr' ? 'Projets' : 'Projects'} | Muhammad Abdul Moiz`}</title>
-        <meta
-          name="description"
-          content={
-            lang === 'fr'
-              ? "Projets majeurs de Muhammad Abdul Moiz couvrant l'intelligence artificielle, les systèmes distribués et le cloud."
-              : "Selected work by Muhammad Abdul Moiz spanning AI systems, full-stack products, and cloud-native software engineering."
-          }
-        />
-      </Head>
+      <Seo
+        title={`${lang === 'fr' ? 'Projets' : 'Projects'} | Muhammad Abdul Moiz`}
+        description={
+          lang === 'fr'
+            ? "Projets majeurs de Muhammad Abdul Moiz couvrant l'intelligence artificielle, les systèmes distribués et le cloud."
+            : "Selected work by Muhammad Abdul Moiz spanning AI systems, full-stack products, and cloud-native software engineering."
+        }
+        path="/projects"
+      />
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">
         <Reveal>

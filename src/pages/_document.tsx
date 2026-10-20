@@ -44,27 +44,7 @@ export default function Document() {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#090d16" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Muhammad Abdul Moiz" />
-        <meta property="og:title" content="Muhammad Abdul Moiz — Web, DevOps & AI Engineer" />
-        <meta
-          property="og:description"
-          content="Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris."
-        />
-        <meta property="og:image" content="/og-image.png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Muhammad Abdul Moiz" />
-        <meta property="og:logo" content="/logo.png" />
-
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Muhammad Abdul Moiz — Web, DevOps & AI Engineer" />
-        <meta
-          name="twitter:description"
-          content="Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris."
-        />
-        <meta name="twitter:image" content="/og-image.png" />
+        {/* Page-level SEO (title, description, canonical, Open Graph, Twitter, JSON-LD) lives in components/Seo.tsx */}
       </Head>
       <body className="bg-slate-50 text-slate-900 dark:bg-[#090d16] dark:text-slate-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-900 dark:selection:text-white transition-colors duration-200">
         <Main />

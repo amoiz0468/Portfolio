@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, FormEvent } from 'react';
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import {
   FiAlertCircle,
   FiCheck,
@@ -158,10 +158,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <Head>
-        <title>{contactPage.headTitle}</title>
-        <meta name="description" content={contactPage.headDesc} />
-      </Head>
+      <Seo title={contactPage.headTitle} description={contactPage.headDesc} path="/contact" />
 
       <section className="flex-1 flex flex-col justify-center mx-auto max-w-5xl w-full px-4 py-6 sm:py-8 md:py-10 lg:px-8">
         <Reveal>

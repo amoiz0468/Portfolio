@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from '../components/Seo';
 import { FiBookOpen, FiCompass, FiGlobe, FiHeart } from 'react-icons/fi';
 import Reveal from '../components/Reveal';
 import SectionTitle from '../components/SectionTitle';
@@ -11,10 +11,7 @@ export default function About() {
 
   return (
     <>
-      <Head>
-        <title>{aboutPage.headTitle}</title>
-        <meta name="description" content={aboutPage.headDesc} />
-      </Head>
+      <Seo title={aboutPage.headTitle} description={aboutPage.headDesc} path="/about" />
 
       <section className="mx-auto max-w-5xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">
         <Reveal>
