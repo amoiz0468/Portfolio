@@ -16,7 +16,7 @@ export default function InteractiveTerminal() {
   const [inputVal, setInputVal] = useState('');
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const shellContainerRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
   const logs = t.telemetry.logs;
 
@@ -52,10 +52,10 @@ export default function InteractiveTerminal() {
     }
   }, [history.length]);
 
-  // Auto-scroll shell to bottom on new output
+  // Auto-scroll ONLY internal shell container to bottom on new output (prevents page jumping)
   useEffect(() => {
-    if (activeTab === 'shell') {
-      terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (activeTab === 'shell' && shellContainerRef.current) {
+      shellContainerRef.current.scrollTop = shellContainerRef.current.scrollHeight;
     }
   }, [history, activeTab]);
 
@@ -276,7 +276,7 @@ export default function InteractiveTerminal() {
               type="button"
               onClick={() => {
                 setActiveTab('shell');
-                setTimeout(() => inputRef.current?.focus(), 50);
+                setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
               }}
               className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:underline dark:text-indigo-400"
             >
@@ -289,8 +289,9 @@ export default function InteractiveTerminal() {
       {/* Mode 2: Interactive Runnable Shell */}
       {activeTab === 'shell' && (
         <div
-          onClick={() => inputRef.current?.focus()}
-          className="flex flex-col p-4 sm:p-5 text-slate-800 dark:text-slate-200 min-h-[260px] max-h-[360px] overflow-y-auto cursor-text"
+          ref={shellContainerRef}
+          onClick={() => inputRef.current?.focus({ preventScroll: true })}
+          className="flex flex-col p-4 sm:p-5 text-slate-800 dark:text-slate-200 min-h-[260px] max-h-[360px] overflow-y-auto cursor-text scroll-smooth"
         >
           {/* History */}
           <div className="space-y-3 flex-1">
@@ -309,7 +310,6 @@ export default function InteractiveTerminal() {
                 <div className="pl-0 sm:pl-3">{item.output}</div>
               </div>
             ))}
-            <div ref={terminalEndRef} />
           </div>
 
           {/* Active Command Input Line */}
@@ -326,7 +326,6 @@ export default function InteractiveTerminal() {
               onKeyDown={handleKeyDown}
               placeholder="type 'help', 'skills', 'projects', 'contact'..."
               className="flex-1 bg-transparent font-mono text-[11px] text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white dark:placeholder:text-slate-500"
-              autoFocus
             />
             <button
               type="button"
