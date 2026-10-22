@@ -23,6 +23,8 @@ export default function AppleHero() {
   const shouldReduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
   const [isFirefox, setIsFirefox] = useState(false);
+  const [heroCardTab, setHeroCardTab] = useState<'specs' | 'live'>('specs');
+  const [parisTime, setParisTime] = useState('');
   const { t, lang } = useLanguage();
 
   useEffect(() => {
@@ -30,7 +32,24 @@ export default function AppleHero() {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+
+    const updateTime = () => {
+      setParisTime(
+        new Date().toLocaleTimeString('fr-FR', {
+          timeZone: 'Europe/Paris',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      );
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearInterval(interval);
+    };
   }, []);
 
   // Scroll-linked scale down and fade out (applied only on desktop where columns are side-by-side)
@@ -175,16 +194,38 @@ export default function AppleHero() {
             transition={{ duration: 0.9, delay: 0.2, ease: APPLE_EASE }}
           >
             <SpotlightCard className="mx-auto w-full max-w-[500px] p-4 sm:p-7">
-              {/* Top Bar Indicators */}
+              {/* Top Bar Indicators & Interactive Tab Switcher */}
               <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/10 pb-3 sm:pb-4">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-red-500/70" />
                   <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-amber-500/70" />
                   <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-emerald-500/70" />
                 </div>
-                <span className="rounded-full border border-slate-200/80 bg-slate-100/80 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-                  {t.hero.specsTag}
-                </span>
+                <div className="flex items-center gap-1 rounded-full bg-slate-100/90 dark:bg-white/5 p-0.5 border border-slate-200/70 dark:border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setHeroCardTab('specs')}
+                    className={`rounded-full px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] transition ${
+                      heroCardTab === 'specs'
+                        ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    }`}
+                  >
+                    {t.hero.specsTag}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setHeroCardTab('live')}
+                    className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] transition ${
+                      heroCardTab === 'live'
+                        ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-300 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    }`}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Live</span>
+                  </button>
+                </div>
               </div>
 
               {/* Profile Image & Highlights - Horizontal on mobile, Grid on desktop */}
@@ -205,7 +246,7 @@ export default function AppleHero() {
 
                 <div className="space-y-1.5 sm:space-y-3 min-w-0">
                   <div>
-                    <h3 className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white truncate">
+                    <h3 className="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
                       Muhammad Abdul Moiz
                     </h3>
                     <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-300">
@@ -228,21 +269,42 @@ export default function AppleHero() {
                 </div>
               </div>
 
-              {/* Specs Breakdown */}
-              <div className="mt-6 space-y-2.5 rounded-2xl border border-slate-200/80 bg-slate-50/80 dark:border-white/10 dark:bg-slate-950/40 p-4 text-xs">
-                <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-2">
-                  <span className="text-slate-500 dark:text-slate-400">{t.hero.coreFocus}</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">{t.hero.coreFocusValue}</span>
+              {/* Mode A: Specs Breakdown */}
+              {heroCardTab === 'specs' ? (
+                <div className="mt-6 space-y-2.5 rounded-2xl border border-slate-200/80 bg-slate-50/80 dark:border-white/10 dark:bg-slate-950/40 p-4 text-xs transition-all">
+                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-2">
+                    <span className="text-slate-500 dark:text-slate-400">{t.hero.coreFocus}</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{t.hero.coreFocusValue}</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-2">
+                    <span className="text-slate-500 dark:text-slate-400">{t.hero.primaryStack}</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{t.hero.primaryStackValue}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 dark:text-slate-400">{t.hero.currentRole}</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">{t.hero.currentRoleValue}</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/10 pb-2">
-                  <span className="text-slate-500 dark:text-slate-400">{t.hero.primaryStack}</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">{t.hero.primaryStackValue}</span>
+              ) : (
+                /* Mode B: Live Real-Time Telemetry & Status */
+                <div className="mt-6 space-y-2.5 rounded-2xl border border-emerald-500/30 bg-emerald-50/40 dark:border-emerald-500/20 dark:bg-emerald-950/20 p-4 text-xs transition-all">
+                  <div className="flex items-center justify-between border-b border-emerald-200/60 dark:border-white/10 pb-2">
+                    <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                      Local Paris Time
+                    </span>
+                    <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">{parisTime || '15:55:00'} CET</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-emerald-200/60 dark:border-white/10 pb-2">
+                    <span className="text-slate-500 dark:text-slate-400">Current Track</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">Alternance @ EPITECH Paris</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500 dark:text-slate-400">Next Opportunity</span>
+                    <span className="font-semibold text-emerald-700 dark:text-emerald-400">Future CDI / CDD (Sept 2027)</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500 dark:text-slate-400">{t.hero.currentRole}</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">{t.hero.currentRoleValue}</span>
-                </div>
-              </div>
+              )}
 
               {/* Social Quick Bar */}
               <div className="mt-5 flex items-center justify-between gap-3 border-t border-slate-200/80 dark:border-white/10 pt-4">
