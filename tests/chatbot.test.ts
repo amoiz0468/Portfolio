@@ -139,6 +139,33 @@ test('Chatbot Engine: System Prompt Guidelines', async (t) => {
     assert.match(replyFr, /exclusivement aux questions concernant son profil/i);
     assert.equal(EMOJI_REGEX.test(replyFr), false);
   });
+
+  await t.test('intelligently answers general help inquiries without refusing', () => {
+    const reply = generateHumanFallbackReply([{ role: 'user', content: 'help me' }]);
+    assert.match(reply, /help you navigate/i);
+    assert.doesNotMatch(reply, /I only answer questions regarding/i);
+    assert.equal(EMOJI_REGEX.test(reply), false);
+
+    const replyFr = generateHumanFallbackReply([{ role: 'user', content: 'aide-moi' }], 'fr');
+    assert.match(replyFr, /faire découvrir le travail/i);
+    assert.doesNotMatch(replyFr, /je réponds exclusivement/i);
+    assert.equal(EMOJI_REGEX.test(replyFr), false);
+  });
+
+  await t.test('intelligently handles app development & coding requests as project opportunities', () => {
+    const reply = generateHumanFallbackReply([{ role: 'user', content: 'help me code an app' }]);
+    assert.match(reply, /architecting and building production web, mobile/i);
+    assert.match(reply, /FastAPI/);
+    assert.match(reply, /DoctorIQ/);
+    assert.doesNotMatch(reply, /I only answer questions regarding/i);
+    assert.equal(EMOJI_REGEX.test(reply), false);
+
+    const replyFr = generateHumanFallbackReply([{ role: 'user', content: 'aide-moi à coder une application' }], 'fr');
+    assert.match(replyFr, /conçoit et développe des applications web/i);
+    assert.match(replyFr, /FastAPI/);
+    assert.doesNotMatch(replyFr, /je réponds exclusivement/i);
+    assert.equal(EMOJI_REGEX.test(replyFr), false);
+  });
 });
 
 test('Security & Optimization: Input Sanitization (XSS & Injection)', async (t) => {

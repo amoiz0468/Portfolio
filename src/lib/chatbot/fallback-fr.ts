@@ -154,6 +154,100 @@ N'hésitez pas à me poser vos questions sur :
     return greetingVariants[varIdx];
   }
 
+  // 3b. AIDE & ASSISTANCE GÉNÉRALE ("aide-moi", "peux-tu m'aider", "que peux-tu faire")
+  if (
+    /^(aide([-\s]moi)?|peux[\s-]tu\s+m['’]aider|comment\s+m['’]aider|que\s+peux[\s-]tu\s+faire|que\s+puis[\s-]je\s+demander|guide([-\s]moi)?)\b/i.test(q) &&
+    !/\b(code|coder|application|app|d[eé]velopper|cr[eé]er|construire)\b/i.test(q)
+  ) {
+    const helpFrVariants = [
+      `Je suis là pour vous faire découvrir le travail et les compétences de **Muhammad Abdul Moiz** !
+
+Voici les sujets clés que vous pouvez explorer :
+- **Projets Réalisés** : *DoctorIQ* (extraction santé OCR & LLM), *Brackets Genie* (WebSockets temps réel & agents LangGraph) et *VIF* (plateforme solidaire web et mobile).
+- **Stack Technique** : Backend (FastAPI, Django REST, Node.js), DevOps (Docker, GitLab CI, GitHub Actions, AWS/GCP, métriques DORA) et IA (LangGraph, PyTorch).
+- **Parcours & Formation** : MSc à l'**EPITECH Paris** (Assistant Pédagogique) & ex-ingénieur logiciel chez **Brackets Private Limited**.
+- **Contact & Recrutement** : En alternance jusqu'en septembre 2027, ouvert aux futurs CDI/CDD ou collaborations techniques via \`${profile.email}\`.
+
+### Suggestions de questions :
+? Parlez-moi de vos projets phares (DoctorIQ, Brackets Genie, VIF).
+? Quelles sont vos compétences et vos services en DevOps et Cloud ?
+? Pourquoi un recruteur devrait-il engager Muhammad Abdul Moiz ?`,
+
+      `Bienvenue ! En tant que représentant IA de Moiz, je vous aide à explorer son profil :
+- **Projets Phares** : Découvrez *DoctorIQ*, *Brackets Genie*, *Ledgeroo* ou *Trinity Suite*.
+- **Services & Compétences** : Microservices backend, déploiements cloud AWS/GCP, pipelines CI/CD ou agents IA génératifs.
+- **Disponibilités** : En alternance à l'EPITECH Paris, disponible pour de futurs rôles d'ingénierie logicielle.
+
+### Suggestions de questions :
+? Quelle est votre stack technique backend et bases de données ?
+? Pourquoi un recruteur devrait-il engager Muhammad Abdul Moiz ?
+? Comment puis-je contacter Muhammad Abdul Moiz ?`,
+
+      `Je suis à votre service pour vous orienter sur le profil de Muhammad Abdul Moiz :
+- **Expérience** : Assistant Pédagogique à EPITECH Paris et ingénieur chez Brackets.
+- **Savoir-faire** : Backends Python performants, conteneurs Docker, observabilité et flux agentiques.
+- **Démonstrations** : Détails sur ses 8 projets en production.
+
+Que souhaitez-vous approfondir ?
+
+### Suggestions de questions :
+? Parlez-moi de DoctorIQ et de l'extraction de documents médicaux.
+? Quelles sont vos compétences et vos services en DevOps et Cloud ?
+? Quels sont vos centres d'intérêt et passions en dehors du travail ?`,
+    ];
+    return helpFrVariants[varIdx];
+  }
+
+  // 3c. DÉVELOPPEMENT D'APPLICATION & PROJETS ("aide-moi à coder une application", "créer une app", "développer une application")
+  if (
+    /\b(coder?\s+(une?\s+)?app(lication)?|construire\s+(une?\s+)?(app(lication)?|site|projet|syst[eè]me)|d[eé]velopper\s+(une?\s+)?(app(lication)?|site)|cr[eé]er\s+(une?\s+)?(app(lication)?|site)|aide([-\s]moi\s+[aà]\s+)?(coder?|d[eé]velopper|programmer)|engager\s+(pour\s+d[eé]velopper|un\s+projet)|freelance|besoin\s+d['’]une?\s+app(lication)?)\b/i.test(q)
+  ) {
+    const appFrVariants = [
+      `Moiz conçoit et développe des applications web, mobiles et d'IA prêtes pour la production !
+
+Voici son approche de développement logiciel :
+- **Systèmes Full-Stack & Mobiles** : Backends performants en **Python (FastAPI, Django)** et interfaces modernes en **React**, **Next.js** ou mobiles en **React Native** (comme *[VIF](#projects)*).
+- **IA Appliquée & Agents** : Intégration de pipelines OCR multimodaux, bases RAG et agents autonomes avec **LangGraph**, **LangChain**, et les APIs **Claude/OpenAI** (comme *[DoctorIQ](#projects)* et *[Brackets Genie](#projects)*).
+- **Cloud & DevOps** : Déploiements automatisés sur **AWS** ou **GCP**, conteneurisation Docker multi-étapes et chaînes CI/CD complètes.
+
+Bien que cet agent conversationnel ne permette pas d'exécuter du code personnalisé en direct dans le chat, Moiz est disponible pour concevoir, prototyper et développer vos applications !
+
+Contactez-le directement à [${profile.email}](mailto:${profile.email}) ou via [LinkedIn](${profile.linkedin}) pour échanger sur votre projet.
+
+### Suggestions de questions :
+? Parlez-moi de vos projets phares (DoctorIQ, Brackets Genie, VIF).
+? Quelles sont vos compétences et vos services en DevOps et Cloud ?
+? Pourquoi un recruteur devrait-il engager Muhammad Abdul Moiz ?`,
+
+      `Si vous cherchez à développer une application ou un système logiciel, vous êtes au bon endroit ! Muhammad Abdul Moiz dispose d'une solide expérience de livraison :
+- **APIs & Microservices de Production** : Architectures asynchrones avec FastAPI et Django REST, reliées à PostgreSQL et Redis.
+- **Interfaces Web & Mobiles** : Développements React 18 et React Native avec télémétrie temps réel via WebSockets.
+- **Infrastructure Cloud** : Images Docker sécurisées, pipelines CI/CD avec contrôles SonarQube et hébergement AWS/GCP.
+
+Moiz est ouvert aux discussions autour d'opportunités d'ingénierie et de développement de projets.
+
+Écrivez-lui directement à [${profile.email}](mailto:${profile.email}) ou sur [LinkedIn](${profile.linkedin}) !
+
+### Suggestions de questions :
+? Parlez-moi de VIF et du pilotage d'un projet full-stack de bout en bout.
+? Quelle est votre expérience avec LangGraph et l'IA conversationnelle ?
+? Comment puis-je contacter Muhammad Abdul Moiz ?`,
+
+      `Moiz possède une expertise éprouvée dans la conception d'applications complètes et d'infrastructures cloud :
+- **Santé & IA** : Réalisation de *DoctorIQ*, divisant par 70% le temps de traitement de documents cliniques.
+- **Systèmes Temps Réel** : Architecture de *Brackets Genie*, avec flux de télémétrie agentique sous 50ms par WebSockets.
+- **Mobile & Solidarité** : Lead projet sur *VIF*, application mobile et web avec suivi des métriques DORA.
+
+N'hésitez pas à lui envoyer un message à [${profile.email}](mailto:${profile.email}) pour discuter de votre cahier des charges !
+
+### Suggestions de questions :
+? Parlez-moi de vos projets phares (DoctorIQ, Brackets Genie, VIF).
+? Pourquoi un recruteur devrait-il engager Muhammad Abdul Moiz ?
+? Quelles sont vos compétences et vos services en DevOps et Cloud ?`,
+    ];
+    return appFrVariants[varIdx];
+  }
+
   // 4. STATUT PROFESSIONNEL & OPPORTUNITES (CDI / CDD)
   if (/\b(alternance|contrat|stage|emploi|recrutement|disponibilit(e|é)|rythme|septembre|embauche|cdd|cdi)\b/i.test(q)) {
     return `### Statut Professionnel & Opportunités Futures (CDI / CDD)

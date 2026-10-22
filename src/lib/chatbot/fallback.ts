@@ -84,6 +84,104 @@ Feel free to ask me anything about Moiz's engineering career, tech stack, or ava
     return greetingVariants[varIdx];
   }
 
+  // 1b. HELP & ASSISTANCE INQUIRIES ("help me", "can you help", "what can you do")
+  if (
+    /^(help(\s+me)?|can\s+you\s+help(\s+me)?|how\s+can\s+you\s+help|what\s+can\s+you\s+do|what\s+can\s+i\s+ask|guide\s+me|how\s+does\s+this\s+work)\b/i.test(q) &&
+    !/\b(code|app|build|develop|create|program|debug|script)\b/i.test(q)
+  ) {
+    const helpVariants = [
+      `I'm here to help you navigate **Muhammad Abdul Moiz**'s portfolio and professional work!
+
+Here are key areas you can ask about:
+- **Featured Projects**: *DoctorIQ* (healthcare OCR & LLM extraction), *Brackets Genie* (real-time WebSockets & LangGraph agents), and *VIF* (food solidarity web & mobile platform).
+- **Engineering Stack**: Backend (FastAPI, Django REST, Node.js), DevOps (Docker, GitLab CI, GitHub Actions, AWS/GCP, SonarQube, DORA metrics), and AI (LangGraph, LangChain, PyTorch).
+- **Experience & Education**: MSc at **EPITECH Paris** (Pedagogical Assistant) & Associate Software Engineer at **Brackets Private Limited**.
+- **Opportunities & Contact**: In alternance at EPITECH Paris (Sept 2026 – Sept 2027), open to future CDI/CDD roles or project collaborations at \`${profile.email}\`.
+
+### Suggested Inquiries:
+? Tell me about your featured projects (DoctorIQ, Brackets Genie, VIF).
+? Do you have experiences of DevOps and what services do you offer as DevOps?
+? Why should a recruiter hire Muhammad Abdul Moiz for engineering roles?`,
+
+      `Welcome! As Moiz's AI twin, I can help you explore his software engineering background, projects, and collaboration opportunities:
+- **Explore Projects**: Ask about *DoctorIQ*, *Brackets Genie*, *Ledgeroo*, or *Trinity Suite*.
+- **Technical Capabilities**: Inquire about backend microservices, cloud deployments, CI/CD pipelines, or agentic GenAI.
+- **Background & Availability**: Learn about his studies at EPITECH Paris and how to connect for engineering roles.
+
+Feel free to ask a specific question or pick one of the suggestions below!
+
+### Suggested Inquiries:
+? What is your core tech stack and backend engineering experience?
+? Why should a recruiter hire Muhammad Abdul Moiz for engineering roles?
+? How can I get in touch with Muhammad Abdul Moiz?`,
+
+      `I am ready to assist! You can ask me anything about Muhammad Abdul Moiz's professional profile:
+- **Work Experience**: Associate Software Engineer at Brackets and Pedagogical Assistant at EPITECH Paris.
+- **Key Skills**: Python, FastAPI, Django, Docker, AWS, GCP, LangGraph, and automated CI/CD software factories.
+- **Project Demonstrations**: Deep-dives into his 8 featured systems spanning AI, cloud, and full-stack development.
+
+What topic would you like to dive into?
+
+### Suggested Inquiries:
+? Tell me about DoctorIQ and clinical document extraction.
+? Do you have experiences of DevOps and what services do you offer as DevOps?
+? What are your passions and hobbies outside of work?`,
+    ];
+    return helpVariants[varIdx];
+  }
+
+  // 1c. APP DEVELOPMENT, CODING & PROJECT COLLABORATION ("help me code an app", "build an app", "can you code")
+  if (
+    /\b(code\s+(an?\s+)?app|build\s+(an?\s+)?(app|application|website|system|project|platform)|develop\s+(an?\s+)?(app|application|website)|create\s+(an?\s+)?(app|application|website)|make\s+(an?\s+)?(app|application|website)|help\s+(me\s+)?(code|build|develop|program)|hire\s+(you|moiz)\s+(to\s+build|for\s+a\s+project)|freelance|consulting|need\s+an?\s+app)\b/i.test(q)
+  ) {
+    const appVariants = [
+      `Moiz specializes in architecting and building production web, mobile, and AI-powered applications from the ground up!
+
+Here is how he approaches application development:
+- **Full-Stack & Mobile Systems**: High-performance backends in **Python (FastAPI, Django)** paired with modern frontends in **React**, **Next.js**, or cross-platform mobile apps in **React Native** (like *[VIF](#projects)*).
+- **Applied AI & Agents**: Integrating multimodal OCR, RAG knowledge bases, and multi-step agents using **LangGraph**, **LangChain**, and **Claude/OpenAI** APIs (like *[DoctorIQ](#projects)* and *[Brackets Genie](#projects)*).
+- **Cloud & DevOps**: Automated CI/CD pipelines (GitLab CI, GitHub Actions), multi-stage Docker containerization, and deployment on **AWS** or **GCP**.
+
+While I am his portfolio AI twin and cannot write production code on the fly in this chat, Moiz is available to build, architect, or collaborate on your software applications!
+
+Feel free to connect directly at [${profile.email}](mailto:${profile.email}) or on [LinkedIn](${profile.linkedin}) to discuss your app.
+
+### Suggested Inquiries:
+? Tell me about your featured projects (DoctorIQ, Brackets Genie, VIF).
+? What DevOps and cloud services do you offer?
+? Why should a recruiter hire Muhammad Abdul Moiz for engineering roles?`,
+
+      `If you are looking to build or code an application, you are in the right place! Muhammad Abdul Moiz has a proven track record delivering end-to-end systems:
+- **Production APIs & Microservices**: Scalable asynchronous backends with FastAPI and Django REST, connected to PostgreSQL and Redis.
+- **Mobile & Web Interfaces**: Cross-platform React Native and React 18 interfaces with real-time WebSocket capabilities.
+- **Cloud Infrastructure**: Robust Docker packaging, CI/CD pipelines with SonarQube quality gates, and scalable AWS/GCP deployments.
+
+Although this chat window is an interactive portfolio guide rather than an IDE sandbox, Moiz is eager to discuss software engineering roles, project development, and consulting collaborations.
+
+Reach out via [${profile.email}](mailto:${profile.email}) or connect on [LinkedIn](${profile.linkedin}) to discuss your application!
+
+### Suggested Inquiries:
+? Tell me about VIF and leading a full-stack project from specs to release.
+? What is your experience with LangGraph and conversational AI?
+? How can I get in touch with Muhammad Abdul Moiz?`,
+
+      `Moiz has extensive experience designing and shipping full-stack applications and automated cloud infrastructure:
+- **Healthcare & AI**: Built *DoctorIQ*, an automated clinical extraction platform cutting document turnaround by 70%.
+- **Real-Time Platforms**: Engineered *Brackets Genie*, streaming multi-agent telemetry with sub-50ms latency over WebSockets.
+- **Solidarity & Mobile**: Led *VIF*, a cross-functional web (FastAPI) and mobile (React Native) food solidarity platform.
+
+As an AI representative, I don't generate custom codebases directly in this chat, but Moiz is available for engineering roles and development collaborations.
+
+Drop him a line at [${profile.email}](mailto:${profile.email}) to talk through your project requirements!
+
+### Suggested Inquiries:
+? Tell me about your featured projects (DoctorIQ, Brackets Genie, VIF).
+? Why should a recruiter hire Muhammad Abdul Moiz for engineering roles?
+? Do you have experiences of DevOps and what services do you offer as DevOps?`,
+    ];
+    return appVariants[varIdx];
+  }
+
   // 2. AGE, BIRTHDATE, HOMETOWN, ORIGIN & BIRTHPLACE (Born October 16, 2002, 23 years old, Pakistan -> Paris)
   if (
     /\b(age|how\s+old|birthday|birth\s*date|date\s+of\s+birth|birth\s*year|year\s+of\s+birth|born|birth\s*place|hometown|home\s*town|where\s+(are\s+you|is\s+moiz)\s+from|from\s+where|nationality|country\s+of\s+origin|origin|where\s+did\s+(you|he)\s+grow\s+up|raised\s+in|raised)\b/i.test(q) ||
