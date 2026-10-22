@@ -229,6 +229,65 @@ function FormattedText({
           );
         }
 
+        // Check for Markdown table: has a divider row like |---|---| and header/data rows with pipes
+        const dividerIndex = lines.findIndex((l) => /^\|?\s*[-:]+[-| :]*\|?\s*$/.test(l));
+        if (dividerIndex >= 1) {
+          const introLines = lines.slice(0, dividerIndex - 1);
+          const parseRow = (line: string) =>
+            line
+              .replace(/^\|/, '')
+              .replace(/\|$/, '')
+              .split('|')
+              .map((c) => c.trim());
+
+          const headerCells = parseRow(lines[dividerIndex - 1]);
+          const rowLines = lines.slice(dividerIndex + 1).filter((l) => l.includes('|'));
+          const rows = rowLines.map(parseRow);
+
+          return (
+            <div key={pIdx} className="my-2 space-y-2">
+              {introLines.length > 0 && (
+                <p className="leading-relaxed whitespace-pre-line">
+                  {renderInlineStyles(introLines.join('\n'))}
+                </p>
+              )}
+              <div className="overflow-x-auto rounded-xl border border-slate-200/90 bg-slate-50/70 p-0.5 dark:border-white/10 dark:bg-white/[0.03]">
+                <table className="w-full min-w-[280px] border-collapse text-left text-[11px]">
+                  <thead>
+                    <tr className="border-b border-slate-200/90 bg-slate-100/90 dark:border-white/10 dark:bg-white/[0.06]">
+                      {headerCells.map((h, hIdx) => (
+                        <th
+                          key={hIdx}
+                          className="px-2.5 py-1.5 font-bold uppercase tracking-wider text-[10px] text-slate-700 dark:text-slate-200"
+                        >
+                          {renderInlineStyles(h)}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200/70 dark:divide-white/5">
+                    {rows.map((row, rIdx) => (
+                      <tr
+                        key={rIdx}
+                        className="transition-colors hover:bg-slate-100/50 dark:hover:bg-white/[0.02]"
+                      >
+                        {row.map((cell, cIdx) => (
+                          <td
+                            key={cIdx}
+                            className="px-2.5 py-2 align-top leading-relaxed text-slate-700 dark:text-slate-300"
+                          >
+                            {renderInlineStyles(cell)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        }
+
         if (para.startsWith('### ')) {
           return (
             <h4
@@ -241,7 +300,7 @@ function FormattedText({
         }
 
         return (
-          <p key={pIdx} className="leading-relaxed">
+          <p key={pIdx} className="leading-relaxed whitespace-pre-line">
             {renderInlineStyles(para)}
           </p>
         );
