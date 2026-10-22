@@ -19,15 +19,17 @@ export default function About() {
         jsonLd={buildAboutJsonLd(lang)}
       />
 
-      <section className="mx-auto max-w-5xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">
-        <Reveal>
-          <SectionTitle
-            eyebrow={aboutPage.eyebrow}
-            eyebrowIcon={<FiCompass />}
-            title={aboutPage.title}
-            subtitle={aboutPage.subtitle}
-          />
-        </Reveal>
+      <main id="main-content" role="main">
+        <section className="mx-auto max-w-5xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionTitle
+              as="h1"
+              eyebrow={aboutPage.eyebrow}
+              eyebrowIcon={<FiCompass />}
+              title={aboutPage.title}
+              subtitle={aboutPage.subtitle}
+            />
+          </Reveal>
 
         <Reveal delay={0.08}>
           <div className="mt-8 sm:mt-10 rounded-[2.5rem] border border-slate-200/90 bg-white/90 p-6 sm:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.05)] backdrop-blur-md transform-gpu dark:border-white/10 dark:bg-slate-900/80 dark:shadow-2xl">
@@ -145,6 +147,7 @@ export default function About() {
           </div>
         </div>
       </section>
+      </main>
     </>
   );
 }

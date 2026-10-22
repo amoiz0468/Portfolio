@@ -26,27 +26,30 @@ export default function ProjectsPage() {
         jsonLd={buildProjectsJsonLd(lang)}
       />
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">
-        <Reveal>
-          <SectionTitle
-            eyebrow={t.projectsSection.eyebrow}
-            eyebrowIcon={<FiLayers />}
-            title={t.projectsSection.title}
-            subtitle={t.projectsSection.subtitle}
-          />
-        </Reveal>
-
-        <div className="mt-8 sm:mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
-          {projectsList.map((project, index) => (
-            <AppleProjectCard
-              key={project.title}
-              project={project}
-              index={index}
-              onSelect={() => setSelectedProject(index)}
+      <main id="main-content" role="main">
+        <section className="mx-auto max-w-6xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">
+          <Reveal>
+            <SectionTitle
+              as="h1"
+              eyebrow={t.projectsSection.eyebrow}
+              eyebrowIcon={<FiLayers />}
+              title={t.projectsSection.title}
+              subtitle={t.projectsSection.subtitle}
             />
-          ))}
-        </div>
-      </section>
+          </Reveal>
+
+          <div className="mt-8 sm:mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
+            {projectsList.map((project, index) => (
+              <AppleProjectCard
+                key={project.title}
+                project={project}
+                index={index}
+                onSelect={() => setSelectedProject(index)}
+              />
+            ))}
+          </div>
+        </section>
+      </main>
 
       {selectedProject !== null && projectsList[selectedProject] ? (
         <ProjectModal

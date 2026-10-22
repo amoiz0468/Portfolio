@@ -6,6 +6,7 @@ type SectionTitleProps = {
   title: string;
   subtitle?: string;
   align?: 'left' | 'center';
+  as?: 'h1' | 'h2';
 };
 
 export default function SectionTitle({
@@ -14,8 +15,10 @@ export default function SectionTitle({
   title,
   subtitle,
   align = 'left',
+  as = 'h2',
 }: SectionTitleProps) {
   const isCenter = align === 'center';
+  const HeadingTag = as;
 
   return (
     <div className={`space-y-4 ${isCenter ? 'text-center mx-auto max-w-3xl' : 'text-left max-w-2xl'}`}>
@@ -25,11 +28,11 @@ export default function SectionTitle({
           <span>{eyebrow}</span>
         </div>
       )}
-      <h2 className="text-[clamp(2rem,4vw+0.5rem,3.5rem)] font-black tracking-[-0.035em] leading-[1.05] text-slate-900 dark:text-white">
+      <HeadingTag className="text-[clamp(2rem,4vw+0.5rem,3.5rem)] font-black tracking-[-0.035em] leading-[1.05] text-slate-900 dark:text-white">
         <span className="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-600 dark:from-white dark:via-slate-100 dark:to-slate-400 bg-clip-text text-transparent">
           {title}
         </span>
-      </h2>
+      </HeadingTag>
       {subtitle && (
         <p className="text-base leading-relaxed text-slate-600 dark:text-slate-400 sm:text-lg">
           {subtitle}

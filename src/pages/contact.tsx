@@ -166,15 +166,17 @@ export default function ContactPage() {
         jsonLd={buildContactJsonLd(lang)}
       />
 
-      <section className="flex-1 flex flex-col justify-center mx-auto max-w-5xl w-full px-4 py-6 sm:py-8 md:py-10 lg:px-8">
-        <Reveal>
-          <SectionTitle
-            eyebrow={contactPage.eyebrow}
-            eyebrowIcon={<FiMail />}
-            title={contactPage.title}
-            subtitle={contactPage.subtitle}
-          />
-        </Reveal>
+      <main id="main-content" role="main">
+        <section className="flex-1 flex flex-col justify-center mx-auto max-w-5xl w-full px-4 py-6 sm:py-8 md:py-10 lg:px-8">
+          <Reveal>
+            <SectionTitle
+              as="h1"
+              eyebrow={contactPage.eyebrow}
+              eyebrowIcon={<FiMail />}
+              title={contactPage.title}
+              subtitle={contactPage.subtitle}
+            />
+          </Reveal>
 
         <div className="mt-8 sm:mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-stretch">
           {/* Left Column: Direct Links, Instant Copy & Fallbacks */}
@@ -421,6 +423,7 @@ export default function ContactPage() {
           </Reveal>
         </div>
       </section>
+      </main>
     </>
   );
 }

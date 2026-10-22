@@ -113,7 +113,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden items-center gap-1 rounded-full border border-slate-200/90 bg-slate-100/70 p-1.5 backdrop-blur-xl dark:border-white/[0.08] dark:bg-white/[0.03] lg:flex">
+          <nav aria-label="Main navigation" className="hidden items-center gap-1 rounded-full border border-slate-200/90 bg-slate-100/70 p-1.5 backdrop-blur-xl dark:border-white/[0.08] dark:bg-white/[0.03] lg:flex">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -232,6 +232,8 @@ export default function Navbar() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Navigation Menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-menu"
               className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white/90 text-slate-700 shadow-sm transition dark:border-white/10 dark:bg-white/5 dark:text-slate-200 active:scale-95"
             >
               {mobileMenuOpen ? <FiX size={16} /> : <FiMenu size={16} />}
@@ -242,12 +244,13 @@ export default function Navbar() {
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
           <motion.div
+            id="mobile-nav-menu"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="border-b border-slate-200 bg-white/98 px-4 pb-6 pt-3 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#090d16]/95 sm:hidden"
           >
-            <div className="flex flex-col gap-1.5">
+            <nav aria-label="Mobile navigation" className="flex flex-col gap-1.5">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -258,7 +261,7 @@ export default function Navbar() {
                   <span>{item.label}</span>
                 </Link>
               ))}
-            </div>
+            </nav>
 
             <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-white/10">
               <div className="flex items-center gap-2">

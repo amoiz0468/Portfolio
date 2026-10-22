@@ -88,7 +88,7 @@ export default function Home() {
         <div className="absolute bottom-[15%] left-[20%] h-[550px] w-[550px] rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.05)_0%,rgba(245,158,11,0.01)_50%,transparent_70%)] dark:bg-[radial-gradient(circle,rgba(245,158,11,0.08)_0%,rgba(245,158,11,0.01)_50%,transparent_70%)]" />
       </div>
 
-      <main className="relative z-10">
+      <main id="main-content" role="main" className="relative z-10">
         {/* 1. HERO SECTION */}
         <AppleHero />
 

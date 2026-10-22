@@ -14,7 +14,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="mt-28 border-t border-slate-200/90 bg-white/85 text-slate-800 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#090d16]/90 dark:text-slate-100 transition-colors duration-200">
+    <footer role="contentinfo" className="mt-28 border-t border-slate-200/90 bg-white/85 text-slate-800 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#090d16]/90 dark:text-slate-100 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_0.8fr_1fr]">
           {/* Brand & Summary */}
@@ -38,7 +38,9 @@ export default function Footer() {
             {/* Language & Theme Controls */}
             <div className="flex items-center gap-2 pt-2">
               <button
+                type="button"
                 onClick={toggleLang}
+                aria-label={lang === 'en' ? 'Basculer en français' : 'Switch to English'}
                 className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
               >
                 <FiGlobe size={13} className="text-indigo-500" />
@@ -130,9 +132,11 @@ export default function Footer() {
             {/* Back to top button */}
             <div className="mt-6">
               <motion.button
+                type="button"
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={scrollToTop}
+                aria-label={t.footer.backToTop}
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-200 hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
               >
                 <FiArrowUp size={13} /> {t.footer.backToTop}

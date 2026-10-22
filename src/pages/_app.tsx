@@ -86,8 +86,14 @@ export default function App({ Component, pageProps, router }: AppProps & { route
           <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         </Head>
         <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 selection:bg-indigo-500/25 selection:text-indigo-900 dark:bg-[#090d16] dark:text-slate-100 dark:selection:bg-indigo-500/30 dark:selection:text-white pb-16 md:pb-0 transition-colors duration-200">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-indigo-600 focus:px-4 focus:py-2.5 focus:text-xs focus:font-bold focus:text-white focus:shadow-2xl focus:ring-2 focus:ring-white focus:outline-none"
+          >
+            Skip to main content
+          </a>
           <Navbar />
-          <main className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={router.route}
@@ -100,7 +106,7 @@ export default function App({ Component, pageProps, router }: AppProps & { route
                 <Component {...pageProps} />
               </motion.div>
             </AnimatePresence>
-          </main>
+          </div>
           <Footer />
           {/* Native Mobile Bottom Navigation Bar */}
           <MobileBottomNav />
