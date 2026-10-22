@@ -51,6 +51,68 @@ export default function InteractiveTerminal() {
   const { theme, setTheme, toggleTheme } = useTheme();
   const logs = t.telemetry.logs;
 
+  // Virtual in-memory filesystem that can be viewed and edited by vim, nano, emacs, cat, touch
+  const [virtualFiles, setVirtualFiles] = useState<Record<string, string>>({
+    'README.md': `# Muhammad Abdul Moiz — Engineering Portfolio
+Welcome to my terminal environment. I am a Web, DevOps, and AI Engineer based in Paris.
+• Master of Science in IT @ EPITECH Paris (2025–2027)
+• Bachelor of Science in CS @ FAST-NUCES (2020–2024)
+• Pedagogical Assistant (Alternance) @ EPITECH Paris (Sept 2026 – Sept 2027)
+Run 'projects' or 'tree' to explore my production engineering work.`,
+    'skills.txt': `[CORE_TECHNICAL_MATRIX]
+Backend: FastAPI, Django REST, Elixir/Phoenix, Node.js, Celery, PostgreSQL, Redis
+DevOps: Docker, Docker Compose, GitLab CI, GitHub Actions, AWS (EC2/S3/Lambda), SonarQube
+AI/ML: LangGraph, LangChain, Multi-Agent Systems, Anthropic/OpenAI APIs, PyTorch, OCR
+Frontend: React 18, Next.js, React Native, TypeScript, TailwindCSS`,
+    'notes.txt': `Welcome to MoizOS editor!
+Feel free to write notes, edit code, or test bash commands.
+Save your changes with :wq (Vim) or ^X (Nano).`,
+  });
+
+  const [activeEditor, setActiveEditor] = useState<'vim' | 'nano' | 'emacs' | null>(null);
+  const [editorFile, setEditorFile] = useState<string>('');
+  const [editorBuffer, setEditorBuffer] = useState<string>('');
+  const [vimMode, setVimMode] = useState<'NORMAL' | 'INSERT'>('NORMAL');
+  const [editorStatusMsg, setEditorStatusMsg] = useState<string>('');
+  const editorTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const closeEditor = (save: boolean) => {
+    const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
+    const lines = editorBuffer.split('\n').length;
+    const bytes = editorBuffer.length;
+
+    if (save && editorFile) {
+      setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
+    }
+
+    const editorName = activeEditor === 'vim' ? 'vim' : activeEditor === 'nano' ? 'nano' : 'emacs';
+    const exitMsg = save
+      ? `[${editorName}] "${editorFile}" ${lines}L, ${bytes}B written to virtual filesystem.`
+      : `[${editorName}] Buffer closed. Changes discarded.`;
+
+    setHistory((prev) => [
+      ...prev,
+      {
+        command: `${editorName} ${editorFile}`,
+        output: <p className="text-[11px] font-mono text-emerald-400">{exitMsg}</p>,
+        time: now,
+        dir: currentDir,
+      },
+    ]);
+
+    setActiveEditor(null);
+    setEditorFile('');
+    setEditorBuffer('');
+    setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 60);
+  };
+
+  // Focus editor textarea when vim/nano/emacs is launched
+  useEffect(() => {
+    if (activeEditor) {
+      setTimeout(() => editorTextareaRef.current?.focus({ preventScroll: true }), 50);
+    }
+  }, [activeEditor]);
+
   // Auto-cycle telemetry lines in telemetry mode
   useEffect(() => {
     if (activeTab !== 'telemetry') return;
@@ -110,20 +172,31 @@ export default function InteractiveTerminal() {
       case 'help':
         output = (
           <div className="space-y-1.5 text-[11px]">
-            <p className="font-semibold text-slate-500 dark:text-slate-400">Essential navigation &amp; commands:</p>
+            <p className="font-semibold text-slate-500 dark:text-slate-400">Available commands &amp; tools:</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 pt-1 font-mono">
+              <div><span className="font-bold text-indigo-500">ls [-la]</span> — list files &amp; directories</div>
+              <div><span className="font-bold text-indigo-500">cat &lt;file&gt;</span> — view file contents</div>
+              <div><span className="font-bold text-indigo-500">tree</span> — visualize portfolio directory tree</div>
+              <div><span className="font-bold text-indigo-500">cd &lt;dir&gt;</span> — change virtual directory</div>
+              <div><span className="font-bold text-indigo-500">nano &lt;file&gt;</span> — launch GNU nano editor (working!)</div>
+              <div><span className="font-bold text-indigo-500">vim &lt;file&gt;</span> — launch Vim text editor (working!)</div>
+              <div><span className="font-bold text-indigo-500">emacs &lt;file&gt;</span> — launch GNU Emacs editor (working!)</div>
+              <div><span className="font-bold text-indigo-500">ping &lt;host&gt;</span> — network latency probe (PONG)</div>
+              <div><span className="font-bold text-indigo-500">neofetch</span> — display system specs &amp; logo</div>
+              <div><span className="font-bold text-indigo-500">whoami</span> — bio, origin &amp; background</div>
               <div><span className="font-bold text-indigo-500">skills</span> — view full-stack, DevOps &amp; AI stack</div>
-              <div><span className="font-bold text-indigo-500">projects</span> — inspect production applications</div>
-              <div><span className="font-bold text-indigo-500">hire</span> — check CDI &amp; alternance availability</div>
-              <div><span className="font-bold text-indigo-500">contact</span> — direct email, phone &amp; socials</div>
-              <div><span className="font-bold text-indigo-500">whoami</span> — bio, origin &amp; academic background</div>
-              <div><span className="font-bold text-indigo-500">ls</span> — list files &amp; virtual directories</div>
-              <div><span className="font-bold text-indigo-500">cat &lt;file&gt;</span> — inspect file contents (e.g. README.md)</div>
-              <div><span className="font-bold text-indigo-500">cd &lt;dir&gt;</span> — change directory (e.g. cd projects)</div>
+              <div><span className="font-bold text-indigo-500">projects</span> — view featured apps &amp; systems</div>
+              <div><span className="font-bold text-indigo-500">docker ps</span> — inspect running project containers</div>
+              <div><span className="font-bold text-indigo-500">git status</span> — check repository status</div>
+              <div><span className="font-bold text-indigo-500">top / htop</span> — live process &amp; CPU stats</div>
+              <div><span className="font-bold text-indigo-500">curl &lt;url&gt;</span> — fetch simulated API endpoint</div>
+              <div><span className="font-bold text-indigo-500">status</span> — live backend service health</div>
+              <div><span className="font-bold text-indigo-500">contact</span> — direct phone, email &amp; socials</div>
+              <div><span className="font-bold text-indigo-500">hire</span> — check alternance &amp; CDI status</div>
               <div><span className="font-bold text-indigo-500">clear</span> — clear the console screen</div>
             </div>
             <p className="text-[10px] text-slate-400 pt-1.5 border-t border-slate-200/50 dark:border-white/5">
-              Tip: MoizOS also responds to common shell tools and developer easter eggs. Feel free to explore!
+              Hidden easter eggs: <span className="text-slate-500 dark:text-slate-400">theme dark/light, fr/en, matrix, sl, cowsay, fortune, joke, quote, coffee, beer, weather, sudo, man moiz</span>
             </p>
           </div>
         );
@@ -211,6 +284,12 @@ export default function InteractiveTerminal() {
             <p className="text-[11px] text-amber-500">
               usage: cat &lt;filename&gt; (try &apos;cat README.md&apos;, &apos;cat skills.txt&apos;, &apos;cat package.json&apos;, or &apos;cat Dockerfile&apos;)
             </p>
+          );
+        } else if (virtualFiles[target] !== undefined) {
+          output = (
+            <div className="rounded-lg bg-slate-100 p-2.5 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200 whitespace-pre-wrap select-text">
+              {virtualFiles[target] || <span className="text-slate-400 italic">[empty file]</span>}
+            </div>
           );
         } else if (target === 'readme.md' || target === 'readme') {
           output = (
@@ -544,21 +623,32 @@ export default function InteractiveTerminal() {
         );
         break;
 
-      case 'touch':
-        output = <p className="text-[11px] font-mono text-emerald-500">touch: created &apos;{arg1 || 'newfile.txt'}&apos; in memory buffer</p>;
+      case 'touch': {
+        const newFile = arg1 || 'newfile.txt';
+        setVirtualFiles((prev) => ({ ...prev, [newFile]: prev[newFile] ?? '' }));
+        output = <p className="text-[11px] font-mono text-emerald-500">touch: created &apos;{newFile}&apos; in virtual filesystem</p>;
         break;
+      }
 
       case 'mkdir':
         output = <p className="text-[11px] font-mono text-emerald-500">mkdir: created directory &apos;{arg1 || 'new-dir'}&apos;</p>;
         break;
 
-      case 'rm':
+      case 'rm': {
         if (fullArg.includes('-rf /') || fullArg.includes('-fr /') || fullArg === '-rf *') {
           output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;/&apos;: Permission denied. Nice try! MoizOS integrity protected.</p>;
+        } else if (arg1 && virtualFiles[arg1] !== undefined) {
+          setVirtualFiles((prev) => {
+            const nextFiles = { ...prev };
+            delete nextFiles[arg1];
+            return nextFiles;
+          });
+          output = <p className="text-[11px] font-mono text-slate-400">rm: removed virtual target &apos;{arg1}&apos;</p>;
         } else {
           output = <p className="text-[11px] font-mono text-slate-400">rm: removed virtual target &apos;{arg1 || 'file'}&apos;</p>;
         }
         break;
+      }
 
       case 'cp':
         output = <p className="text-[11px] font-mono text-emerald-500">cp: copied &apos;{arg1 || 'src'}&apos; to &apos;{arg2 || 'dest'}&apos;</p>;
@@ -692,7 +782,19 @@ export default function InteractiveTerminal() {
       }
 
       case 'curl':
-        if (arg1.includes('profile') || arg1.includes('api')) {
+        if (arg1.includes('wttr') || fullArg.includes('wttr')) {
+          output = (
+            <div className="font-mono text-[11px] text-slate-700 dark:text-slate-300 space-y-1">
+              <p className="font-bold text-indigo-500">Weather report: Paris, France (wttr.in)</p>
+              <pre className="text-amber-500 dark:text-amber-400 leading-tight select-none">{`     \\   /     Sunny / Mild
+      .-.      +18°C (feels like 19°C)
+   ― (   ) ―   Wind: 11 km/h WNW
+      \`-’      Humidity: 52%
+     /   \\     UV Index: 3 (Moderate)`}</pre>
+              <p className="text-[10px] text-slate-400">wttr.in/Paris • HTTP/2 200 OK</p>
+            </div>
+          );
+        } else if (arg1.includes('profile') || arg1.includes('api')) {
           output = (
             <div className="rounded-lg bg-slate-100 p-2 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
               <pre>{JSON.stringify({
@@ -912,22 +1014,39 @@ export default function InteractiveTerminal() {
 
       case 'vim':
       case 'vi':
-      case 'nvim':
-        output = (
-          <p className="text-[11px] text-indigo-400 font-mono">
-            Trapped in {base}? Press &lt;ESC&gt; :wq to escape. Just kidding! You are safe in the web console.
-          </p>
-        );
-        break;
+      case 'nvim': {
+        const file = arg1 || 'notes.txt';
+        const initial = virtualFiles[file] ?? '';
+        setEditorFile(file);
+        setEditorBuffer(initial);
+        setVimMode('NORMAL');
+        setEditorStatusMsg(`"${file}" ${initial ? initial.split('\n').length + 'L' : '[New File]'}`);
+        setActiveEditor('vim');
+        setInputVal('');
+        return;
+      }
 
-      case 'nano':
-      case 'emacs':
-        output = (
-          <p className="text-[11px] text-indigo-400 font-mono">
-            {base} buffer closed [0 modifications saved].
-          </p>
-        );
-        break;
+      case 'nano': {
+        const file = arg1 || 'notes.txt';
+        const initial = virtualFiles[file] ?? '';
+        setEditorFile(file);
+        setEditorBuffer(initial);
+        setEditorStatusMsg(`File: ${file}`);
+        setActiveEditor('nano');
+        setInputVal('');
+        return;
+      }
+
+      case 'emacs': {
+        const file = arg1 || 'notes.txt';
+        const initial = virtualFiles[file] ?? '';
+        setEditorFile(file);
+        setEditorBuffer(initial);
+        setEditorStatusMsg(`Buffer: ${file}`);
+        setActiveEditor('emacs');
+        setInputVal('');
+        return;
+      }
 
       case 'code':
         output = (
@@ -1086,17 +1205,37 @@ export default function InteractiveTerminal() {
         );
         break;
 
-      case 'cowsay':
+      case 'cowsay': {
+        const speech = fullArg.trim() || 'Hire Moiz: Full-Stack, DevOps & AI Power!';
+        const len = speech.length;
+        const topBar = ' ' + '_'.repeat(len + 2);
+        const botBar = ' ' + '-'.repeat(len + 2);
         output = (
-          <div className="font-mono text-[11px] text-emerald-500 select-none">
-            <pre>{` ___________________________________________
-< Hire Moiz: Full-Stack, DevOps & AI Power! >
- -------------------------------------------
+          <div className="font-mono text-[11px] text-emerald-500 select-none overflow-x-auto">
+            <pre>{`${topBar}
+< ${speech} >
+${botBar}
         \\   ^__^
          \\  (oo)\\_______
             (__)\\       )\\/\\
                 ||----w |
                 ||     ||`}</pre>
+          </div>
+        );
+        break;
+      }
+
+      case 'weather':
+      case 'wttr':
+        output = (
+          <div className="font-mono text-[11px] text-slate-700 dark:text-slate-300 space-y-1">
+            <p className="font-bold text-indigo-500">Weather report: Paris, France</p>
+            <pre className="text-amber-500 dark:text-amber-400 leading-tight select-none">{`     \\   /     Sunny / Mild
+      .-.      +18°C (feels like 19°C)
+   ― (   ) ―   Wind: 11 km/h WNW
+      \`-’      Humidity: 52%
+     /   \\     UV Index: 3 (Moderate)`}</pre>
+            <p className="text-[10px] text-slate-400">Location: Paris (75011) • EPITECH Campus • Ideal engineering weather</p>
           </div>
         );
         break;
@@ -1402,79 +1541,297 @@ export default function InteractiveTerminal() {
         <div
           data-lenis-prevent="true"
           onClick={(e) => {
+            if (activeEditor) return;
             if ((e.target as HTMLElement).closest('button, a, input')) return;
             if (window.getSelection()?.toString()) return;
             inputRef.current?.focus({ preventScroll: true });
           }}
           className="flex flex-col p-4 sm:p-5 text-slate-800 dark:text-slate-200 h-[340px] sm:h-[380px] cursor-text"
         >
-          {/* Scrollable History Viewport with Lenis-prevent */}
-          <div
-            ref={shellContainerRef}
-            data-lenis-prevent="true"
-            className="flex-1 overflow-y-auto overscroll-contain space-y-3 pr-2 select-text"
-            style={{ overscrollBehavior: 'contain' }}
-          >
-            {history.map((item, idx) => (
-              <div key={idx} className="space-y-1">
-                {item.command !== 'init' && (
-                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 font-semibold text-[11px]">
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">moiz@paris</span>
-                    <span className="text-slate-400">:</span>
-                    <span className="text-indigo-500 font-bold">{item.dir || '~'}</span>
-                    <span className="text-slate-400">$</span>
-                    <span className="text-slate-900 dark:text-white font-mono">{item.command}</span>
-                    <span className="ml-auto text-[10px] text-slate-400">{item.time}</span>
+          {activeEditor ? (
+            <div className="flex flex-col h-full space-y-2 select-text" data-lenis-prevent="true">
+              {/* Header depending on editor */}
+              {activeEditor === 'vim' && (
+                <div className="flex items-center justify-between border-b border-slate-200/80 pb-1.5 dark:border-white/10 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-emerald-500 font-mono">VIM</span>
+                    <span className="text-slate-400 font-mono text-[11px]">~/{editorFile}</span>
+                    <button
+                      type="button"
+                      onClick={() => setVimMode((m) => (m === 'NORMAL' ? 'INSERT' : 'NORMAL'))}
+                      className={`rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wider transition font-mono ${
+                        vimMode === 'INSERT'
+                          ? 'bg-emerald-500 text-slate-950 animate-pulse'
+                          : 'bg-indigo-600 text-white'
+                      }`}
+                    >
+                      -- {vimMode} --
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-1.5 font-mono">
+                    <button
+                      type="button"
+                      onClick={() => closeEditor(true)}
+                      className="rounded bg-emerald-600 px-2 py-0.5 text-[10px] font-semibold text-white transition hover:bg-emerald-500"
+                    >
+                      :wq (Save &amp; Exit)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
+                        setEditorStatusMsg(`"${editorFile}" written [OK]`);
+                      }}
+                      className="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white transition hover:bg-indigo-500"
+                    >
+                      :w (Save)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => closeEditor(false)}
+                      className="rounded bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-700 transition hover:bg-rose-500 hover:text-white dark:bg-white/10 dark:text-slate-300"
+                    >
+                      :q! (Discard)
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeEditor === 'nano' && (
+                <div className="flex items-center justify-between bg-slate-800 text-white px-2.5 py-1 rounded text-[11px] font-mono shrink-0">
+                  <span>GNU nano 7.2</span>
+                  <span className="font-bold">File: {editorFile}</span>
+                  <span className="text-amber-400 font-semibold">[MoizOS 2.4]</span>
+                </div>
+              )}
+
+              {activeEditor === 'emacs' && (
+                <div className="flex items-center justify-between border-b border-slate-200 pb-1 text-[11px] font-mono dark:border-white/10 shrink-0">
+                  <span className="font-bold text-violet-400">GNU Emacs 29.3</span>
+                  <span className="text-slate-400">*{editorFile}* (Fundamental)</span>
+                  <span className="text-emerald-500 font-semibold">Active Buffer</span>
+                </div>
+              )}
+
+              {/* Editor Workspace & Textarea */}
+              <div className="relative flex flex-1 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-black/60">
+                {activeEditor === 'vim' && (
+                  <div className="flex flex-col select-none border-r border-slate-200 bg-slate-100/80 px-2 py-2 text-right font-mono text-[11px] text-slate-400 dark:border-white/5 dark:bg-white/[0.02]">
+                    {Array.from({ length: Math.max(6, editorBuffer.split('\n').length) }).map((_, i) => (
+                      <span key={i} className="leading-relaxed">
+                        {i < editorBuffer.split('\n').length ? i + 1 : '~'}
+                      </span>
+                    ))}
                   </div>
                 )}
-                <div className="pl-0 sm:pl-3">{item.output}</div>
+
+                <textarea
+                  ref={editorTextareaRef}
+                  value={editorBuffer}
+                  onChange={(e) => {
+                    setEditorBuffer(e.target.value);
+                    if (activeEditor === 'vim' && vimMode === 'NORMAL') {
+                      setVimMode('INSERT');
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (activeEditor === 'vim') {
+                      if (e.key === 'Escape') {
+                        e.preventDefault();
+                        setVimMode('NORMAL');
+                        setEditorStatusMsg('-- NORMAL --');
+                      } else if (vimMode === 'NORMAL' && e.key === 'i') {
+                        e.preventDefault();
+                        setVimMode('INSERT');
+                        setEditorStatusMsg('-- INSERT --');
+                      }
+                    } else if (activeEditor === 'nano') {
+                      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x') {
+                        e.preventDefault();
+                        closeEditor(true);
+                      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
+                        e.preventDefault();
+                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
+                        setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines ]`);
+                      }
+                    } else if (activeEditor === 'emacs') {
+                      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                        e.preventDefault();
+                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
+                        setEditorStatusMsg(`Wrote ${editorFile}`);
+                      }
+                    }
+                  }}
+                  data-lenis-prevent="true"
+                  className="flex-1 resize-none bg-transparent p-2 font-mono text-[11px] leading-relaxed text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-100"
+                  placeholder={
+                    activeEditor === 'vim'
+                      ? 'Type to edit in INSERT mode. Press <Esc> for NORMAL mode.'
+                      : 'Type to edit file buffer...'
+                  }
+                />
               </div>
-            ))}
-          </div>
 
-          {/* Pinned Active Command Input Line */}
-          <div className="shrink-0 mt-3 flex items-center gap-2 border-t border-slate-200/70 pt-3 text-[11px] dark:border-white/10">
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">moiz@paris</span>
-            <span className="text-slate-400">:</span>
-            <span className="text-indigo-500 font-bold shrink-0">{currentDir}</span>
-            <span className="text-slate-400">$</span>
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputVal}
-              onChange={(e) => setInputVal(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="type 'skills', 'projects', 'hire', 'help', 'ls'..."
-              className="flex-1 bg-transparent font-mono text-[11px] text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white dark:placeholder:text-slate-500"
-            />
-            <button
-              type="button"
-              aria-label="Execute command"
-              onClick={() => executeCommand(inputVal)}
-              disabled={!inputVal.trim()}
-              className="rounded-lg bg-indigo-600 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-40"
-            >
-              <FiCornerDownLeft />
-            </button>
-          </div>
+              {/* Footer / Status / Shortcuts Bar */}
+              {activeEditor === 'vim' && (
+                <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-0.5 shrink-0">
+                  <span className="text-emerald-500 font-semibold">
+                    {editorStatusMsg ||
+                      (vimMode === 'INSERT'
+                        ? '-- INSERT --'
+                        : `"${editorFile}" ${editorBuffer.split('\n').length}L, ${editorBuffer.length}B`)}
+                  </span>
+                  <span className="text-slate-400">Press &lt;Esc&gt; then :wq or click buttons to exit</span>
+                </div>
+              )}
 
-          {/* Pinned Quick Action Chips */}
-          <div className="shrink-0 mt-2.5 flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Quick:</span>
-            {quickChips.map((chip) => (
-              <button
-                key={chip}
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  executeCommand(chip);
-                }}
-                className="rounded-lg border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[10px] font-medium text-slate-700 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-indigo-400/50 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300"
+              {activeEditor === 'nano' && (
+                <div className="space-y-1 pt-1 font-mono text-[10px] shrink-0">
+                  <div className="text-amber-500 text-[10px]">{editorStatusMsg || '[ Ready. Edit text above ]'}</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 bg-slate-900/90 text-slate-200 p-1.5 rounded">
+                    <button
+                      type="button"
+                      onClick={() => closeEditor(true)}
+                      className="text-left hover:text-emerald-400 transition"
+                    >
+                      <span className="font-bold text-white bg-slate-700 px-1 rounded mr-1">^X</span> Exit &amp; Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
+                        setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines ]`);
+                      }}
+                      className="text-left hover:text-emerald-400 transition"
+                    >
+                      <span className="font-bold text-white bg-slate-700 px-1 rounded mr-1">^O</span> WriteOut
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => closeEditor(false)}
+                      className="text-left hover:text-rose-400 transition"
+                    >
+                      <span className="font-bold text-white bg-slate-700 px-1 rounded mr-1">^C</span> Discard
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditorBuffer('')}
+                      className="text-left hover:text-amber-400 transition"
+                    >
+                      <span className="font-bold text-white bg-slate-700 px-1 rounded mr-1">^K</span> Cut/Clear
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {activeEditor === 'emacs' && (
+                <div className="space-y-1 font-mono text-[10px] shrink-0">
+                  <div className="bg-slate-700 text-white px-2 py-0.5 rounded text-[10px]">
+                    -UUU:---F1  {editorFile}   All ({editorBuffer.split('\n').length} lines) (Fundamental)----------------
+                  </div>
+                  <div className="flex items-center justify-between text-slate-500">
+                    <span className="text-emerald-500">{editorStatusMsg || 'Minibuffer: C-x C-c or click button to save & exit'}</span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => closeEditor(true)}
+                        className="rounded bg-violet-600 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-violet-500"
+                      >
+                        C-x C-c (Save &amp; Exit)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
+                          setEditorStatusMsg(`Wrote ${editorFile}`);
+                        }}
+                        className="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-indigo-500"
+                      >
+                        C-x C-s (Save)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => closeEditor(false)}
+                        className="rounded bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-700 hover:bg-rose-500 hover:text-white dark:bg-white/10 dark:text-slate-300"
+                      >
+                        C-g (Quit)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Scrollable History Viewport with Lenis-prevent */}
+              <div
+                ref={shellContainerRef}
+                data-lenis-prevent="true"
+                className="flex-1 overflow-y-auto overscroll-contain space-y-3 pr-2 select-text"
+                style={{ overscrollBehavior: 'contain' }}
               >
-                &gt; {chip}
-              </button>
-            ))}
-          </div>
+                {history.map((item, idx) => (
+                  <div key={idx} className="space-y-1">
+                    {item.command !== 'init' && (
+                      <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 font-semibold text-[11px]">
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">moiz@paris</span>
+                        <span className="text-slate-400">:</span>
+                        <span className="text-indigo-500 font-bold">{item.dir || '~'}</span>
+                        <span className="text-slate-400">$</span>
+                        <span className="text-slate-900 dark:text-white font-mono">{item.command}</span>
+                        <span className="ml-auto text-[10px] text-slate-400">{item.time}</span>
+                      </div>
+                    )}
+                    <div className="pl-0 sm:pl-3">{item.output}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pinned Active Command Input Line */}
+              <div className="shrink-0 mt-3 flex items-center gap-2 border-t border-slate-200/70 pt-3 text-[11px] dark:border-white/10">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">moiz@paris</span>
+                <span className="text-slate-400">:</span>
+                <span className="text-indigo-500 font-bold shrink-0">{currentDir}</span>
+                <span className="text-slate-400">$</span>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="type 'skills', 'projects', 'hire', 'help', 'ls'..."
+                  className="flex-1 bg-transparent font-mono text-[11px] text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white dark:placeholder:text-slate-500"
+                />
+                <button
+                  type="button"
+                  aria-label="Execute command"
+                  onClick={() => executeCommand(inputVal)}
+                  disabled={!inputVal.trim()}
+                  className="rounded-lg bg-indigo-600 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-40"
+                >
+                  <FiCornerDownLeft />
+                </button>
+              </div>
+
+              {/* Pinned Quick Action Chips */}
+              <div className="shrink-0 mt-2.5 flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Quick:</span>
+                {quickChips.map((chip) => (
+                  <button
+                    key={chip}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      executeCommand(chip);
+                    }}
+                    className="rounded-lg border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[10px] font-medium text-slate-700 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-indigo-400/50 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300"
+                  >
+                    &gt; {chip}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
