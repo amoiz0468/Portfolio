@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { generateHumanFallbackReply, buildSystemPrompt, detectDomainTopic } from '../src/lib/chatbot';
-import { isRateLimited, sanitizeText, resetRateLimitsForTesting } from '../src/pages/api/chat';
+import { isRateLimited, sanitizeText, resetRateLimitsForTesting, cleanReplyText } from '../src/pages/api/chat';
 import { profile, projects } from '../src/data/portfolio';
 import { STORIES } from '../src/data/stories';
 
@@ -165,6 +165,37 @@ test('Chatbot Engine: System Prompt Guidelines', async (t) => {
     assert.match(replyFr, /FastAPI/);
     assert.doesNotMatch(replyFr, /je réponds exclusivement/i);
     assert.equal(EMOJI_REGEX.test(replyFr), false);
+  });
+
+  await t.test('cleanReplyText defensively intercepts multi-file boilerplates and directory trees', () => {
+    const rawMultiFileCode = `**Simple REST API with FastAPI**
+
+### 1. Project layout
+\`\`\`
+my_rest_api/
+│
+├─ app/
+│   ├─ __init__.py
+│   └─ main.py
+\`\`\`
+
+### 2. requirements.txt
+\`\`\`
+fastapi==0.110.0
+uvicorn==0.27.0
+\`\`\`
+
+### 3. app/main.py
+\`\`\`python
+from fastapi import FastAPI
+app = FastAPI()
+\`\`\``;
+
+    const cleaned = cleanReplyText(rawMultiFileCode);
+    assert.match(cleaned, /Architecture note/i);
+    assert.match(cleaned, /fastapi==0.110.0/);
+    assert.match(cleaned, /Additional file implementations omitted/i);
+    assert.doesNotMatch(cleaned, /├─/);
   });
 });
 

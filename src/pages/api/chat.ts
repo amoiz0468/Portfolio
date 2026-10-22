@@ -6,6 +6,7 @@ import {
   callOpenAICompatibleApi,
   generateHumanFallbackReply,
 } from '../../lib/chatbot';
+import { profile } from '../../data/portfolio';
 
 // In-memory sliding window rate limiter for defensive DDoS and brute-force mitigation
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -57,15 +58,45 @@ export function sanitizeText(str: string): string {
 }
 
 /**
- * Strips any suggested inquiries, question lists, or trailing prompt chips
+ * Strips any suggested inquiries, question lists, or trailing prompt chips.
+ * Defensively restricts extensive code blocks, multi-file boilerplates,
+ * and ASCII directory trees so the chatbot does not generate entire codebases.
  */
 export function cleanReplyText(text: string): string {
   if (!text) return '';
-  return text
+
+  let cleaned = text
     .replace(/\n*###\s*(?:Suggested Inquiries|Questions Recommand[ée]es|Suggestions de questions)[\s\S]*$/i, '')
     .replace(/^[-*]?\s*[?~]\s+.*$/gm, '')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+
+  // 1. Remove ASCII directory trees (lines with ├──, └──, │, ├─, └─)
+  cleaned = cleaned.replace(/```[a-z0-9_-]*\n[\s\S]*?[│├└─][\s\S]*?```/gi, () => {
+    return `*(Architecture note: Moiz structures applications with modular service boundaries, clean schemas, and Docker packaging.)*`;
+  });
+
+  // 2. Process fenced code blocks: allow at most 1 concise snippet (max 5 lines)
+  let codeBlockCount = 0;
+  cleaned = cleaned.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, (match, lang, codeContent) => {
+    codeBlockCount++;
+
+    // If more than 1 code block was output (e.g. multi-file boilerplate)
+    if (codeBlockCount > 1) {
+      return `*(Additional file implementations omitted — Moiz provides full production codebases upon project engagement. Reach out at [${profile.email}](mailto:${profile.email}))*`;
+    }
+
+    const lines = codeContent.split('\n');
+    // If a single code block is excessively long (> 5 non-empty lines)
+    if (lines.filter((l: string) => l.trim().length > 0).length > 5) {
+      const truncatedLines = lines.slice(0, 4);
+      return `\`\`\`${lang}\n${truncatedLines.join('\n')}\n# ... (connect with Moiz at ${profile.email} for complete implementation)\n\`\`\``;
+    }
+
+    return match;
+  });
+
+  return cleaned.trim();
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

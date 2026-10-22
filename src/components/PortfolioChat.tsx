@@ -288,6 +288,47 @@ function FormattedText({
           );
         }
 
+        if (para.trim() === '---') {
+          return <hr key={pIdx} className="my-2 border-slate-200 dark:border-white/10" />;
+        }
+
+        if (para.includes('```')) {
+          const segments = para.split(/(```[\s\S]*?```)/g);
+          return (
+            <div key={pIdx} className="space-y-2">
+              {segments.map((seg, sIdx) => {
+                const cbMatch = seg.match(/^```([a-zA-Z0-9_-]+)?\n?([\s\S]*?)```$/);
+                if (cbMatch) {
+                  const lang = cbMatch[1] || '';
+                  const code = cbMatch[2].trim();
+                  return (
+                    <div
+                      key={sIdx}
+                      className="my-2 overflow-hidden rounded-xl border border-slate-200/90 bg-slate-900 text-slate-100 shadow-sm dark:border-white/10 dark:bg-black/60"
+                    >
+                      {lang && (
+                        <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/70 px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                          <span>{lang}</span>
+                        </div>
+                      )}
+                      <pre className="overflow-x-auto p-3 font-mono text-[11px] leading-relaxed text-emerald-400 dark:text-emerald-300">
+                        <code>{code}</code>
+                      </pre>
+                    </div>
+                  );
+                }
+                const trimmed = seg.trim();
+                if (!trimmed) return null;
+                return (
+                  <p key={sIdx} className="leading-relaxed whitespace-pre-line">
+                    {renderInlineStyles(trimmed)}
+                  </p>
+                );
+              })}
+            </div>
+          );
+        }
+
         if (para.startsWith('### ')) {
           return (
             <h4

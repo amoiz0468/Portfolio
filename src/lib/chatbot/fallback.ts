@@ -132,7 +132,7 @@ What topic would you like to dive into?
 
   // 1c. APP DEVELOPMENT, CODING & PROJECT COLLABORATION ("help me code an app", "build an app", "can you code")
   if (
-    /\b(code\s+(an?\s+)?app|build\s+(an?\s+)?(app|application|website|system|project|platform)|develop\s+(an?\s+)?(app|application|website)|create\s+(an?\s+)?(app|application|website)|make\s+(an?\s+)?(app|application|website)|help\s+(me\s+)?(code|build|develop|program)|hire\s+(you|moiz)\s+(to\s+build|for\s+a\s+project)|freelance|consulting|need\s+an?\s+app)\b/i.test(q)
+    /\b(code\s+(an?\s+)?(app|api|rest|service|system)|write\s+(the\s+|some\s+)?code|give\s+(me\s+)?code|build\s+(an?\s+)?(app|api|application|website|system|project|platform)|develop\s+(an?\s+)?(app|api|application|website)|create\s+(an?\s+)?(app|api|application|website)|make\s+(an?\s+)?(app|api|application|website)|help\s+(me\s+)?(code|build|develop|program)|hire\s+(you|moiz)\s+(to\s+build|for\s+a\s+project)|freelance|consulting|need\s+an?\s+(app|api))\b/i.test(q)
   ) {
     const appVariants = [
       `Moiz specializes in architecting and building production web, mobile, and AI-powered applications from the ground up!
