@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, FormEvent } from 'react';
 import Seo from '../components/Seo';
+import { buildContactJsonLd } from '../lib/seo';
 import {
   FiAlertCircle,
   FiCheck,
@@ -158,7 +159,12 @@ export default function ContactPage() {
 
   return (
     <>
-      <Seo title={contactPage.headTitle} description={contactPage.headDesc} path="/contact" />
+      <Seo
+        title={contactPage.headTitle}
+        description={contactPage.headDesc}
+        path="/contact"
+        jsonLd={buildContactJsonLd(lang)}
+      />
 
       <section className="flex-1 flex flex-col justify-center mx-auto max-w-5xl w-full px-4 py-6 sm:py-8 md:py-10 lg:px-8">
         <Reveal>

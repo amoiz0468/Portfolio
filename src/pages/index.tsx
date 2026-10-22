@@ -78,7 +78,7 @@ export default function Home() {
             : "Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris. Full-stack development, cloud, CI/CD and generative AI."
         }
         path="/"
-        jsonLd={buildPersonJsonLd()}
+        jsonLd={buildPersonJsonLd(lang)}
       />
 
       {/* Global Background Ambient Glow Lights */}

@@ -680,3 +680,59 @@ test('Chatbot Engine: Age, Birth Queries & Dynamic Response Variation', async (t
   });
 });
 
+test('Search Engine Optimization (SEO) & Schema Integrity', async (t) => {
+  const {
+    buildPersonJsonLd,
+    buildProjectsJsonLd,
+    buildAboutJsonLd,
+    buildContactJsonLd,
+    SITE_ROUTES,
+    SEO_KEYWORDS,
+  } = await import('../src/lib/seo');
+
+  await t.test('buildPersonJsonLd outputs valid schema.org graph with academic & contact entities', () => {
+    const enGraph = buildPersonJsonLd('en');
+    assert.equal(enGraph['@context'], 'https://schema.org');
+    assert.ok(Array.isArray(enGraph['@graph']));
+    const person = enGraph['@graph'].find((item: any) => item['@type'] === 'Person');
+    assert.ok(person, 'Person entity must exist');
+    assert.equal(person.name, 'Muhammad Abdul Moiz');
+    assert.ok(Array.isArray(person.alumniOf));
+    assert.ok(person.alumniOf.some((a: any) => a.name === 'EPITECH Paris'));
+    assert.ok(person.alumniOf.some((a: any) => a.name === 'FAST-NUCES'));
+    assert.ok(person.telephone);
+  });
+
+  await t.test('buildProjectsJsonLd generates CollectionPage and ItemList for all 8 projects', () => {
+    const projGraph = buildProjectsJsonLd('en');
+    assert.equal(projGraph['@context'], 'https://schema.org');
+    const itemList = projGraph['@graph'].find((item: any) => item['@type'] === 'ItemList');
+    assert.ok(itemList, 'ItemList must exist');
+    assert.equal(itemList.numberOfItems, 8);
+    assert.equal(itemList.itemListElement.length, 8);
+  });
+
+  await t.test('buildAboutJsonLd and buildContactJsonLd include BreadcrumbList', () => {
+    const aboutGraph = buildAboutJsonLd('fr');
+    const contactGraph = buildContactJsonLd('fr');
+    assert.ok(aboutGraph['@graph'].some((item: any) => item['@type'] === 'AboutPage'));
+    assert.ok(contactGraph['@graph'].some((item: any) => item['@type'] === 'ContactPage'));
+  });
+
+  await t.test('SITE_ROUTES covers all core pages with appropriate changefreq and priority', () => {
+    const paths = SITE_ROUTES.map((r) => r.path);
+    assert.ok(paths.includes('/'));
+    assert.ok(paths.includes('/projects'));
+    assert.ok(paths.includes('/about'));
+    assert.ok(paths.includes('/contact'));
+  });
+
+  await t.test('SEO keywords contain zero emojis and valid strings', () => {
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+    for (const kw of SEO_KEYWORDS) {
+      assert.ok(!emojiRegex.test(kw), `Keyword ${kw} must contain no emojis`);
+    }
+  });
+});
+
+

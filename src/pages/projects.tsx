@@ -1,4 +1,5 @@
 import Seo from '../components/Seo';
+import { buildProjectsJsonLd } from '../lib/seo';
 import { useState } from 'react';
 import { FiLayers } from 'react-icons/fi';
 import ProjectModal from '../components/ProjectModal';
@@ -22,6 +23,7 @@ export default function ProjectsPage() {
             : "Selected work by Muhammad Abdul Moiz spanning AI systems, full-stack products, and cloud-native software engineering."
         }
         path="/projects"
+        jsonLd={buildProjectsJsonLd(lang)}
       />
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">

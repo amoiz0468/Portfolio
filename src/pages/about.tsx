@@ -1,4 +1,5 @@
 import Seo from '../components/Seo';
+import { buildAboutJsonLd } from '../lib/seo';
 import { FiBookOpen, FiCompass, FiGlobe, FiHeart } from 'react-icons/fi';
 import Reveal from '../components/Reveal';
 import SectionTitle from '../components/SectionTitle';
@@ -6,12 +7,17 @@ import SpotlightCard from '../components/SpotlightCard';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function About() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const { aboutPage, educationSection, skillsSection, passionsSection } = t;
 
   return (
     <>
-      <Seo title={aboutPage.headTitle} description={aboutPage.headDesc} path="/about" />
+      <Seo
+        title={aboutPage.headTitle}
+        description={aboutPage.headDesc}
+        path="/about"
+        jsonLd={buildAboutJsonLd(lang)}
+      />
 
       <section className="mx-auto max-w-5xl px-4 py-8 sm:py-12 md:py-14 sm:px-6 lg:px-8">
         <Reveal>

@@ -42,7 +42,7 @@ export function absoluteUrl(path = '/'): string {
 }
 
 /** schema.org ProfilePage + Person + WebSite graph for rich results / knowledge panel. */
-export function buildPersonJsonLd() {
+export function buildPersonJsonLd(lang: 'en' | 'fr' = 'en') {
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -51,7 +51,7 @@ export function buildPersonJsonLd() {
         '@id': `${SITE_URL}/#profilepage`,
         url: absoluteUrl('/'),
         name: `${profile.name} — ${profile.title}`,
-        inLanguage: 'en',
+        inLanguage: lang,
         dateCreated: '2025-09-01T00:00:00+02:00',
         isPartOf: { '@id': `${SITE_URL}/#website` },
         mainEntity: { '@id': `${SITE_URL}/#person` },
@@ -66,12 +66,24 @@ export function buildPersonJsonLd() {
         url: absoluteUrl('/'),
         image: absoluteUrl('/avatar.png'),
         email: `mailto:${profile.email}`,
+        telephone: profile.phone,
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Paris',
           addressCountry: 'FR',
         },
-        alumniOf: { '@type': 'CollegeOrUniversity', name: 'EPITECH Paris' },
+        alumniOf: [
+          {
+            '@type': 'CollegeOrUniversity',
+            name: 'EPITECH Paris',
+            url: 'https://www.epitech.eu/',
+          },
+          {
+            '@type': 'CollegeOrUniversity',
+            name: 'FAST-NUCES',
+            url: 'https://www.nu.edu.pk/',
+          },
+        ],
         sameAs: [profile.linkedin, profile.github],
         knowsAbout: [
           'Web Development',
@@ -80,10 +92,16 @@ export function buildPersonJsonLd() {
           'Machine Learning',
           'Cloud Computing',
           'Python',
+          'FastAPI',
+          'Django',
           'TypeScript',
+          'React',
+          'Next.js',
           'Docker',
           'AWS',
+          'CI/CD',
           'LangChain',
+          'LangGraph',
         ],
       },
       {
@@ -93,6 +111,157 @@ export function buildPersonJsonLd() {
         name: SITE_NAME,
         inLanguage: ['en', 'fr'],
         publisher: { '@id': `${SITE_URL}/#person` },
+      },
+    ],
+  };
+}
+
+/** schema.org CollectionPage + ItemList for projects page rich snippet indexation. */
+export function buildProjectsJsonLd(lang: 'en' | 'fr' = 'en') {
+  const { projects } = require('../data/portfolio');
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${SITE_URL}/projects/#page`,
+        url: absoluteUrl('/projects'),
+        name: `${lang === 'fr' ? 'Projets' : 'Projects'} | ${profile.name}`,
+        description:
+          lang === 'fr'
+            ? "Projets majeurs de Muhammad Abdul Moiz couvrant l'intelligence artificielle, les systemes distribues et le cloud."
+            : 'Selected engineering projects by Muhammad Abdul Moiz spanning AI systems, full-stack products, and cloud infrastructure.',
+        inLanguage: lang,
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: absoluteUrl('/'),
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: lang === 'fr' ? 'Projets' : 'Projects',
+              item: absoluteUrl('/projects'),
+            },
+          ],
+        },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${SITE_URL}/projects/#itemlist`,
+        name: `${profile.name} — Featured Projects`,
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: projects.length,
+        itemListElement: projects.map((p: any, idx: number) => ({
+          '@type': 'ListItem',
+          position: idx + 1,
+          item: {
+            '@type': 'SoftwareApplication',
+            name: p.title,
+            applicationCategory: p.category,
+            operatingSystem: 'Cross-platform, Web, Cloud',
+            description: p.description,
+            keywords: p.stack.join(', '),
+            author: { '@id': `${SITE_URL}/#person` },
+          },
+        })),
+      },
+    ],
+  };
+}
+
+/** schema.org AboutPage graph with academic background and alumni entities. */
+export function buildAboutJsonLd(lang: 'en' | 'fr' = 'en') {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'AboutPage',
+        '@id': `${SITE_URL}/about/#page`,
+        url: absoluteUrl('/about'),
+        name: `${lang === 'fr' ? 'A propos' : 'About'} | ${profile.name}`,
+        description: profile.summary,
+        inLanguage: lang,
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        mainEntity: { '@id': `${SITE_URL}/#person` },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: absoluteUrl('/'),
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: lang === 'fr' ? 'A propos' : 'About',
+              item: absoluteUrl('/about'),
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+/** schema.org ContactPage with verified direct contact points. */
+export function buildContactJsonLd(lang: 'en' | 'fr' = 'en') {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'ContactPage',
+        '@id': `${SITE_URL}/contact/#page`,
+        url: absoluteUrl('/contact'),
+        name: `${lang === 'fr' ? 'Contactez-moi' : 'Contact'} | ${profile.name}`,
+        description:
+          lang === 'fr'
+            ? 'Contactez Muhammad Abdul Moiz pour toute opportunite d alternance ou projet technique.'
+            : 'Get in touch with Muhammad Abdul Moiz for software engineering opportunities, contracts, or technical inquiries.',
+        inLanguage: lang,
+        isPartOf: { '@id': `${SITE_URL}/#website` },
+        mainEntity: {
+          '@type': 'Person',
+          name: profile.name,
+          email: `mailto:${profile.email}`,
+          telephone: profile.phone,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: 'Paris',
+            addressCountry: 'FR',
+          },
+          contactPoint: {
+            '@type': 'ContactPoint',
+            contactType: 'Professional Contact',
+            email: profile.email,
+            telephone: profile.phone,
+            availableLanguage: ['en', 'fr'],
+          },
+        },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: absoluteUrl('/'),
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Contact',
+              item: absoluteUrl('/contact'),
+            },
+          ],
+        },
       },
     ],
   };

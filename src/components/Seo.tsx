@@ -31,7 +31,18 @@ export default function Seo({ title, description, path, image = DEFAULT_OG_IMAGE
         name="robots"
         content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
       />
+      <meta
+        key="googlebot"
+        name="googlebot"
+        content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+      />
+      <meta key="google-site-verification" name="google-site-verification" content="google38c30279bd04c8b8" />
       <link key="canonical" rel="canonical" href={url} />
+
+      {/* Multilingual Hreflang Alternates */}
+      <link key="hreflang-en" rel="alternate" hrefLang="en" href={url} />
+      <link key="hreflang-fr" rel="alternate" hrefLang="fr" href={url} />
+      <link key="hreflang-default" rel="alternate" hrefLang="x-default" href={url} />
 
       {/* Open Graph */}
       <meta key="og:type" property="og:type" content="website" />
@@ -50,6 +61,8 @@ export default function Seo({ title, description, path, image = DEFAULT_OG_IMAGE
 
       {/* Twitter */}
       <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+      <meta key="twitter:site" name="twitter:site" content="@moizghauri" />
+      <meta key="twitter:creator" name="twitter:creator" content="@moizghauri" />
       <meta key="twitter:title" name="twitter:title" content={title} />
       <meta key="twitter:description" name="twitter:description" content={description} />
       <meta key="twitter:image" name="twitter:image" content={imageUrl} />
@@ -59,7 +72,9 @@ export default function Seo({ title, description, path, image = DEFAULT_OG_IMAGE
         <script
           key="jsonld"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(Array.isArray(jsonLd) ? { '@context': 'https://schema.org', '@graph': jsonLd } : jsonLd).replace(/</g, '\\u003c'),
+          }}
         />
       )}
     </Head>
