@@ -1,15 +1,17 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { AnimatePresence, motion } from 'framer-motion';
 import Head from 'next/head';
 import Lenis from 'lenis';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import PortfolioChat from '../components/PortfolioChat';
 import MobileBottomNav from '../components/MobileBottomNav';
 import { ThemeProvider } from '../context/ThemeContext';
 import { LanguageProvider } from '../context/LanguageContext';
+
+const PortfolioChat = dynamic(() => import('../components/PortfolioChat'), { ssr: false });
 
 export default function App({ Component, pageProps, router }: AppProps & { router: { route: string } }) {
   useEffect(() => {

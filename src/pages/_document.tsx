@@ -25,6 +25,10 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <script dangerouslySetInnerHTML={{ __html: themeInitializerScript }} />
+        {/* Early DNS & TLS Preconnect to Asset Origins */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com" crossOrigin="anonymous" />
         {/* Browser Tab Favicons & Logo */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />

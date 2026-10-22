@@ -12,8 +12,10 @@ import {
   FiTrendingUp,
   FiHeart,
 } from 'react-icons/fi';
-import ProjectModal from '../components/ProjectModal';
+import dynamic from 'next/dynamic';
 import Reveal from '../components/Reveal';
+
+const ProjectModal = dynamic(() => import('../components/ProjectModal'), { ssr: false });
 import SectionTitle from '../components/SectionTitle';
 import SpotlightCard from '../components/SpotlightCard';
 import AppleHero from '../components/AppleHero';
