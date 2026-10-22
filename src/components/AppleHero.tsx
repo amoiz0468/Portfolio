@@ -249,6 +249,9 @@ export default function AppleHero() {
                     <h3 className="text-base sm:text-xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
                       Muhammad Abdul Moiz
                     </h3>
+                    <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      Moiz Ghauri
+                    </p>
                     <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-300">
                       {lang === 'fr' ? 'Web • DevOps • IA' : 'Web • DevOps • AI'}
                     </p>

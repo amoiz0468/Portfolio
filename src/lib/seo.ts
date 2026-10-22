@@ -8,7 +8,14 @@ export const DEFAULT_OG_IMAGE = '/og-image.png';
 
 export const SEO_KEYWORDS = [
   'Muhammad Abdul Moiz',
+  'Abdul Moiz',
+  'Moiz',
   'Moiz Ghauri',
+  'Abdul Moiz Paris',
+  'Moiz Developer',
+  'Abdul Moiz Developer',
+  'Moiz Portfolio',
+  'Abdul Moiz Portfolio',
   'Web Developer Paris',
   'DevOps Engineer',
   'AI Engineer',
@@ -60,7 +67,16 @@ export function buildPersonJsonLd(lang: 'en' | 'fr' = 'en') {
         '@type': 'Person',
         '@id': `${SITE_URL}/#person`,
         name: profile.name,
-        alternateName: 'Moiz Ghauri',
+        givenName: 'Abdul Moiz',
+        familyName: 'Ghauri',
+        additionalName: 'Muhammad',
+        alternateName: [
+          'Abdul Moiz',
+          'Moiz',
+          'Moiz Ghauri',
+          'Abdul Moiz Ghauri',
+          'Muhammad Abdul Moiz (Moiz)',
+        ],
         jobTitle: profile.title,
         description: profile.summary,
         url: absoluteUrl('/'),
@@ -230,6 +246,7 @@ export function buildContactJsonLd(lang: 'en' | 'fr' = 'en') {
         mainEntity: {
           '@type': 'Person',
           name: profile.name,
+          alternateName: ['Abdul Moiz', 'Moiz', 'Moiz Ghauri'],
           email: `mailto:${profile.email}`,
           telephone: profile.phone,
           address: {

@@ -71,11 +71,11 @@ export default function Home() {
   return (
     <>
       <Seo
-        title={`${profile.name} | ${lang === 'fr' ? 'Ingénieur Web, DevOps & IA' : 'Web, DevOps & AI Engineer'}`}
+        title={`${profile.name} (Moiz) | ${lang === 'fr' ? 'Ingénieur Web, DevOps & IA Paris' : 'Web, DevOps & AI Engineer Paris'}`}
         description={
           lang === 'fr'
-            ? "Portfolio de Muhammad Abdul Moiz — Ingénieur Web, DevOps et IA basé à Paris. Développement full-stack, cloud, CI/CD et IA générative."
-            : "Portfolio of Muhammad Abdul Moiz — Web, DevOps and AI Engineer based in Paris. Full-stack development, cloud, CI/CD and generative AI."
+            ? "Portfolio de Muhammad Abdul Moiz (Moiz Ghauri) — Ingénieur Web, DevOps et IA basé à Paris. Projets full-stack, cloud CI/CD et IA générative."
+            : "Portfolio of Muhammad Abdul Moiz (Moiz Ghauri) — Web, DevOps and AI Engineer based in Paris. Full-stack development, cloud CI/CD, and generative AI."
         }
         path="/"
         jsonLd={buildPersonJsonLd(lang)}
