@@ -18,6 +18,7 @@ export default function InteractiveTerminal() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [currentDir, setCurrentDir] = useState('~');
   const [commandHistoryList, setCommandHistoryList] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const shellContainerRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
@@ -60,13 +61,14 @@ export default function InteractiveTerminal() {
     if (activeTab === 'shell' && shellContainerRef.current) {
       shellContainerRef.current.scrollTop = shellContainerRef.current.scrollHeight;
     }
-  }, [history, activeTab]);
+  }, [history.length, activeTab]);
 
   const executeCommand = (cmdText: string) => {
     const raw = cmdText.trim();
     if (!raw) return;
 
     setCommandHistoryList((prev) => [...prev, raw]);
+    setHistoryIndex(null);
     const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
 
     const parts = raw.split(/\s+/);
@@ -661,6 +663,24 @@ export default function InteractiveTerminal() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       executeCommand(inputVal);
+      setHistoryIndex(null);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (commandHistoryList.length === 0) return;
+      const nextIdx = historyIndex === null ? commandHistoryList.length - 1 : Math.max(0, historyIndex - 1);
+      setHistoryIndex(nextIdx);
+      setInputVal(commandHistoryList[nextIdx] || '');
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex === null) return;
+      const nextIdx = historyIndex + 1;
+      if (nextIdx >= commandHistoryList.length) {
+        setHistoryIndex(null);
+        setInputVal('');
+      } else {
+        setHistoryIndex(nextIdx);
+        setInputVal(commandHistoryList[nextIdx] || '');
+      }
     }
   };
 
@@ -698,7 +718,7 @@ export default function InteractiveTerminal() {
             type="button"
             onClick={() => {
               setActiveTab('shell');
-              setTimeout(() => inputRef.current?.focus(), 50);
+              setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
             }}
             className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-semibold transition ${
               activeTab === 'shell'
@@ -765,12 +785,21 @@ export default function InteractiveTerminal() {
       {/* Mode 2: Interactive Runnable Shell */}
       {activeTab === 'shell' && (
         <div
-          ref={shellContainerRef}
-          onClick={() => inputRef.current?.focus({ preventScroll: true })}
-          className="flex flex-col p-4 sm:p-5 text-slate-800 dark:text-slate-200 min-h-[260px] max-h-[360px] overflow-y-auto cursor-text scroll-smooth"
+          data-lenis-prevent="true"
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest('button, a, input')) return;
+            if (window.getSelection()?.toString()) return;
+            inputRef.current?.focus({ preventScroll: true });
+          }}
+          className="flex flex-col p-4 sm:p-5 text-slate-800 dark:text-slate-200 h-[340px] sm:h-[380px] cursor-text"
         >
-          {/* History */}
-          <div className="space-y-3 flex-1">
+          {/* Scrollable History Viewport with Lenis-prevent */}
+          <div
+            ref={shellContainerRef}
+            data-lenis-prevent="true"
+            className="flex-1 overflow-y-auto overscroll-contain space-y-3 pr-2 select-text"
+            style={{ overscrollBehavior: 'contain' }}
+          >
             {history.map((item, idx) => (
               <div key={idx} className="space-y-1">
                 {item.command !== 'init' && (
@@ -788,8 +817,8 @@ export default function InteractiveTerminal() {
             ))}
           </div>
 
-          {/* Active Command Input Line */}
-          <div className="mt-4 flex items-center gap-2 border-t border-slate-200/70 pt-3 text-[11px] dark:border-white/10">
+          {/* Pinned Active Command Input Line */}
+          <div className="shrink-0 mt-3 flex items-center gap-2 border-t border-slate-200/70 pt-3 text-[11px] dark:border-white/10">
             <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">moiz@paris</span>
             <span className="text-slate-400">:</span>
             <span className="text-indigo-500 font-bold shrink-0">{currentDir}</span>
@@ -800,7 +829,7 @@ export default function InteractiveTerminal() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="type 'help', 'skills', 'projects', 'contact'..."
+              placeholder="type 'help', 'ls', 'tree', 'cat README.md', 'ping'..."
               className="flex-1 bg-transparent font-mono text-[11px] text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white dark:placeholder:text-slate-500"
             />
             <button
@@ -813,8 +842,8 @@ export default function InteractiveTerminal() {
             </button>
           </div>
 
-          {/* Quick Action Chips */}
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-1">
+          {/* Pinned Quick Action Chips */}
+          <div className="shrink-0 mt-2.5 flex flex-wrap items-center gap-1.5 pt-1">
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Quick:</span>
             {quickChips.map((chip) => (
               <button
