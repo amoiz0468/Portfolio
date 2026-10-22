@@ -22,9 +22,11 @@ export default function AppleHero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
+  const [isFirefox, setIsFirefox] = useState(false);
   const { t, lang } = useLanguage();
 
   useEffect(() => {
+    setIsFirefox(typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent));
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -44,7 +46,13 @@ export default function AppleHero() {
     <div ref={containerRef} className="relative min-h-[95vh] w-full">
       <motion.section
         id="overview"
-        style={shouldReduceMotion || isMobile ? undefined : { scale: heroScale, opacity: heroOpacity }}
+        style={
+          shouldReduceMotion || isMobile
+            ? undefined
+            : isFirefox
+            ? { opacity: heroOpacity }
+            : { scale: heroScale, opacity: heroOpacity }
+        }
         className="mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pt-14"
       >
         <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">

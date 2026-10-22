@@ -82,7 +82,7 @@ export default function Home() {
       />
 
       {/* Global Background Ambient Glow Lights */}
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden transform-gpu">
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-[10%] top-[5%] h-[550px] w-[550px] rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.08)_0%,rgba(99,102,241,0.01)_50%,transparent_70%)] dark:bg-[radial-gradient(circle,rgba(99,102,241,0.12)_0%,rgba(99,102,241,0.02)_50%,transparent_70%)]" />
         <div className="absolute right-[5%] top-[25%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.07)_0%,rgba(139,92,246,0.01)_50%,transparent_70%)] dark:bg-[radial-gradient(circle,rgba(139,92,246,0.11)_0%,rgba(139,92,246,0.02)_50%,transparent_70%)]" />
         <div className="absolute bottom-[15%] left-[20%] h-[550px] w-[550px] rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.05)_0%,rgba(245,158,11,0.01)_50%,transparent_70%)] dark:bg-[radial-gradient(circle,rgba(245,158,11,0.08)_0%,rgba(245,158,11,0.01)_50%,transparent_70%)]" />
@@ -93,7 +93,7 @@ export default function Home() {
         <AppleHero />
 
         {/* 2. STATS & METRICS */}
-        <section id="stats" className="content-auto border-y border-slate-200/90 bg-white/70 py-6 sm:py-20 backdrop-blur-md dark:border-white/[0.08] dark:bg-white/[0.02] transition-colors duration-200">
+        <section id="stats" className="border-y border-slate-200/90 bg-white/70 py-6 sm:py-20 backdrop-blur-md dark:border-white/[0.08] dark:bg-white/[0.02] transition-colors duration-200">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-4">
               {statsList.map((stat, index) => (
