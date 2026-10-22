@@ -74,7 +74,7 @@ export default function InteractiveTerminal() {
                 MoizOS v2.4 (x86_64-apple-darwin) • Interactive Bash Console
               </p>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Type <span className="font-semibold text-indigo-500">help</span>, try <span className="font-semibold text-emerald-500">ls</span>, <span className="font-semibold text-emerald-500">tree</span>, <span className="font-semibold text-emerald-500">ping</span>, or tap any quick chip below.
+                Type <span className="font-semibold text-indigo-500">help</span>, explore <span className="font-semibold text-emerald-500">skills</span>, <span className="font-semibold text-emerald-500">projects</span>, or tap any quick chip below.
               </p>
             </div>
           ),
@@ -110,21 +110,20 @@ export default function InteractiveTerminal() {
       case 'help':
         output = (
           <div className="space-y-1.5 text-[11px]">
-            <p className="font-semibold text-slate-500 dark:text-slate-400">Primary commands:</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 pt-1">
+            <p className="font-semibold text-slate-500 dark:text-slate-400">Essential navigation &amp; commands:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 pt-1 font-mono">
               <div><span className="font-bold text-indigo-500">skills</span> — view full-stack, DevOps &amp; AI stack</div>
-              <div><span className="font-bold text-indigo-500">projects</span> — view featured apps &amp; systems</div>
+              <div><span className="font-bold text-indigo-500">projects</span> — inspect production applications</div>
+              <div><span className="font-bold text-indigo-500">hire</span> — check CDI &amp; alternance availability</div>
               <div><span className="font-bold text-indigo-500">contact</span> — direct email, phone &amp; socials</div>
-              <div><span className="font-bold text-indigo-500">hire</span> — inspect alternance &amp; CDI availability</div>
               <div><span className="font-bold text-indigo-500">whoami</span> — bio, origin &amp; academic background</div>
-              <div><span className="font-bold text-indigo-500">ls [-la]</span> — list files &amp; virtual directories</div>
-              <div><span className="font-bold text-indigo-500">cat &lt;file&gt;</span> — inspect file contents</div>
-              <div><span className="font-bold text-indigo-500">tree</span> — visual directory tree</div>
-              <div><span className="font-bold text-indigo-500">ping &lt;host&gt;</span> — network latency probe (PONG)</div>
+              <div><span className="font-bold text-indigo-500">ls</span> — list files &amp; virtual directories</div>
+              <div><span className="font-bold text-indigo-500">cat &lt;file&gt;</span> — inspect file contents (e.g. README.md)</div>
+              <div><span className="font-bold text-indigo-500">cd &lt;dir&gt;</span> — change directory (e.g. cd projects)</div>
               <div><span className="font-bold text-indigo-500">clear</span> — clear the console screen</div>
             </div>
             <p className="text-[10px] text-slate-400 pt-1.5 border-t border-slate-200/50 dark:border-white/5">
-              Tip: MoizOS simulates a full Unix environment. Run standard utilities (git, docker, ps, df, free, curl, ssh, python, node, chmod, grep...) or explore dozens of hidden developer easter eggs (theme dark/light, fr/en, matrix, sl, cowsay, fortune, joke, coffee, beer...).
+              Tip: MoizOS also responds to common shell tools and developer easter eggs. Feel free to explore!
             </p>
           </div>
         );
@@ -502,18 +501,26 @@ export default function InteractiveTerminal() {
         break;
 
       case 'top':
-      case 'htop':
+      case 'htop': {
+        const cpuUs = (Math.random() * 2.2 + 1.2).toFixed(1);
+        const cpuSy = (Math.random() * 0.5 + 0.3).toFixed(1);
+        const cpuId = (100 - parseFloat(cpuUs) - parseFloat(cpuSy)).toFixed(1);
+        const cpuFastAPI = (Math.random() * 1.5 + 1.6).toFixed(1);
+        const cpuAgent = (Math.random() * 1.2 + 1.0).toFixed(1);
+        const cpuRedis = (Math.random() * 0.4 + 0.3).toFixed(1);
+        const cpuCelery = (Math.random() * 0.2 + 0.1).toFixed(1);
         output = (
           <div className="space-y-1 font-mono text-[11px]">
-            <p className="text-slate-400">Tasks: 4 total, 0 running, 4 sleeping, 0 stopped | %Cpu: 2.1 us, 0.4 sy, 97.5 id</p>
+            <p className="text-slate-400">Tasks: 4 total, 0 running, 4 sleeping, 0 stopped | %Cpu: {cpuUs} us, {cpuSy} sy, {cpuId} id</p>
             <p className="font-bold text-slate-500 dark:text-slate-400">PID   USER  %CPU  %MEM     TIME+ COMMAND</p>
-            <p className="text-emerald-500">1001  moiz   2.1   0.8   1:24.02 uvicorn-fastapi</p>
-            <p className="text-emerald-500">1002  moiz   1.8   1.2   0:58.33 langgraph-orchestrator</p>
-            <p className="text-emerald-500">1003  moiz   0.5   0.4   4:12.18 redis-server</p>
-            <p className="text-emerald-500">1004  moiz   0.1   0.2   0:15.40 celery-worker</p>
+            <p className="text-emerald-500">1001  moiz   {cpuFastAPI}   0.8   1:24.02 uvicorn-fastapi</p>
+            <p className="text-emerald-500">1002  moiz   {cpuAgent}   1.2   0:58.33 langgraph-orchestrator</p>
+            <p className="text-emerald-500">1003  moiz   {cpuRedis}   0.4   4:12.18 redis-server</p>
+            <p className="text-emerald-500">1004  moiz   {cpuCelery}   0.2   0:15.40 celery-worker</p>
           </div>
         );
         break;
+      }
 
       case 'df':
         output = (
@@ -641,31 +648,48 @@ export default function InteractiveTerminal() {
 
       case 'ping': {
         const targetHost = arg1 || 'moiz.paris';
+        const isLocal = targetHost === '127.0.0.1' || targetHost === 'localhost' || targetHost === '::1';
+        const targetIp = isLocal ? '127.0.0.1' : (targetHost === 'moiz.paris' ? '76.76.21.21' : '104.21.48.91');
+        const ttl = isLocal ? 64 : 56;
+
+        // Dynamic realistic latency numbers within expected network variance
+        const t1 = isLocal ? +(Math.random() * 0.024 + 0.025).toFixed(3) : +(Math.random() * 5.4 + 11.2).toFixed(2);
+        const t2 = isLocal ? +(Math.random() * 0.024 + 0.027).toFixed(3) : +(Math.random() * 4.9 + 12.0).toFixed(2);
+        const t3 = isLocal ? +(Math.random() * 0.028 + 0.023).toFixed(3) : +(Math.random() * 5.8 + 11.0).toFixed(2);
+        const t4 = isLocal ? +(Math.random() * 0.025 + 0.026).toFixed(3) : +(Math.random() * 4.7 + 11.8).toFixed(2);
+        const times = [t1, t2, t3, t4];
+        const min = Math.min(...times).toFixed(isLocal ? 3 : 2);
+        const max = Math.max(...times).toFixed(isLocal ? 3 : 2);
+        const avg = (times.reduce((a, b) => a + b, 0) / times.length).toFixed(isLocal ? 3 : 2);
+
         output = (
           <div className="space-y-1 font-mono text-[11px]">
             <p className="font-semibold text-slate-500 dark:text-slate-400">
-              PING {targetHost} (127.0.0.1): 56 data bytes
+              PING {targetHost} ({targetIp}): 56 data bytes
             </p>
-            <p className="text-emerald-500">64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.038 ms <span className="font-bold">[PONG!]</span></p>
-            <p className="text-emerald-500">64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.042 ms <span className="font-bold">[PONG!]</span></p>
-            <p className="text-emerald-500">64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.039 ms <span className="font-bold">[PONG!]</span></p>
+            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=0 ttl={ttl} time={t1} ms <span className="font-bold">[PONG!]</span></p>
+            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=1 ttl={ttl} time={t2} ms <span className="font-bold">[PONG!]</span></p>
+            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=2 ttl={ttl} time={t3} ms <span className="font-bold">[PONG!]</span></p>
+            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=3 ttl={ttl} time={t4} ms <span className="font-bold">[PONG!]</span></p>
             <div className="pt-0.5 text-slate-400 text-[10px]">
               <p>--- {targetHost} ping statistics ---</p>
-              <p>3 packets transmitted, 3 packets received, 0.0% packet loss</p>
-              <p>round-trip min/avg/max = 0.038/0.039/0.042 ms (Sub-millisecond low latency)</p>
+              <p>4 packets transmitted, 4 packets received, 0.0% packet loss</p>
+              <p>round-trip min/avg/max = {min}/{avg}/{max} ms</p>
             </div>
           </div>
         );
         break;
       }
 
-      case 'pong':
+      case 'pong': {
+        const delay = (Math.random() * 0.02 + 0.012).toFixed(3);
         output = (
           <p className="text-[11px] text-emerald-400 font-mono font-bold">
-            PING! (Round-trip delay: 0.012 ms)
+            PING! (Round-trip delay: {delay} ms)
           </p>
         );
         break;
+      }
 
       case 'curl':
         if (arg1.includes('profile') || arg1.includes('api')) {
@@ -1020,18 +1044,21 @@ export default function InteractiveTerminal() {
         );
         break;
 
-      case 'status':
+      case 'status': {
+        const latency = (Math.random() * 6.5 + 8.5).toFixed(1);
+        const queueJobs = Math.floor(Math.random() * 3);
         output = (
           <div className="space-y-1 text-[11px]">
             <p className="font-bold text-slate-900 dark:text-white">Service Health Matrix:</p>
-            <p className="text-emerald-500">✓ FastAPI Core Gateway: 200 OK (latency: 12ms)</p>
-            <p className="text-emerald-500">✓ Celery Async Workers: Active (concurrency: 8)</p>
+            <p className="text-emerald-500">✓ FastAPI Core Gateway: 200 OK (latency: {latency}ms)</p>
+            <p className="text-emerald-500">✓ Celery Async Workers: Active (concurrency: 8, queue: {queueJobs} jobs)</p>
             <p className="text-emerald-500">✓ Redis Cache &amp; Broker: Connected (PONG)</p>
             <p className="text-emerald-500">✓ Docker Multi-stage Containers: Healthy</p>
             <p className="text-indigo-400">ℹ Live Paris Time: {new Date().toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris' })} CET</p>
           </div>
         );
         break;
+      }
 
       case 'cv':
       case 'resume':
@@ -1272,7 +1299,7 @@ export default function InteractiveTerminal() {
     }
   };
 
-  const quickChips = ['help', 'ls', 'tree', 'cat README.md', 'skills', 'projects', 'ping', 'neofetch', 'theme', 'clear'];
+  const quickChips = ['skills', 'projects', 'hire', 'contact', 'whoami', 'help', 'ls', 'clear'];
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white/95 font-mono text-xs shadow-lg shadow-slate-200/50 backdrop-blur-md transition-colors duration-200 dark:border-white/15 dark:bg-black/90 dark:shadow-2xl">
@@ -1417,7 +1444,7 @@ export default function InteractiveTerminal() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="type 'help', 'ls', 'tree', 'cat README.md', 'ping'..."
+              placeholder="type 'skills', 'projects', 'hire', 'help', 'ls'..."
               className="flex-1 bg-transparent font-mono text-[11px] text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white dark:placeholder:text-slate-500"
             />
             <button
