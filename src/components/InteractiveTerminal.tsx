@@ -222,6 +222,175 @@ function RealPingOutput({ targetHost }: { targetHost: string }) {
   );
 }
 
+function parseBashrcAliases(bashrcContent: string): Record<string, string> {
+  const aliases: Record<string, string> = {};
+  if (!bashrcContent) return aliases;
+  const lines = bashrcContent.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const match = trimmed.match(/^alias\s+([a-zA-Z0-9_\-.:]+)=['"]?([^'"]+)['"]?$/);
+    if (match) {
+      aliases[match[1]] = match[2].trim();
+    }
+  }
+  return aliases;
+}
+
+const PROJECT_KEYS = [
+  'doctor-iq',
+  'brackets-genie',
+  'vif',
+  'vif-food-solidarity',
+  'ledgeroo',
+  'ledgeroo-fintech',
+  'trinity',
+  'trinity-suite',
+  'time-manager',
+];
+
+function renderProjectExecution(projKey: string, executeCmd: (c: string) => void): React.ReactNode {
+  switch (projKey) {
+    case 'doctor-iq':
+      return (
+        <div className="space-y-1.5 font-mono text-[11px] select-text">
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-200/60 pb-1 dark:border-white/10">
+            <span className="font-bold text-emerald-500">[DoctorIQ v2.4.0 — Medical AI OCR &amp; Clinical Analytics]</span>
+            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">STATUS: RUNNING</span>
+          </div>
+          <div className="space-y-0.5 text-slate-700 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400">&gt; Initializing Python 3.11 FastAPI microservice on 0.0.0.0:8000...</p>
+            <p>&gt; Loading Tesseract OCR 5.3 + morphological denoiser... <span className="text-emerald-500 font-bold">[OK]</span></p>
+            <p>&gt; Connecting to MedGemma-7B LLM engine (Ollama/vLLM backend)... <span className="text-emerald-500 font-bold">[CONNECTED]</span></p>
+            <p>&gt; Running test prescription extraction on mock batch #4102... <span className="text-emerald-500 font-bold">[99.4% ACCURACY]</span></p>
+            <p className="text-indigo-500 dark:text-indigo-400 font-semibold pt-0.5">
+              Live API Gateway active: <span className="underline">http://localhost:8000/docs</span>
+            </p>
+          </div>
+          <div className="rounded bg-slate-900/90 p-2 text-slate-200 text-[10px] space-y-0.5 border border-slate-800">
+            <p className="text-slate-400"># Sample extraction payload:</p>
+            <p className="text-emerald-400">&#123; &quot;patient_id&quot;: &quot;PX-9042&quot;, &quot;diagnosis&quot;: &quot;Acute Bronchitis&quot;, &quot;dosage_mg&quot;: 500, &quot;validated&quot;: true &#125;</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 pt-1 text-[10px] text-slate-400">
+            <span>Inspect:</span>
+            <button
+              type="button"
+              onClick={() => executeCmd('curl http://localhost:8000/health')}
+              className="text-indigo-400 hover:underline"
+            >
+              curl http://localhost:8000/health
+            </button>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={() => executeCmd('docker ps')}
+              className="text-indigo-400 hover:underline"
+            >
+              docker ps
+            </button>
+          </div>
+        </div>
+      );
+
+    case 'brackets-genie':
+      return (
+        <div className="space-y-1.5 font-mono text-[11px] select-text">
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-200/60 pb-1 dark:border-white/10">
+            <span className="font-bold text-emerald-500">[Brackets Genie — Autonomous LangGraph Multi-Agent Cluster]</span>
+            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">STATUS: STREAMING</span>
+          </div>
+          <div className="space-y-0.5 text-slate-700 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400">&gt; Starting LangGraph Node.js/TypeScript orchestration pipeline...</p>
+            <p>&gt; Initializing agent topology: Router -&gt; Researcher -&gt; Architect -&gt; CodeGen -&gt; Tester... <span className="text-emerald-500 font-bold">[OK]</span></p>
+            <p>&gt; Groq Llama-3.3-70B ultra-low latency mesh established (fallback: Claude 3.5 Sonnet)... <span className="text-emerald-500 font-bold">[ONLINE]</span></p>
+            <p>&gt; WebSocket SSE channel listening at port 4000: <span className="text-emerald-500 font-bold">120 tokens/sec throughput</span></p>
+          </div>
+          <div className="rounded bg-slate-900/90 p-2 text-slate-200 text-[10px] space-y-0.5 border border-slate-800">
+            <p className="text-slate-400"># Multi-agent consensus:</p>
+            <p className="text-indigo-300">Agent-Researcher: Architecture graph compiled in 42ms with 0 cyclomatic bottlenecks.</p>
+          </div>
+          <p className="text-[10px] text-slate-400">Multi-agent loop active. Type &apos;status&apos; or inspect with &apos;docker ps&apos;.</p>
+        </div>
+      );
+
+    case 'vif':
+    case 'vif-food-solidarity':
+      return (
+        <div className="space-y-1.5 font-mono text-[11px] select-text">
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-200/60 pb-1 dark:border-white/10">
+            <span className="font-bold text-emerald-500">[VIF — Food Solidarity Logistics &amp; Volunteer Management Platform]</span>
+            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">STATUS: DEPLOYED</span>
+          </div>
+          <div className="space-y-0.5 text-slate-700 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400">&gt; Booting Django REST Framework + PostgreSQL 16 on port 8080...</p>
+            <p>&gt; Celery distributed task queue active with 6 worker pools... <span className="text-emerald-500 font-bold">[READY]</span></p>
+            <p>&gt; Live route optimization: 14 volunteer delivery circuits active across Paris... <span className="text-emerald-500 font-bold">[SYNCED]</span></p>
+            <p>&gt; Meals dispatched today: <span className="text-emerald-500 font-bold">350+ hot meals</span> delivered to emergency shelters</p>
+          </div>
+          <div className="rounded bg-slate-900/90 p-2 text-slate-200 text-[10px] border border-slate-800">
+            <p className="text-slate-400"># Logistics health metrics:</p>
+            <p className="text-emerald-400">Lead Time: &lt; 25 mins • Inventory waste: 0.2% • DORA Metric: Elite deployment frequency</p>
+          </div>
+        </div>
+      );
+
+    case 'ledgeroo':
+    case 'ledgeroo-fintech':
+      return (
+        <div className="space-y-1.5 font-mono text-[11px] select-text">
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-200/60 pb-1 dark:border-white/10">
+            <span className="font-bold text-emerald-500">[Ledgeroo FinTech — High-Throughput Ledger &amp; Payment Gateway]</span>
+            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">STATUS: ACTIVE</span>
+          </div>
+          <div className="space-y-0.5 text-slate-700 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400">&gt; Starting Java 21 / Spring Boot &amp; FastAPI payment orchestrator...</p>
+            <p>&gt; Double-entry immutable ledger database ledger_db: <span className="text-emerald-500 font-bold">0 imbalance verified</span></p>
+            <p>&gt; Stripe API idempotency webhook filters: <span className="text-emerald-500 font-bold">[ACTIVE]</span></p>
+            <p>&gt; Cryptographic audit chain: SHA-256 block hash validation <span className="text-emerald-500 font-bold">[PASSED]</span></p>
+            <p className="text-indigo-400 font-semibold pt-0.5">Peak throughput: 1,420 transactions/sec • PCI-DSS Level 1 compliant</p>
+          </div>
+        </div>
+      );
+
+    case 'trinity':
+    case 'trinity-suite':
+      return (
+        <div className="space-y-1.5 font-mono text-[11px] select-text">
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-200/60 pb-1 dark:border-white/10">
+            <span className="font-bold text-emerald-500">[Trinity Suite — Enterprise Internal Software Factory &amp; CI/CD]</span>
+            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">STATUS: GREEN</span>
+          </div>
+          <div className="space-y-0.5 text-slate-700 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400">&gt; Connecting GitLab CI runner daemon to European cloud cluster...</p>
+            <p>&gt; SonarQube quality gate: <span className="text-emerald-500 font-bold">0 blocker bugs, 0 vulnerabilities, 94.2% test coverage</span></p>
+            <p>&gt; Automated container build farm: 18 microservice pipelines synced</p>
+            <p>&gt; Deployment latency: reduced by 40% with multi-stage Docker cache</p>
+          </div>
+        </div>
+      );
+
+    case 'time-manager':
+      return (
+        <div className="space-y-1.5 font-mono text-[11px] select-text">
+          <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-200/60 pb-1 dark:border-white/10">
+            <span className="font-bold text-emerald-500">[Time Manager — Distributed Workforce Scheduling &amp; Analytics]</span>
+            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">STATUS: RUNNING</span>
+          </div>
+          <div className="space-y-0.5 text-slate-700 dark:text-slate-300">
+            <p className="text-slate-500 dark:text-slate-400">&gt; Starting Elixir 1.15 OTP system on BEAM VM (8 parallel schedulers)...</p>
+            <p>&gt; Phoenix 1.7 WebSocket channels connected to Vue 3 frontend... <span className="text-emerald-500 font-bold">[OK]</span></p>
+            <p>&gt; Ecto PostgreSQL connection pool latency: <span className="text-emerald-500 font-bold">&lt; 0.4ms</span></p>
+            <p>&gt; Real-time clock-in / clock-out events broadcasting to dashboard</p>
+            <p className="text-indigo-400 font-semibold pt-0.5">Listening at http://localhost:4000 (LiveView + REST endpoints)</p>
+          </div>
+        </div>
+      );
+
+    default:
+      return null;
+  }
+}
+
 export default function InteractiveTerminal() {
   const [activeTab, setActiveTab] = useState<'telemetry' | 'shell'>('telemetry');
   const [activeLine, setActiveLine] = useState(0);
@@ -331,108 +500,253 @@ export default function InteractiveTerminal() {
     setHistoryIndex(null);
     const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
 
-    const parts = raw.split(/\s+/);
+    // 1. Alias Resolution from ~/.bashrc
+    const activeAliases = parseBashrcAliases(virtualFiles['.bashrc'] || '');
+    let resolvedCmd = raw;
+    const rawTokens = raw.split(/\s+/);
+    const initialCmd = rawTokens[0];
+    const initialArgs = raw.substring(initialCmd.length).trim();
+
+    if (activeAliases[initialCmd] && initialCmd !== 'alias' && initialCmd !== 'unalias') {
+      resolvedCmd = initialArgs
+        ? `${activeAliases[initialCmd]} ${initialArgs}`
+        : activeAliases[initialCmd];
+    }
+
+    const parts = resolvedCmd.split(/\s+/);
     const base = parts[0].toLowerCase();
     const arg1 = parts[1] ? parts[1].toLowerCase() : '';
     const arg2 = parts[2] ? parts[2].toLowerCase() : '';
+    const arg3 = parts[3] ? parts[3].toLowerCase() : '';
     const fullArg = parts.slice(1).join(' ');
 
     let output: React.ReactNode = null;
 
-    switch (base) {
-      case 'help':
+    // Check for project or script execution: e.g. ./doctor-iq, ./vif, doctor-iq in projects, python ./doctor-iq
+    const isExplicitExec = base.startsWith('./') || base.startsWith('projects/');
+    const isProjInDir = currentDir === '~/projects' && PROJECT_KEYS.includes(base);
+    const isInterpreterExec = ['python', 'node', 'sh', 'bash'].includes(base) && Boolean(arg1);
+
+    if (isExplicitExec || isProjInDir || isInterpreterExec) {
+      const cleanTarget = (
+        base.startsWith('./')
+          ? base.slice(2)
+          : base.startsWith('projects/')
+          ? base.slice(9)
+          : isInterpreterExec
+          ? arg1.replace(/^\.\//, '')
+          : base
+      ).toLowerCase();
+
+      if (PROJECT_KEYS.includes(cleanTarget)) {
+        output = renderProjectExecution(cleanTarget, executeCommand);
+      } else if (virtualFiles[cleanTarget] !== undefined) {
         output = (
-          <div className="space-y-1.5 text-[11px]">
-            <p className="font-semibold text-slate-500 dark:text-slate-400">Available commands &amp; tools:</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 pt-1 font-mono">
-              <div><span className="font-bold text-indigo-500">ls [-la]</span> — list files &amp; directories</div>
-              <div><span className="font-bold text-indigo-500">cat &lt;file&gt;</span> — view file contents</div>
-              <div><span className="font-bold text-indigo-500">tree</span> — visualize portfolio directory tree</div>
-              <div><span className="font-bold text-indigo-500">cd &lt;dir&gt;</span> — change virtual directory</div>
-              <div><span className="font-bold text-indigo-500">nano / vim / emacs</span> — interactive text editors</div>
-              <div><span className="font-bold text-indigo-500">cp &lt;src&gt; &lt;dst&gt;</span> — copy file in virtual FS</div>
-              <div><span className="font-bold text-indigo-500">mv &lt;src&gt; &lt;dst&gt;</span> — rename / move virtual file</div>
-              <div><span className="font-bold text-indigo-500">rm &lt;file&gt;</span> — remove file from virtual FS</div>
-              <div><span className="font-bold text-indigo-500">touch &lt;file&gt;</span> — create or update virtual file</div>
-              <div><span className="font-bold text-indigo-500">grep / wc</span> — search text &amp; count lines/words</div>
-              <div><span className="font-bold text-indigo-500">ping &lt;host&gt;</span> — real network round-trip probe</div>
-              <div><span className="font-bold text-indigo-500">bc &lt;expr&gt;</span> — calculate math expression</div>
-              <div><span className="font-bold text-indigo-500">cal / df / du</span> — terminal calendar &amp; disk usage</div>
-              <div><span className="font-bold text-indigo-500">whoami / neofetch</span> — bio, specs &amp; background</div>
-              <div><span className="font-bold text-indigo-500">skills / projects</span> — stack, apps &amp; systems</div>
-              <div><span className="font-bold text-indigo-500">github / linkedin</span> — direct external links</div>
-              <div><span className="font-bold text-indigo-500">day / dark</span> — toggle day / night mode</div>
-              <div><span className="font-bold text-indigo-500">docker ps / git status</span> — DevOps status</div>
-              <div><span className="font-bold text-indigo-500">top / htop</span> — live process &amp; CPU stats</div>
-              <div><span className="font-bold text-indigo-500">curl &lt;url&gt;</span> — simulated HTTP request</div>
-              <div><span className="font-bold text-indigo-500">status / hire</span> — live health &amp; contract availability</div>
-              <div><span className="font-bold text-indigo-500">clear</span> — clear the console screen</div>
-            </div>
-            <p className="text-[10px] text-slate-400 pt-1.5 border-t border-slate-200/50 dark:border-white/5">
-              Easter eggs &amp; utilities: <span className="text-slate-500 dark:text-slate-400">joke, fortune, quote, base64, ssh, env, weather, cowsay, sl, matrix, sudo, man moiz</span>
-            </p>
+          <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+            <p className="text-emerald-500 font-bold">[exec] {cleanTarget}: script execution initiated ({virtualFiles[cleanTarget].length} bytes)</p>
+            <pre className="p-2 rounded bg-slate-100 dark:bg-white/5 overflow-x-auto text-[10px] text-slate-600 dark:text-slate-300 select-text">
+              {virtualFiles[cleanTarget]}
+            </pre>
           </div>
         );
-        break;
+      } else if (isExplicitExec) {
+        output = <p className="text-[11px] font-mono text-rose-500">bash: ./{cleanTarget}: No such file or directory</p>;
+      }
+    }
 
-      case 'ls': {
-        const isLong = parts.some((p) => /^-.*l/.test(p));
-        const isAll = parts.some((p) => /^-.*a/.test(p));
-
-        if (currentDir === '~/projects' || arg1 === 'projects' || arg1 === 'projects/') {
+    if (!output) {
+      switch (base) {
+        case 'help':
           output = (
-            <div className="space-y-1 text-[11px]">
-              {isLong ? (
-                <div className="font-mono text-slate-600 dark:text-slate-300 space-y-0.5">
-                  <p className="text-slate-400">total 8</p>
-                  <p>-rwxr-xr-x 1 moiz staff 4096 Oct 22 14:00 <span className="font-semibold text-emerald-500">doctor-iq</span></p>
-                  <p>-rwxr-xr-x 1 moiz staff 4096 Oct 22 14:00 <span className="font-semibold text-emerald-500">brackets-genie</span></p>
-                  <p>-rwxr-xr-x 1 moiz staff 4096 Oct 22 14:00 <span className="font-semibold text-emerald-500">vif-food-solidarity</span></p>
-                  <p>-rwxr-xr-x 1 moiz staff 4096 Oct 22 14:00 <span className="font-semibold text-emerald-500">ledgeroo-fintech</span></p>
-                  <p>-rwxr-xr-x 1 moiz staff 4096 Oct 22 14:00 <span className="font-semibold text-emerald-500">trinity-suite</span></p>
-                  <p>-rwxr-xr-x 1 moiz staff 4096 Oct 22 14:00 <span className="font-semibold text-emerald-500">time-manager</span></p>
-                </div>
-              ) : (
-                <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono">
-                  <span className="text-emerald-500 font-semibold cursor-pointer hover:underline" onClick={() => executeCommand('cat doctor-iq')}>doctor-iq</span>
-                  <span className="text-emerald-500 font-semibold cursor-pointer hover:underline" onClick={() => executeCommand('cat brackets-genie')}>brackets-genie</span>
-                  <span className="text-emerald-500 font-semibold cursor-pointer hover:underline" onClick={() => executeCommand('cat vif')}>vif-food-solidarity</span>
-                  <span className="text-emerald-500 font-semibold cursor-pointer hover:underline" onClick={() => executeCommand('cat ledgeroo')}>ledgeroo-fintech</span>
-                  <span className="text-emerald-500 font-semibold cursor-pointer hover:underline" onClick={() => executeCommand('cat trinity')}>trinity-suite</span>
-                  <span className="text-emerald-500 font-semibold cursor-pointer hover:underline" onClick={() => executeCommand('cat time-manager')}>time-manager</span>
-                </div>
-              )}
+            <div className="space-y-2 text-[11px]">
+              <p className="font-semibold text-slate-500 dark:text-slate-400">Core Commands &amp; Navigation:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 pt-0.5 font-mono">
+                <div><span className="font-bold text-indigo-500">ls [-la] / ll</span> — list files &amp; details</div>
+                <div><span className="font-bold text-indigo-500">cat &lt;file&gt;</span> — view file contents</div>
+                <div><span className="font-bold text-indigo-500">tree</span> — dynamic filesystem tree</div>
+                <div><span className="font-bold text-indigo-500">cd &lt;dir&gt;</span> — navigate (~, projects)</div>
+                <div><span className="font-bold text-indigo-500">nano / vim / emacs</span> — open text editor</div>
+                <div><span className="font-bold text-indigo-500">./&lt;project&gt;</span> — run interactive project demo</div>
+                <div><span className="font-bold text-indigo-500">docker ps</span> — inspect running containers</div>
+                <div><span className="font-bold text-indigo-500">ping &lt;host&gt;</span> — real network latency probe</div>
+                <div><span className="font-bold text-indigo-500">whoami / skills</span> — bio, stack &amp; capabilities</div>
+                <div><span className="font-bold text-indigo-500">contact / hire</span> — direct contact info &amp; status</div>
+                <div><span className="font-bold text-indigo-500">day / dark</span> — toggle day / night mode</div>
+                <div><span className="font-bold text-indigo-500">clear</span> — clear the console</div>
+              </div>
+              <p className="text-[10px] text-slate-400 pt-1.5 border-t border-slate-200/50 dark:border-white/5">
+                Power tools &amp; easter eggs: <span className="text-slate-500 dark:text-slate-400">alias, cp, mv, rm, touch, grep, bc, cal, df, du, git, top, curl, joke, weather, man</span>
+              </p>
             </div>
           );
-        } else {
-          const files = Object.keys(virtualFiles).filter((f) => {
-            if (f.startsWith('.') && !isAll) return false;
-            return true;
-          });
+          break;
 
-          if (isLong) {
+        case 'alias': {
+          const currentBashrc = virtualFiles['.bashrc'] || '';
+          const aliases = parseBashrcAliases(currentBashrc);
+          if (!arg1) {
             output = (
-              <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300">
-                <p className="text-slate-400">total {files.length * 4}</p>
-                {isAll && (
-                  <>
-                    <p>drwxr-xr-x 8 moiz staff 256 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
-                    <p>drwxr-xr-x 5 root staff 160 Oct 23 14:00 <span className="text-indigo-400 font-bold">..</span></p>
-                  </>
+              <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+                {Object.keys(aliases).length > 0 ? (
+                  Object.entries(aliases).map(([name, val]) => (
+                    <p key={name} className="text-emerald-500">
+                      alias {name}=&apos;{val}&apos;
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-slate-400">No aliases defined in ~/.bashrc</p>
                 )}
-                {files.map((fname) => {
-                  const content = virtualFiles[fname] || '';
-                  const bytes = content.length;
-                  const isHidden = fname.startsWith('.');
-                  const isMd = fname.endsWith('.md');
-                  return (
-                    <p key={fname}>
-                      -rw-r--r-- 1 moiz staff {bytes.toString().padStart(5, ' ')} Oct 23 14:00{' '}
+              </div>
+            );
+          } else {
+            const match = fullArg.match(/^([a-zA-Z0-9_\-.:]+)=['"]?([^'"]+)['"]?$/);
+            if (match) {
+              const aliasKey = match[1];
+              const aliasVal = match[2].trim();
+              setVirtualFiles((prev) => {
+                const current = prev['.bashrc'] || '';
+                const regex = new RegExp(`^alias\\s+${aliasKey}=.*$`, 'm');
+                const newLine = `alias ${aliasKey}='${aliasVal}'`;
+                const updated = regex.test(current)
+                  ? current.replace(regex, newLine)
+                  : `${current}\n${newLine}`;
+                return { ...prev, ['.bashrc']: updated };
+              });
+              output = (
+                <p className="text-[11px] font-mono text-emerald-500">
+                  alias: &apos;{aliasKey}&apos; registered as &apos;{aliasVal}&apos; in ~/.bashrc [OK]
+                </p>
+              );
+            } else {
+              output = <p className="text-[11px] font-mono text-amber-500">usage: alias [name=&apos;command&apos;]</p>;
+            }
+          }
+          break;
+        }
+
+        case 'unalias': {
+          if (!arg1) {
+            output = <p className="text-[11px] font-mono text-amber-500">usage: unalias &lt;name&gt;</p>;
+          } else {
+            setVirtualFiles((prev) => {
+              const current = prev['.bashrc'] || '';
+              const regex = new RegExp(`^alias\\s+${arg1}=.*$\n?`, 'm');
+              return { ...prev, ['.bashrc']: current.replace(regex, '') };
+            });
+            output = <p className="text-[11px] font-mono text-slate-400">unalias: removed &apos;{arg1}&apos; from ~/.bashrc</p>;
+          }
+          break;
+        }
+
+        case 'll':
+        case 'ls': {
+          const isLong = base === 'll' || parts.some((p) => /^-.*l/.test(p));
+          const isAll = parts.some((p) => /^-.*a/.test(p));
+
+          if (currentDir === '~/projects' || arg1 === 'projects' || arg1 === 'projects/') {
+            const projectItems = [
+              { name: 'doctor-iq', size: '8.4M', date: 'Oct 23 12:00', desc: 'FastAPI + MedGemma OCR Pipeline' },
+              { name: 'brackets-genie', size: '4.2M', date: 'Oct 23 12:00', desc: 'LangGraph Multi-Agent Cluster' },
+              { name: 'vif-food-solidarity', size: '12M', date: 'Oct 23 12:00', desc: 'Django REST + Logistics Platform' },
+              { name: 'ledgeroo-fintech', size: '6.1M', date: 'Oct 23 12:00', desc: 'Payment Gateway + Double-Entry Ledger' },
+              { name: 'trinity-suite', size: '5.8M', date: 'Oct 23 12:00', desc: 'Enterprise CI/CD Factory' },
+              { name: 'time-manager', size: '3.9M', date: 'Oct 23 12:00', desc: 'Elixir Phoenix + Vue 3 Realtime' },
+            ];
+
+            output = (
+              <div className="space-y-1 text-[11px] overflow-x-auto">
+                {isLong ? (
+                  <div className="font-mono text-slate-600 dark:text-slate-300 space-y-0.5">
+                    <p className="text-slate-400">total 40</p>
+                    {isAll && (
+                      <>
+                        <p>drwxr-xr-x 8 moiz staff 256 Oct 23 12:00 <span className="text-indigo-400 font-bold">.</span></p>
+                        <p>drwxr-xr-x 5 root staff 160 Oct 23 12:00 <span className="text-indigo-400 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd ~')}>..</span></p>
+                      </>
+                    )}
+                    {projectItems.map((p) => (
+                      <p key={p.name}>
+                        -rwxr-xr-x 1 moiz staff {p.size.padStart(5, ' ')} {p.date}{' '}
+                        <span
+                          className="font-semibold text-emerald-500 cursor-pointer hover:underline"
+                          onClick={() => executeCommand(`./${p.name}`)}
+                          title="Click to execute"
+                        >
+                          {p.name}*
+                        </span>{' '}
+                        <span className="text-[10px] text-slate-400">({p.desc})</span>
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono">
+                    {projectItems.map((p) => (
                       <span
+                        key={p.name}
+                        className="text-emerald-500 font-semibold cursor-pointer hover:underline"
+                        onClick={() => executeCommand(`./${p.name}`)}
+                        title="Click to execute demo"
+                      >
+                        {p.name}*
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          } else {
+            const files = Object.keys(virtualFiles).filter((f) => {
+              if (f.startsWith('.') && !isAll) return false;
+              return true;
+            });
+
+            if (isLong) {
+              output = (
+                <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-x-auto">
+                  <p className="text-slate-400">total {files.length * 4}</p>
+                  {isAll && (
+                    <>
+                      <p>drwxr-xr-x 8 moiz staff 256 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
+                      <p>drwxr-xr-x 5 root staff 160 Oct 23 14:00 <span className="text-indigo-400 font-bold">..</span></p>
+                    </>
+                  )}
+                  {files.map((fname) => {
+                    const content = virtualFiles[fname] || '';
+                    const bytes = content.length;
+                    const isHidden = fname.startsWith('.');
+                    const isMd = fname.endsWith('.md');
+                    return (
+                      <p key={fname}>
+                        -rw-r--r-- 1 moiz staff {bytes.toString().padStart(5, ' ')} Oct 23 14:00{' '}
+                        <span
+                          className={`cursor-pointer hover:underline ${
+                            isHidden
+                              ? 'text-slate-400'
+                              : isMd
+                              ? 'text-slate-900 dark:text-white font-semibold'
+                              : 'text-slate-900 dark:text-white'
+                          }`}
+                          onClick={() => executeCommand(`cat ${fname}`)}
+                        >
+                          {fname}
+                        </span>
+                      </p>
+                    );
+                  })}
+                  <p>drwxr-xr-x 6 moiz staff  192 Oct 23 14:00 <span className="text-indigo-500 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd projects')}>projects/</span></p>
+                </div>
+              );
+            } else {
+              output = (
+                <div className="space-y-1 text-[11px]">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono">
+                    {files.map((fname) => (
+                      <span
+                        key={fname}
                         className={`cursor-pointer hover:underline ${
-                          isHidden
+                          fname.startsWith('.')
                             ? 'text-slate-400'
-                            : isMd
+                            : fname === 'README.md'
                             ? 'text-slate-900 dark:text-white font-semibold'
                             : 'text-slate-900 dark:text-white'
                         }`}
@@ -440,133 +754,166 @@ export default function InteractiveTerminal() {
                       >
                         {fname}
                       </span>
-                    </p>
-                  );
-                })}
-                <p>drwxr-xr-x 6 moiz staff  192 Oct 23 14:00 <span className="text-indigo-500 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd projects')}>projects/</span></p>
+                    ))}
+                    <span
+                      className="text-indigo-500 font-bold cursor-pointer hover:underline"
+                      onClick={() => executeCommand('cd projects')}
+                    >
+                      projects/
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 pt-0.5">Tip: use &apos;cat &lt;file&gt;&apos;, &apos;nano &lt;file&gt;&apos;, or &apos;cd projects&apos;</p>
+                </div>
+              );
+            }
+          }
+          break;
+        }
+
+        case 'cat': {
+          const target = arg1.replace(/^\.\//, '');
+          if (!target) {
+            output = (
+              <p className="text-[11px] text-amber-500 font-mono">
+                usage: cat &lt;filename&gt; (try &apos;cat README.md&apos;, &apos;cat skills.txt&apos;, &apos;cat package.json&apos;, or &apos;cat Dockerfile&apos;)
+              </p>
+            );
+          } else if (['doctor-iq', 'brackets-genie', 'vif', 'vif-food-solidarity', 'ledgeroo', 'ledgeroo-fintech', 'trinity', 'trinity-suite', 'time-manager'].includes(target)) {
+            output = (
+              <div className="space-y-1 text-[11px] font-mono">
+                <p className="font-bold text-slate-900 dark:text-white">Project: {target.toUpperCase()}</p>
+                <p className="text-slate-600 dark:text-slate-300">
+                  Executable binary. Type <span className="text-emerald-400 font-bold cursor-pointer hover:underline" onClick={() => executeCommand(`./${target}`)}>./{target}</span> to run the interactive demo.
+                </p>
+              </div>
+            );
+          } else {
+            const matchKey = Object.keys(virtualFiles).find(
+              (k) => k.toLowerCase() === target.toLowerCase()
+            );
+            if (matchKey && virtualFiles[matchKey] !== undefined) {
+              output = (
+                <div className="rounded-lg bg-slate-100 p-2.5 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200 whitespace-pre-wrap select-text">
+                  {virtualFiles[matchKey] || <span className="text-slate-400 italic">[empty file]</span>}
+                </div>
+              );
+            } else {
+              output = (
+                <p className="text-[11px] text-rose-500 dark:text-rose-400 font-mono">
+                  cat: {target}: No such file or directory. Try &apos;ls&apos; to view files.
+                </p>
+              );
+            }
+          }
+          break;
+        }
+
+        case 'tree': {
+          const fileKeys = Object.keys(virtualFiles).filter((f) => !f.startsWith('.'));
+          const hiddenKeys = Object.keys(virtualFiles).filter((f) => f.startsWith('.'));
+          const showAll = parts.includes('-a');
+          const displayedFiles = (showAll ? [...fileKeys, ...hiddenKeys] : fileKeys).sort();
+          const projectItems = [
+            { name: 'doctor-iq', desc: 'FastAPI + MedGemma OCR Pipeline' },
+            { name: 'brackets-genie', desc: 'LangGraph Streaming Multi-Agent' },
+            { name: 'vif-food-solidarity', desc: 'Food Logistics & Volunteer System' },
+            { name: 'ledgeroo-fintech', desc: 'FinTech Backend + Stripe' },
+            { name: 'trinity-suite', desc: 'Enterprise CI/CD Factory' },
+            { name: 'time-manager', desc: 'Elixir Phoenix + Vue 3 Realtime' },
+          ];
+
+          if (currentDir === '~/projects') {
+            output = (
+              <div className="font-mono text-[11px] space-y-0.5 text-slate-700 dark:text-slate-300">
+                <p className="font-bold text-indigo-500">projects/</p>
+                {projectItems.map((proj, idx) => (
+                  <p key={proj.name}>
+                    {idx === projectItems.length - 1 ? '└──' : '├──'}{' '}
+                    <span
+                      className="text-emerald-500 font-semibold cursor-pointer hover:underline"
+                      onClick={() => executeCommand(`./${proj.name}`)}
+                    >
+                      {proj.name}*
+                    </span>{' '}
+                    <span className="text-slate-400 text-[10px]">({proj.desc})</span>
+                  </p>
+                ))}
+                <p className="text-slate-400 pt-1 text-[10px]">1 directory, 6 executable projects</p>
               </div>
             );
           } else {
             output = (
-              <div className="space-y-1 text-[11px]">
-                <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono">
-                  {files.map((fname) => (
+              <div className="font-mono text-[11px] space-y-0.5 text-slate-700 dark:text-slate-300">
+                <p className="font-bold text-indigo-500">.</p>
+                {displayedFiles.map((fname) => (
+                  <p key={fname}>
+                    ├──{' '}
                     <span
-                      key={fname}
-                      className={`cursor-pointer hover:underline ${
-                        fname.startsWith('.')
-                          ? 'text-slate-400'
-                          : fname === 'README.md'
-                          ? 'text-slate-900 dark:text-white font-semibold'
-                          : 'text-slate-900 dark:text-white'
-                      }`}
+                      className={`cursor-pointer hover:underline ${fname.startsWith('.') ? 'text-slate-400' : 'text-slate-900 dark:text-white'}`}
                       onClick={() => executeCommand(`cat ${fname}`)}
                     >
                       {fname}
-                    </span>
-                  ))}
+                    </span>{' '}
+                    <span className="text-[10px] text-slate-400">({virtualFiles[fname]?.length || 0}B)</span>
+                  </p>
+                ))}
+                <p>
+                  └──{' '}
                   <span
-                    className="text-indigo-500 font-bold cursor-pointer hover:underline"
+                    className="text-indigo-400 font-bold cursor-pointer hover:underline"
                     onClick={() => executeCommand('cd projects')}
                   >
                     projects/
                   </span>
-                </div>
-                <p className="text-[10px] text-slate-400 pt-0.5">Tip: use &apos;cat &lt;file&gt;&apos;, &apos;nano &lt;file&gt;&apos;, or &apos;cd projects&apos;</p>
+                </p>
+                {projectItems.map((proj, idx) => (
+                  <p key={proj.name} className="pl-4">
+                    {idx === projectItems.length - 1 ? '└──' : '├──'}{' '}
+                    <span
+                      className="text-emerald-500 font-semibold cursor-pointer hover:underline"
+                      onClick={() => executeCommand(`./${proj.name}`)}
+                    >
+                      {proj.name}*
+                    </span>{' '}
+                    <span className="text-slate-400 text-[10px]">({proj.desc})</span>
+                  </p>
+                ))}
+                <p className="text-slate-400 pt-1 text-[10px]">
+                  2 directories, {displayedFiles.length + projectItems.length} files{' '}
+                  {!showAll && '(run tree -a to see dotfiles)'}
+                </p>
               </div>
             );
           }
+          break;
         }
-        break;
-      }
 
-      case 'cat': {
-        const target = arg1.replace(/^\.\//, '');
-        if (!target) {
-          output = (
-            <p className="text-[11px] text-amber-500 font-mono">
-              usage: cat &lt;filename&gt; (try &apos;cat README.md&apos;, &apos;cat skills.txt&apos;, &apos;cat package.json&apos;, or &apos;cat Dockerfile&apos;)
-            </p>
-          );
-        } else if (['doctor-iq', 'brackets-genie', 'vif', 'ledgeroo', 'trinity', 'time-manager'].includes(target)) {
-          output = (
-            <div className="space-y-1 text-[11px] font-mono">
-              <p className="font-bold text-slate-900 dark:text-white">Project: {target.toUpperCase()}</p>
-              <p className="text-slate-600 dark:text-slate-300">Run &apos;projects&apos; command or click the project card to inspect the full architecture stack.</p>
-            </div>
-          );
-        } else {
-          const matchKey = Object.keys(virtualFiles).find(
-            (k) => k.toLowerCase() === target.toLowerCase()
-          );
-          if (matchKey && virtualFiles[matchKey] !== undefined) {
-            output = (
-              <div className="rounded-lg bg-slate-100 p-2.5 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200 whitespace-pre-wrap select-text">
-                {virtualFiles[matchKey] || <span className="text-slate-400 italic">[empty file]</span>}
-              </div>
-            );
-          } else {
-            output = (
-              <p className="text-[11px] text-rose-500 dark:text-rose-400 font-mono">
-                cat: {target}: No such file or directory. Try &apos;ls&apos; to view files.
-              </p>
-            );
-          }
-        }
-        break;
-      }
-
-      case 'tree':
-        output = (
-          <div className="font-mono text-[11px] space-y-0.5 text-slate-700 dark:text-slate-300">
-            <p className="font-bold text-indigo-500">.</p>
-            <p>├── <span className="text-slate-900 dark:text-white">README.md</span></p>
-            <p>├── <span className="text-slate-900 dark:text-white">skills.txt</span></p>
-            <p>├── <span className="text-slate-900 dark:text-white">contact.json</span></p>
-            <p>├── <span className="text-slate-900 dark:text-white">experience.log</span></p>
-            <p>├── <span className="text-slate-900 dark:text-white">package.json</span></p>
-            <p>├── <span className="text-slate-900 dark:text-white">Dockerfile</span></p>
-            <p>├── <span className="text-slate-900 dark:text-white">Makefile</span></p>
-            <p>├── <span className="text-amber-500">id_rsa.pub</span></p>
-            <p>├── <span className="text-slate-500">.env</span></p>
-            <p>└── <span className="text-indigo-400 font-bold">projects/</span></p>
-            <p className="pl-4">├── <span className="text-emerald-500">doctor-iq/</span> (Medical OCR + LLM Pipeline)</p>
-            <p className="pl-4">├── <span className="text-emerald-500">brackets-genie/</span> (LangGraph Streaming Agents)</p>
-            <p className="pl-4">├── <span className="text-emerald-500">vif/</span> (Food Solidarity Full-Stack)</p>
-            <p className="pl-4">├── <span className="text-emerald-500">ledgeroo/</span> (FinTech Backend + Stripe)</p>
-            <p className="pl-4">├── <span className="text-emerald-500">trinity-suite/</span> (Software Factory + SonarQube)</p>
-            <p className="pl-4">└── <span className="text-emerald-500">time-manager/</span> (Elixir Phoenix + Vue 3)</p>
-            <p className="text-slate-400 pt-1 text-[10px]">2 directories, 14 files</p>
-          </div>
-        );
-        break;
-
-      case 'cd': {
-        const dest = arg1.replace(/\/+$/, '');
-        if (!dest || dest === '~' || dest === 'root' || dest === '/home/moiz') {
-          setCurrentDir('~');
-          output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
-        } else if (dest === 'projects' || dest === '~/projects') {
-          setCurrentDir('~/projects');
-          output = (
-            <p className="text-[11px] text-slate-400">
-              Switched directory to ~/projects. Type <span className="text-emerald-400 font-bold cursor-pointer" onClick={() => executeCommand('ls')}>ls</span> to view projects.
-            </p>
-          );
-        } else if (dest === '..' || dest === '../') {
-          if (currentDir === '~/projects') {
+        case 'cd': {
+          const dest = arg1.replace(/\/+$/, '');
+          if (!dest || dest === '~' || dest === 'root' || dest === '/home/moiz') {
             setCurrentDir('~');
             output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
+          } else if (dest === 'projects' || dest === '~/projects') {
+            setCurrentDir('~/projects');
+            output = (
+              <p className="text-[11px] text-slate-400">
+                Switched directory to ~/projects. Type <span className="text-emerald-400 font-bold cursor-pointer" onClick={() => executeCommand('ls')}>ls</span> to view projects.
+              </p>
+            );
+          } else if (dest === '..' || dest === '../') {
+            if (currentDir === '~/projects') {
+              setCurrentDir('~');
+              output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
+            } else {
+              output = <p className="text-[11px] text-slate-400">Already in root home directory (~)</p>;
+            }
+          } else if (dest === '/') {
+            output = <p className="text-[11px] text-amber-500">Access restricted: / is managed by MoizOS kernel.</p>;
           } else {
-            output = <p className="text-[11px] text-slate-400">Already in root home directory (~)</p>;
+            output = <p className="text-[11px] text-rose-500">cd: {dest}: No such file or directory</p>;
           }
-        } else if (dest === '/') {
-          output = <p className="text-[11px] text-amber-500">Access restricted: / is managed by MoizOS kernel.</p>;
-        } else {
-          output = <p className="text-[11px] text-rose-500">cd: {dest}: No such file or directory</p>;
+          break;
         }
-        break;
-      }
 
       case 'pwd':
         output = (
@@ -1020,19 +1367,228 @@ export default function InteractiveTerminal() {
         break;
 
       case 'docker':
-        if (arg1 === 'ps' || !arg1) {
+      case 'docker-compose': {
+        const isCompose = base === 'docker-compose' || arg1 === 'compose';
+        const subCmd = isCompose && base === 'docker' ? arg2 : isCompose ? arg1 : arg1;
+        const target = isCompose && base === 'docker' ? arg3 : arg2;
+
+        if (isCompose) {
+          if (subCmd === 'down') {
+            output = (
+              <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                <p className="text-indigo-400">[+] Running 4/4</p>
+                <p className="text-slate-400"> - Container doctor-iq-api-1             Stopped &amp; Removed [0.4s]</p>
+                <p className="text-slate-400"> - Container brackets-genie-orchestrator  Stopped &amp; Removed [0.3s]</p>
+                <p className="text-slate-400"> - Container redis-broker                 Stopped &amp; Removed [0.2s]</p>
+                <p className="text-slate-400"> - Network moiz-engineering_default       Removed [0.1s]</p>
+              </div>
+            );
+          } else if (subCmd === 'ps') {
+            output = (
+              <div className="space-y-0.5 font-mono text-[11px] overflow-x-auto text-slate-700 dark:text-slate-300">
+                <p className="font-bold text-slate-500 dark:text-slate-400 whitespace-pre">NAME                             IMAGE                 SERVICE         STATUS         PORTS</p>
+                <p className="text-emerald-500 whitespace-pre">doctor-iq-api-1                  moiz/doctor-iq:v2.4   doctor-iq-api   Up 3 days      0.0.0.0:8000-&gt;8000/tcp</p>
+                <p className="text-emerald-500 whitespace-pre">brackets-genie-orchestrator-1    moiz/genie-agent:v1.0 genie-agent     Up 5 days      0.0.0.0:4000-&gt;4000/tcp</p>
+                <p className="text-emerald-500 whitespace-pre">redis-broker-1                   redis:7-alpine        redis-broker    Up 14 days     0.0.0.0:6379-&gt;6379/tcp</p>
+                <p className="text-emerald-500 whitespace-pre">portfolio-db-1                   postgres:16-alpine    portfolio-db    Up 21 days     0.0.0.0:5432-&gt;5432/tcp</p>
+              </div>
+            );
+          } else {
+            output = (
+              <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                <p className="text-indigo-400">[+] Running 5/5</p>
+                <p className="text-emerald-500"> ✔ Network moiz-engineering_default       Created [0.1s]</p>
+                <p className="text-emerald-500"> ✔ Container portfolio-db-1               Started [0.4s]</p>
+                <p className="text-emerald-500"> ✔ Container redis-broker-1               Started [0.3s]</p>
+                <p className="text-emerald-500"> ✔ Container doctor-iq-api-1              Started [0.6s]</p>
+                <p className="text-emerald-500"> ✔ Container brackets-genie-orchestrator  Started [0.5s]</p>
+                <p className="text-slate-400 pt-1 text-[10px]">All 4 microservices healthy. Listening on ports 8000, 4000, 5432, 6379.</p>
+              </div>
+            );
+          }
+        } else if (arg1 === 'ps' || !arg1) {
+          const showAll = parts.includes('-a') || arg2 === '-a';
           output = (
             <div className="space-y-1 font-mono text-[11px] overflow-x-auto">
-              <p className="font-bold text-slate-500 dark:text-slate-400">CONTAINER ID   IMAGE                 STATUS         PORTS                    NAMES</p>
-              <p className="text-emerald-500">a4f91c0e21b8   moiz/fastapi-gateway  Up 42 days     0.0.0.0:8000-&gt;8000/tcp   doctor-iq-api</p>
-              <p className="text-emerald-500">b82e44d9f102   moiz/langgraph-agent  Up 19 days     0.0.0.0:8080-&gt;8080/tcp   genie-orchestrator</p>
-              <p className="text-emerald-500">c3710a911e4f   redis:7-alpine        Up 42 days     0.0.0.0:6379-&gt;6379/tcp   redis-broker</p>
-              <p className="text-emerald-500">d1840e729a1b   postgres:16-alpine    Up 42 days     0.0.0.0:5432-&gt;5432/tcp   portfolio-db</p>
+              <p className="font-bold text-slate-500 dark:text-slate-400 whitespace-pre">CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS         PORTS                    NAMES</p>
+              <p className="text-emerald-500 whitespace-pre">a4f91c0e21b8   moiz/doctor-iq:v2.4   &quot;uvicorn main:app --…&quot;   3 days ago     Up 3 days      0.0.0.0:8000-&gt;8000/tcp   doctor-iq-api</p>
+              <p className="text-emerald-500 whitespace-pre">b82e44d9f102   moiz/genie-agent:v1.0 &quot;npm start&quot;              5 days ago     Up 5 days      0.0.0.0:4000-&gt;4000/tcp   brackets-genie-orchestrator</p>
+              <p className="text-emerald-500 whitespace-pre">9f4411ba82c1   moiz/vif-backend:v1.2 &quot;gunicorn vif.wsgi&quot;      1 week ago     Up 7 days      0.0.0.0:8080-&gt;8080/tcp   vif-solidarity-backend</p>
+              <p className="text-emerald-500 whitespace-pre">c3710a911e4f   redis:7-alpine        &quot;docker-entrypoint.s…&quot;   2 weeks ago    Up 14 days     0.0.0.0:6379-&gt;6379/tcp   redis-broker</p>
+              <p className="text-emerald-500 whitespace-pre">d1840e729a1b   postgres:16-alpine    &quot;docker-entrypoint.s…&quot;   3 weeks ago    Up 21 days     0.0.0.0:5432-&gt;5432/tcp   portfolio-db</p>
+              {showAll && (
+                <p className="text-slate-400 whitespace-pre">e7192a001fb2   moiz/test-runner:ci   &quot;npm test&quot;               12 hours ago   Exited (0) 12 hours ago          ci-test-runner</p>
+              )}
+            </div>
+          );
+        } else if (arg1 === 'images' || arg1 === 'image') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] overflow-x-auto">
+              <p className="font-bold text-slate-500 dark:text-slate-400 whitespace-pre">REPOSITORY               TAG       IMAGE ID       CREATED        SIZE</p>
+              <p className="text-emerald-500 whitespace-pre">moiz/doctor-iq           v2.4      a4f91c0e21b8   3 days ago     248MB</p>
+              <p className="text-emerald-500 whitespace-pre">moiz/genie-agent         v1.0      b82e44d9f102   5 days ago     182MB</p>
+              <p className="text-emerald-500 whitespace-pre">moiz/vif-backend         v1.2      9f4411ba82c1   1 week ago     215MB</p>
+              <p className="text-slate-700 dark:text-slate-300 whitespace-pre">redis                    7-alpine  c3710a911e4f   2 weeks ago    32.4MB</p>
+              <p className="text-slate-700 dark:text-slate-300 whitespace-pre">postgres                 16-alpine d1840e729a1b   3 weeks ago    379MB</p>
+              <p className="text-slate-700 dark:text-slate-300 whitespace-pre">node                     20-alpine f47a98bc310a   4 weeks ago    174MB</p>
+              <p className="text-slate-700 dark:text-slate-300 whitespace-pre">python                   3.11-slim 8c12fa490b1e   1 month ago    145MB</p>
+            </div>
+          );
+        } else if (arg1 === 'build') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-indigo-400 font-bold">[+] Building 2.8s (11/11) FINISHED</p>
+              <p className="text-slate-400"> =&gt; [internal] load build definition from Dockerfile [0.0s]</p>
+              <p className="text-slate-400"> =&gt; [builder 1/4] FROM docker.io/library/node:20-alpine [0.1s]</p>
+              <p className="text-slate-400"> =&gt; [builder 2/4] WORKDIR /app [0.1s]</p>
+              <p className="text-slate-400"> =&gt; [builder 3/4] COPY package*.json ./ [0.1s]</p>
+              <p className="text-slate-400"> =&gt; [builder 4/4] RUN npm ci [1.4s]</p>
+              <p className="text-slate-400"> =&gt; [runner 1/2] COPY --from=builder /app ./ [0.4s]</p>
+              <p className="text-emerald-500"> =&gt; naming to docker.io/moiz/portfolio:latest [OK]</p>
+              <p className="text-emerald-500 font-semibold pt-0.5">Successfully tagged moiz/portfolio:latest</p>
+            </div>
+          );
+        } else if (arg1 === 'run') {
+          const img = arg2 || 'moiz/doctor-iq';
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-emerald-500">c91024fa88b1</p>
+              <p className="text-slate-400">Container started in detached mode from {img}. Port forwarding 8000:8000 established.</p>
+            </div>
+          );
+        } else if (arg1 === 'logs') {
+          const cName = arg2 || 'doctor-iq-api';
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-slate-400 font-semibold">--- Logs for {cName} ---</p>
+              <p className="text-emerald-500">2026-10-23T12:00:01.402Z [INFO] Uvicorn running on http://0.0.0.0:8000</p>
+              <p className="text-emerald-500">2026-10-23T12:00:02.115Z [INFO] Application startup complete.</p>
+              <p className="text-emerald-500">2026-10-23T12:00:02.890Z [INFO] Redis broker connection established: PING -&gt; PONG</p>
+              <p className="text-emerald-500">2026-10-23T12:00:15.602Z [INFO] 127.0.0.1:49210 - &quot;GET /health HTTP/1.1&quot; 200 OK</p>
+            </div>
+          );
+        } else if (arg1 === 'stats') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] overflow-x-auto text-slate-700 dark:text-slate-300">
+              <p className="font-bold text-slate-500 dark:text-slate-400 whitespace-pre">CONTAINER ID   NAME                 CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           PIDS</p>
+              <p className="text-emerald-500 whitespace-pre">a4f91c0e21b8   doctor-iq-api        1.24%     214MiB / 8GiB         2.61%     42.1MB / 8.4MB    12</p>
+              <p className="text-emerald-500 whitespace-pre">b82e44d9f102   genie-orchestrator   0.88%     142MiB / 8GiB         1.73%     28.4MB / 14.1MB   8</p>
+              <p className="text-emerald-500 whitespace-pre">9f4411ba82c1   vif-backend          0.45%     186MiB / 8GiB         2.27%     18.2MB / 5.2MB    6</p>
+              <p className="text-emerald-500 whitespace-pre">c3710a911e4f   redis-broker         0.12%     18.4MiB / 8GiB        0.22%     64.2MB / 62.1MB   4</p>
+              <p className="text-emerald-500 whitespace-pre">d1840e729a1b   portfolio-db         0.65%     194MiB / 8GiB         2.36%     12.8MB / 48.2MB   9</p>
+            </div>
+          );
+        } else if (arg1 === 'stop') {
+          output = <p className="text-[11px] font-mono text-emerald-500">[OK] Container {arg2 || 'doctor-iq-api'} stopped.</p>;
+        } else if (arg1 === 'start' || arg1 === 'restart') {
+          output = <p className="text-[11px] font-mono text-emerald-500">[OK] Container {arg2 || 'doctor-iq-api'} {arg1}ed.</p>;
+        } else if (arg1 === 'exec') {
+          output = <p className="text-[11px] font-mono text-emerald-400">root@a4f91c0e21b8:/app# session opened. Type exit to return.</p>;
+        } else if (arg1 === 'volume') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="font-bold text-slate-500 dark:text-slate-400">DRIVER    VOLUME NAME</p>
+              <p className="text-emerald-500">local     portfolio_pgdata</p>
+              <p className="text-emerald-500">local     doctor_iq_models</p>
+            </div>
+          );
+        } else if (arg1 === 'network') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="font-bold text-slate-500 dark:text-slate-400">NETWORK ID     NAME              DRIVER    SCOPE</p>
+              <p className="text-emerald-500">7f8a91c0e21b   bridge            bridge    local</p>
+              <p className="text-emerald-500">1b2c3d4e5f6a   host              host      local</p>
+              <p className="text-emerald-500">9d8c7b6a5e4f   portfolio-net     bridge    local</p>
+            </div>
+          );
+        } else if (arg1 === 'info' || arg1 === 'version') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="font-bold text-indigo-400">Docker Engine - Community 26.1.1</p>
+              <p>Server Version: 26.1.1 | API: 1.45 | OS/Arch: linux/amd64</p>
+              <p>Containers: 5 Running, 1 Exited | Images: 7 | Storage: overlay2</p>
+              <p>Total Memory: 32.00 GiB | CPUs: 16 | Kernel: 6.8.0-45-generic</p>
             </div>
           );
         } else {
-          output = <p className="text-[11px] text-slate-400 font-mono">Docker daemon online. Try &apos;docker ps&apos;</p>;
+          output = <p className="text-[11px] text-slate-400 font-mono">Usage: docker [ps|images|build|run|logs|stats|compose|stop|restart|info]</p>;
         }
+        break;
+      }
+
+      case 'uptime':
+        output = (
+          <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
+            {now} up 42 days, 3:18, 1 user, load average: 0.18, 0.22, 0.15
+          </p>
+        );
+        break;
+
+      case 'uname':
+        if (arg1 === '-r') {
+          output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">6.8.0-45-generic</p>;
+        } else if (arg1 === '-m' || arg1 === '-p') {
+          output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">x86_64</p>;
+        } else {
+          output = (
+            <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
+              Linux moiz-workstation 6.8.0-45-generic #45-Ubuntu SMP PREEMPT_DYNAMIC x86_64 GNU/Linux
+            </p>
+          );
+        }
+        break;
+
+      case 'hostname':
+        output = <p className="text-[11px] font-mono text-emerald-500">moiz-workstation</p>;
+        break;
+
+      case 'arch':
+        output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">x86_64</p>;
+        break;
+
+      case 'who':
+        output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">moiz     pts/0        Oct 23 11:42 (192.168.1.42)</p>;
+        break;
+
+      case 'netstat':
+      case 'ss':
+      case 'lsof':
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] overflow-x-auto text-slate-700 dark:text-slate-300">
+            <p className="font-bold text-slate-500 dark:text-slate-400 whitespace-pre">Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program</p>
+            <p className="text-emerald-500 whitespace-pre">tcp        0      0 0.0.0.0:8000            0.0.0.0:*               LISTEN      1420/doctor-iq (FastAPI)</p>
+            <p className="text-emerald-500 whitespace-pre">tcp        0      0 0.0.0.0:4000            0.0.0.0:*               LISTEN      1580/brackets-genie (LangGraph)</p>
+            <p className="text-emerald-500 whitespace-pre">tcp        0      0 0.0.0.0:5432            0.0.0.0:*               LISTEN      910/postgres:16</p>
+            <p className="text-emerald-500 whitespace-pre">tcp        0      0 0.0.0.0:6379            0.0.0.0:*               LISTEN      840/redis-server:7</p>
+            <p className="text-emerald-500 whitespace-pre">tcp        0      0 0.0.0.0:3000            0.0.0.0:*               LISTEN      2100/next-portfolio</p>
+          </div>
+        );
+        break;
+
+      case 'systemctl':
+      case 'service':
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+            <p className="text-emerald-500 font-bold">&#9679; {arg2 || arg1 || 'docker'}.service - System Application Service</p>
+            <p className="text-slate-400">   Loaded: loaded (/lib/systemd/system/{arg2 || arg1 || 'docker'}.service; enabled)</p>
+            <p className="text-emerald-400">   Active: active (running) since Wed 2026-09-10 08:14:02 CEST; 42 days ago</p>
+            <p className="text-slate-400">   Main PID: 742 (dockerd) • Tasks: 42 (limit: 4915)</p>
+          </div>
+        );
+        break;
+
+      case 'ps':
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] overflow-x-auto text-slate-700 dark:text-slate-300">
+            <p className="font-bold text-slate-500 dark:text-slate-400 whitespace-pre">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</p>
+            <p className="text-slate-400 whitespace-pre">root         1  0.0  0.1 168924 13540 ?        Ss   Sep10   0:08 /sbin/init</p>
+            <p className="text-emerald-500 whitespace-pre">moiz       742  0.2  1.4 842100 94120 ?        Ssl  Sep10   4:12 /usr/bin/dockerd</p>
+            <p className="text-emerald-500 whitespace-pre">moiz      1420  0.8  3.2 512000 214000 pts/0   Sl   Oct20   2:45 python3 main:app (DoctorIQ)</p>
+            <p className="text-emerald-500 whitespace-pre">moiz      1580  0.5  2.1 420000 142000 pts/0   Sl   Oct21   1:18 node server.js (Brackets Genie)</p>
+            <p className="text-emerald-500 whitespace-pre">moiz      2100  0.4  2.8 480000 186000 pts/0   Sl   Oct22   0:54 next-server (Portfolio)</p>
+            <p className="text-slate-400 whitespace-pre">moiz      3102  0.0  0.0  12400   3200 pts/0   R+   {now}   0:00 ps {fullArg}</p>
+          </div>
+        );
         break;
 
       case 'git':
@@ -1830,10 +2386,11 @@ ${botBar}
           </p>
         );
     }
+  }
 
-    setHistory((prev) => [...prev, { command: raw, output, time: now, dir: currentDir }]);
-    setInputVal('');
-  };
+  setHistory((prev) => [...prev, { command: raw, output, time: now, dir: currentDir }]);
+  setInputVal('');
+};
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -1967,22 +2524,22 @@ ${botBar}
             if (window.getSelection()?.toString()) return;
             inputRef.current?.focus({ preventScroll: true });
           }}
-          className="flex flex-col p-4 sm:p-5 text-slate-800 dark:text-slate-200 h-[340px] sm:h-[380px] cursor-text"
+          className="flex flex-col p-3 sm:p-5 text-slate-800 dark:text-slate-200 h-[390px] sm:h-[440px] md:h-[480px] cursor-text"
         >
           {activeEditor ? (
             <div className="flex flex-col h-full space-y-2 select-text" data-lenis-prevent="true">
               {/* Header depending on editor */}
               {activeEditor === 'vim' && (
-                <div className="flex items-center justify-between border-b border-slate-200/80 pb-1.5 dark:border-white/10 shrink-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-emerald-500 font-mono">VIM</span>
+                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-200/80 pb-1.5 dark:border-white/10 shrink-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="font-bold text-emerald-500 font-mono text-[11px]">VIM</span>
                     <span className="text-slate-400 font-mono text-[11px]">~/</span>
                     <input
                       type="text"
                       value={editorFile}
                       onChange={(e) => setEditorFile(e.target.value)}
                       placeholder="untitled.txt"
-                      className="bg-transparent border-b border-dashed border-slate-400/50 text-slate-800 dark:text-slate-200 font-mono text-[11px] px-1 py-0.5 focus:border-emerald-400 focus:outline-none w-28 sm:w-36"
+                      className="bg-transparent border-b border-dashed border-slate-400/50 text-slate-800 dark:text-slate-200 font-mono text-[11px] px-1 py-0.5 focus:border-emerald-400 focus:outline-none w-24 sm:w-36"
                       title="File name (click to edit)"
                     />
                     <button
@@ -2242,34 +2799,35 @@ ${botBar}
               </div>
 
               {/* Pinned Active Command Input Line */}
-              <div className="shrink-0 mt-3 flex items-center gap-2 border-t border-slate-200/70 pt-3 text-[11px] dark:border-white/10">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">moiz@paris</span>
-                <span className="text-slate-400">:</span>
+              <div className="shrink-0 mt-2 sm:mt-3 flex items-center gap-1.5 sm:gap-2 border-t border-slate-200/70 pt-2.5 sm:pt-3 text-[11px] dark:border-white/10">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0 hidden xs:inline">moiz@paris</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0 xs:hidden">moiz</span>
+                <span className="text-slate-400 shrink-0">:</span>
                 <span className="text-indigo-500 font-bold shrink-0">{currentDir}</span>
-                <span className="text-slate-400">$</span>
+                <span className="text-slate-400 shrink-0">$</span>
                 <input
                   ref={inputRef}
                   type="text"
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="type 'skills', 'projects', 'hire', 'help', 'ls'..."
-                  className="flex-1 bg-transparent font-mono text-[11px] text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white dark:placeholder:text-slate-500"
+                  placeholder="skills, projects, hire, ls, ./doctor-iq..."
+                  className="min-w-0 flex-1 bg-transparent font-mono text-[11px] text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white dark:placeholder:text-slate-500"
                 />
                 <button
                   type="button"
                   aria-label="Execute command"
                   onClick={() => executeCommand(inputVal)}
                   disabled={!inputVal.trim()}
-                  className="rounded-lg bg-indigo-600 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-40"
+                  className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-1.5 text-[10px] font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-40"
                 >
                   <FiCornerDownLeft />
                 </button>
               </div>
 
               {/* Pinned Quick Action Chips */}
-              <div className="shrink-0 mt-2.5 flex flex-wrap items-center gap-1.5 pt-1">
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1">Quick:</span>
+              <div className="shrink-0 mt-2 flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mr-1 hidden sm:inline">Quick:</span>
                 {quickChips.map((chip) => (
                   <button
                     key={chip}
@@ -2278,7 +2836,7 @@ ${botBar}
                       e.stopPropagation();
                       executeCommand(chip);
                     }}
-                    className="rounded-lg border border-slate-200 bg-slate-100/90 px-2 py-0.5 text-[10px] font-medium text-slate-700 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-indigo-400/50 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300"
+                    className="rounded-lg border border-slate-200 bg-slate-100/90 px-2 py-1 text-[10px] font-medium text-slate-700 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-indigo-400/50 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300"
                   >
                     &gt; {chip}
                   </button>
