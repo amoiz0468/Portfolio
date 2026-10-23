@@ -154,17 +154,18 @@ function RealPingOutput({ targetHost }: { targetHost: string }) {
   const [pings, setPings] = useState<{ seq: number; time: number; ip: string; ttl: number }[]>([]);
   const [done, setDone] = useState(false);
 
+  const isLocal = targetHost === '127.0.0.1' || targetHost === 'localhost' || targetHost === '::1';
+  const targetIp = isLocal
+    ? '127.0.0.1'
+    : targetHost.includes('google')
+    ? '142.250.74.206'
+    : targetHost === 'moiz.paris'
+    ? '76.76.21.21'
+    : '104.21.48.91';
+  const ttl = isLocal ? 64 : 56;
+
   useEffect(() => {
     let cancelled = false;
-    const isLocal = targetHost === '127.0.0.1' || targetHost === 'localhost' || targetHost === '::1';
-    const targetIp = isLocal
-      ? '127.0.0.1'
-      : targetHost.includes('google')
-      ? '142.250.74.206'
-      : targetHost === 'moiz.paris'
-      ? '76.76.21.21'
-      : '104.21.48.91';
-    const ttl = isLocal ? 64 : 56;
 
     const runPings = async () => {
       const results: { seq: number; time: number; ip: string; ttl: number }[] = [];
@@ -193,7 +194,7 @@ function RealPingOutput({ targetHost }: { targetHost: string }) {
     return () => {
       cancelled = true;
     };
-  }, [targetHost]);
+  }, [targetHost, isLocal, targetIp, ttl]);
 
   const times = pings.map((p) => p.time);
   const min = times.length ? Math.min(...times).toFixed(2) : '0.00';
@@ -203,7 +204,7 @@ function RealPingOutput({ targetHost }: { targetHost: string }) {
   return (
     <div className="space-y-1 font-mono text-[11px]">
       <p className="font-semibold text-slate-500 dark:text-slate-400">
-        PING {targetHost} ({targetHost === '127.0.0.1' ? '127.0.0.1' : '76.76.21.21'}): 56 data bytes (live network probe)
+        PING {targetHost} ({targetIp}): 56 data bytes (live network probe)
       </p>
       {pings.map((p) => (
         <p key={p.seq} className="text-emerald-500">
@@ -407,6 +408,7 @@ export default function InteractiveTerminal() {
 
   // In-memory virtual filesystem (restarts on page reload)
   const [virtualFiles, setVirtualFiles] = useState<Record<string, string>>(INITIAL_VIRTUAL_FILES);
+  const [virtualDirs, setVirtualDirs] = useState<string[]>(['projects']);
 
   const [activeEditor, setActiveEditor] = useState<'vim' | 'nano' | 'emacs' | null>(null);
   const [editorFile, setEditorFile] = useState<string>('');
@@ -431,7 +433,7 @@ export default function InteractiveTerminal() {
       : `[${editorName}] Buffer closed. Changes discarded.`;
 
     setHistory((prev) => [
-      ...prev,
+      ...prev.slice(-80),
       {
         command: `${editorName} ${targetFile}`,
         output: <p className="text-[11px] font-mono text-emerald-400">{exitMsg}</p>,
@@ -496,9 +498,176 @@ export default function InteractiveTerminal() {
     const raw = cmdText.trim();
     if (!raw) return;
 
-    setCommandHistoryList((prev) => [...prev, raw]);
+    // Command chaining with && or ;
+    if (raw.includes('&&')) {
+      const subCmds = raw.split('&&').map((s) => s.trim()).filter(Boolean);
+      for (const sub of subCmds) {
+        executeCommand(sub);
+      }
+      return;
+    }
+    if (raw.includes(';') && !raw.includes('&')) {
+      const subCmds = raw.split(';').map((s) => s.trim()).filter(Boolean);
+      for (const sub of subCmds) {
+        executeCommand(sub);
+      }
+      return;
+    }
+
+    setCommandHistoryList((prev) => [...prev.slice(-80), raw]);
     setHistoryIndex(null);
     const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
+
+    // Output redirection: e.g. echo "text" > file.txt, date >> file.log, cat a > b
+    const redirMatch = raw.match(/^(.*?)\s*(>>|>)\s*([a-zA-Z0-9_\-./]+)$/);
+    if (redirMatch) {
+      const leftCmd = redirMatch[1].trim();
+      const operator = redirMatch[2];
+      const targetFile = redirMatch[3].replace(/^\.\//, '');
+
+      if (targetFile) {
+        let contentToWrite = '';
+        const leftParts = leftCmd.split(/\s+/);
+        const leftBase = leftParts[0].toLowerCase();
+
+        if (leftBase === 'echo') {
+          const echoRaw = leftCmd.substring(4).trim();
+          if (echoRaw === '$user' || echoRaw === '$USER') contentToWrite = 'moiz';
+          else if (echoRaw === '$location' || echoRaw === '$LOCATION') contentToWrite = 'Paris, France';
+          else if (echoRaw === '$status' || echoRaw === '$STATUS') contentToWrite = 'Ready for CDI / Hybrid / Remote';
+          else if (echoRaw === '$shell' || echoRaw === '$SHELL') contentToWrite = '/bin/bash';
+          else contentToWrite = echoRaw.replace(/^["']|["']$/g, '');
+        } else if (leftBase === 'date') {
+          contentToWrite = new Date().toLocaleString('en-GB', { timeZone: 'Europe/Paris' });
+        } else if (leftBase === 'cat') {
+          const srcFile = (leftParts[1] || '').replace(/^\.\//, '');
+          contentToWrite = virtualFiles[srcFile] ?? '';
+        } else if (leftBase === 'pwd') {
+          contentToWrite = currentDir === '~/projects' ? '/home/moiz/projects' : '/home/moiz';
+        } else if (leftBase === 'whoami') {
+          contentToWrite = 'moiz (Muhammad Abdul Moiz — Full-Stack, DevOps & AI Engineer)';
+        } else {
+          contentToWrite = `[output of ${leftCmd}]`;
+        }
+
+        setVirtualFiles((prev) => {
+          const existing = prev[targetFile] || '';
+          const finalContent =
+            operator === '>>'
+              ? existing
+                ? `${existing}\n${contentToWrite}`
+                : contentToWrite
+              : contentToWrite;
+          return { ...prev, [targetFile]: finalContent };
+        });
+
+        setHistory((prev) => [
+          ...prev.slice(-80),
+          {
+            command: raw,
+            output: (
+              <p className="text-[11px] font-mono text-emerald-500">
+                [{operator}] &apos;{targetFile}&apos; updated ({contentToWrite.length} bytes written) [OK]
+              </p>
+            ),
+            time: now,
+            dir: currentDir,
+          },
+        ]);
+        setInputVal('');
+        return;
+      }
+    }
+
+    // Unix Pipe simulation: e.g. cat README.md | grep DevOps, ls | grep .md, cat README.md | wc
+    if (raw.includes('|')) {
+      const pipeParts = raw.split('|').map((s) => s.trim()).filter(Boolean);
+      if (pipeParts.length === 2) {
+        const leftCmd = pipeParts[0];
+        const rightCmd = pipeParts[1];
+        const rightTokens = rightCmd.split(/\s+/);
+        const rightBase = rightTokens[0].toLowerCase();
+        const rightArg1 = rightTokens[1] ? rightTokens[1].toLowerCase() : '';
+        const cleanPattern = rightArg1.replace(/^["']|["']$/g, '');
+
+        let sourceLines: string[] = [];
+        const leftTokens = leftCmd.split(/\s+/);
+        const leftBase = leftTokens[0].toLowerCase();
+
+        if (leftBase === 'cat') {
+          const src = (leftTokens[1] || '').replace(/^\.\//, '');
+          if (virtualFiles[src] !== undefined) {
+            sourceLines = virtualFiles[src].split('\n');
+          }
+        } else if (leftBase === 'ls') {
+          sourceLines = [...Object.keys(virtualFiles), ...virtualDirs.map((d) => `${d}/`)];
+        } else if (leftBase === 'history') {
+          sourceLines = commandHistoryList.map((c, i) => `${i + 1}  ${c}`);
+        } else if (leftBase === 'ps') {
+          sourceLines = [
+            'root         1  0.0  0.1 /sbin/init',
+            'moiz       742  0.2  1.4 /usr/bin/dockerd',
+            'moiz      1420  0.8  3.2 python3 main:app (DoctorIQ)',
+            'moiz      1580  0.5  2.1 node server.js (Brackets Genie)',
+            'moiz      2100  0.4  2.8 next-server (Portfolio)',
+          ];
+        } else if (leftBase === 'echo') {
+          sourceLines = [leftCmd.substring(4).trim().replace(/^["']|["']$/g, '')];
+        }
+
+        let pipeOutput: React.ReactNode = null;
+        if (rightBase === 'grep' && cleanPattern) {
+          const filtered = sourceLines.filter((l) => l.toLowerCase().includes(cleanPattern.toLowerCase()));
+          pipeOutput = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              {filtered.length > 0 ? (
+                filtered.map((line, idx) => (
+                  <p key={idx} className="text-emerald-500">
+                    {line}
+                  </p>
+                ))
+              ) : (
+                <p className="text-slate-400">grep: pattern &apos;{cleanPattern}&apos; not found in piped stream</p>
+              )}
+            </div>
+          );
+        } else if (rightBase === 'wc') {
+          const totalLines = sourceLines.length;
+          const totalWords = sourceLines.join(' ').trim().split(/\s+/).filter(Boolean).length;
+          const totalBytes = sourceLines.join('\n').length;
+          pipeOutput = (
+            <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
+              {totalLines} {totalWords} {totalBytes}
+            </p>
+          );
+        } else if (rightBase === 'head') {
+          pipeOutput = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              {sourceLines.slice(0, 6).map((l, i) => (
+                <p key={i}>{l}</p>
+              ))}
+            </div>
+          );
+        } else if (rightBase === 'tail') {
+          pipeOutput = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              {sourceLines.slice(-6).map((l, i) => (
+                <p key={i}>{l}</p>
+              ))}
+            </div>
+          );
+        }
+
+        if (pipeOutput) {
+          setHistory((prev) => [
+            ...prev.slice(-80),
+            { command: raw, output: pipeOutput, time: now, dir: currentDir },
+          ]);
+          setInputVal('');
+          return;
+        }
+      }
+    }
 
     // 1. Alias Resolution from ~/.bashrc
     const activeAliases = parseBashrcAliases(virtualFiles['.bashrc'] || '');
@@ -694,6 +863,21 @@ export default function InteractiveTerminal() {
                 )}
               </div>
             );
+          } else if (currentDir !== '~') {
+            const curDirName = currentDir.replace('~/', '');
+            output = (
+              <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300">
+                <p className="text-slate-400">total 0</p>
+                {isAll && (
+                  <>
+                    <p>drwxr-xr-x 2 moiz staff  64 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
+                    <p>drwxr-xr-x 5 root staff 160 Oct 23 14:00 <span className="text-indigo-400 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd ~')}>..</span></p>
+                  </>
+                )}
+                <p className="text-slate-500 italic">[directory: /home/moiz/{curDirName}]</p>
+                <p className="text-[10px] text-slate-400">Tip: use &apos;touch &lt;file&gt;&apos; or &apos;nano &lt;file&gt;&apos; to write files, or &apos;cd ..&apos; to return.</p>
+              </div>
+            );
           } else {
             const files = Object.keys(virtualFiles).filter((f) => {
               if (f.startsWith('.') && !isAll) return false;
@@ -703,7 +887,7 @@ export default function InteractiveTerminal() {
             if (isLong) {
               output = (
                 <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-x-auto">
-                  <p className="text-slate-400">total {files.length * 4}</p>
+                  <p className="text-slate-400">total {(files.length + virtualDirs.length) * 4}</p>
                   {isAll && (
                     <>
                       <p>drwxr-xr-x 8 moiz staff 256 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
@@ -733,7 +917,17 @@ export default function InteractiveTerminal() {
                       </p>
                     );
                   })}
-                  <p>drwxr-xr-x 6 moiz staff  192 Oct 23 14:00 <span className="text-indigo-500 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd projects')}>projects/</span></p>
+                  {virtualDirs.map((dname) => (
+                    <p key={dname}>
+                      drwxr-xr-x 6 moiz staff  192 Oct 23 14:00{' '}
+                      <span
+                        className="text-indigo-500 font-bold cursor-pointer hover:underline"
+                        onClick={() => executeCommand(`cd ${dname}`)}
+                      >
+                        {dname}/
+                      </span>
+                    </p>
+                  ))}
                 </div>
               );
             } else {
@@ -755,12 +949,15 @@ export default function InteractiveTerminal() {
                         {fname}
                       </span>
                     ))}
-                    <span
-                      className="text-indigo-500 font-bold cursor-pointer hover:underline"
-                      onClick={() => executeCommand('cd projects')}
-                    >
-                      projects/
-                    </span>
+                    {virtualDirs.map((dname) => (
+                      <span
+                        key={dname}
+                        className="text-indigo-500 font-bold cursor-pointer hover:underline"
+                        onClick={() => executeCommand(`cd ${dname}`)}
+                      >
+                        {dname}/
+                      </span>
+                    ))}
                   </div>
                   <p className="text-[10px] text-slate-400 pt-0.5">Tip: use &apos;cat &lt;file&gt;&apos;, &apos;nano &lt;file&gt;&apos;, or &apos;cd projects&apos;</p>
                 </div>
@@ -821,6 +1018,7 @@ export default function InteractiveTerminal() {
             { name: 'trinity-suite', desc: 'Enterprise CI/CD Factory' },
             { name: 'time-manager', desc: 'Elixir Phoenix + Vue 3 Realtime' },
           ];
+          const customDirs = virtualDirs.filter((d) => d !== 'projects');
 
           if (currentDir === '~/projects') {
             output = (
@@ -857,6 +1055,18 @@ export default function InteractiveTerminal() {
                     <span className="text-[10px] text-slate-400">({virtualFiles[fname]?.length || 0}B)</span>
                   </p>
                 ))}
+                {customDirs.map((cdir) => (
+                  <p key={cdir}>
+                    ├──{' '}
+                    <span
+                      className="text-indigo-400 font-bold cursor-pointer hover:underline"
+                      onClick={() => executeCommand(`cd ${cdir}`)}
+                    >
+                      {cdir}/
+                    </span>{' '}
+                    <span className="text-[10px] text-slate-400">(custom directory)</span>
+                  </p>
+                ))}
                 <p>
                   └──{' '}
                   <span
@@ -879,7 +1089,7 @@ export default function InteractiveTerminal() {
                   </p>
                 ))}
                 <p className="text-slate-400 pt-1 text-[10px]">
-                  2 directories, {displayedFiles.length + projectItems.length} files{' '}
+                  {1 + virtualDirs.length} directories, {displayedFiles.length + projectItems.length} files{' '}
                   {!showAll && '(run tree -a to see dotfiles)'}
                 </p>
               </div>
@@ -889,7 +1099,7 @@ export default function InteractiveTerminal() {
         }
 
         case 'cd': {
-          const dest = arg1.replace(/\/+$/, '');
+          const dest = arg1.replace(/\/+$/, '').trim();
           if (!dest || dest === '~' || dest === 'root' || dest === '/home/moiz') {
             setCurrentDir('~');
             output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
@@ -901,7 +1111,7 @@ export default function InteractiveTerminal() {
               </p>
             );
           } else if (dest === '..' || dest === '../') {
-            if (currentDir === '~/projects') {
+            if (currentDir !== '~') {
               setCurrentDir('~');
               output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
             } else {
@@ -909,6 +1119,13 @@ export default function InteractiveTerminal() {
             }
           } else if (dest === '/') {
             output = <p className="text-[11px] text-amber-500">Access restricted: / is managed by MoizOS kernel.</p>;
+          } else if (virtualDirs.includes(dest)) {
+            setCurrentDir(`~/${dest}`);
+            output = (
+              <p className="text-[11px] text-slate-400">
+                Switched directory to ~/{dest}. Type <span className="text-emerald-400 font-bold cursor-pointer" onClick={() => executeCommand('ls')}>ls</span> to inspect.
+              </p>
+            );
           } else {
             output = <p className="text-[11px] text-rose-500">cd: {dest}: No such file or directory</p>;
           }
@@ -918,7 +1135,7 @@ export default function InteractiveTerminal() {
       case 'pwd':
         output = (
           <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
-            /home/moiz{currentDir === '~/projects' ? '/projects' : ''}
+            /home/moiz{currentDir.replace('~', '')}
           </p>
         );
         break;
@@ -943,30 +1160,6 @@ export default function InteractiveTerminal() {
         );
         break;
 
-      case 'hostname':
-        output = (
-          <p className="text-[11px] font-mono text-emerald-500">
-            moiz-macbook-pro.paris.local
-          </p>
-        );
-        break;
-
-      case 'uname':
-        output = (
-          <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
-            Darwin moiz-macbook-m4.paris 24.3.0 Darwin Kernel Version 24.3.0 arm64 (Apple M4 Pro)
-          </p>
-        );
-        break;
-
-      case 'uptime':
-        output = (
-          <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
-            {new Date().toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris' })} up 23 years, 6 days, 1 user, load average: 0.08, 0.05, 0.02 (100% SLA)
-          </p>
-        );
-        break;
-
       case 'date':
       case 'time':
         output = (
@@ -984,27 +1177,14 @@ export default function InteractiveTerminal() {
         } else if (arg1 === '$status') {
           output = <p className="text-[11px] font-mono text-emerald-400">Ready for CDI / Hybrid / Remote</p>;
         } else if (arg1 === '$shell') {
-          output = <p className="text-[11px] font-mono text-emerald-400">/bin/zsh</p>;
+          output = <p className="text-[11px] font-mono text-emerald-400">/bin/bash</p>;
         } else if (arg1 === '$path') {
-          output = <p className="text-[11px] font-mono text-slate-400">/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/home/moiz/.cargo/bin</p>;
+          output = <p className="text-[11px] font-mono text-slate-400">/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/home/moiz/.local/bin</p>;
         } else if (arg1 === '$lang') {
           output = <p className="text-[11px] font-mono text-emerald-400">{lang}</p>;
         } else {
-          output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">{fullArg || ''}</p>;
+          output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">{fullArg.replace(/^["']|["']$/g, '') || ''}</p>;
         }
-        break;
-
-      case 'ps':
-        output = (
-          <div className="space-y-0.5 font-mono text-[11px] overflow-x-auto text-slate-700 dark:text-slate-300">
-            <p className="font-bold text-slate-500 dark:text-slate-400">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</p>
-            <p className="text-emerald-500">moiz         1  0.0  0.1  22588  3412 ?        Ss   09:00   0:01 /bin/init (MoizOS)</p>
-            <p className="text-emerald-500">moiz       101  0.4  1.2 412900 38410 ?        S    09:01   0:42 uvicorn main:app --workers 4</p>
-            <p className="text-emerald-500">moiz       102  0.2  0.8 198400 24190 ?        S    09:01   0:18 celery -A tasks worker -l info</p>
-            <p className="text-emerald-500">moiz       103  0.1  0.4  54200 12040 ?        S    09:01   0:09 redis-server *:6379</p>
-            <p className="text-emerald-500">moiz       104  0.0  0.2  89100  8120 pts/0    Ss   14:00   0:00 /bin/zsh</p>
-          </div>
-        );
         break;
 
       case 'top':
@@ -1058,17 +1238,50 @@ export default function InteractiveTerminal() {
         break;
       }
 
-      case 'mkdir':
-        output = <p className="text-[11px] font-mono text-emerald-500">mkdir: created directory &apos;{arg1 || 'new-dir'}&apos;</p>;
+      case 'mkdir': {
+        const dirName = (arg1 || '').replace(/\/+$/, '').trim();
+        if (!dirName) {
+          output = <p className="text-[11px] font-mono text-amber-500">usage: mkdir &lt;directory&gt;</p>;
+        } else if (virtualDirs.includes(dirName) || dirName === 'projects') {
+          output = <p className="text-[11px] font-mono text-rose-500">mkdir: cannot create directory &apos;{dirName}&apos;: File exists</p>;
+        } else {
+          setVirtualDirs((prev) => [...prev, dirName]);
+          output = <p className="text-[11px] font-mono text-emerald-500">mkdir: created directory &apos;{dirName}&apos; [OK]</p>;
+        }
         break;
+      }
+
+      case 'rmdir': {
+        const dirName = (arg1 || '').replace(/\/+$/, '').trim();
+        if (!dirName) {
+          output = <p className="text-[11px] font-mono text-amber-500">usage: rmdir &lt;directory&gt;</p>;
+        } else if (dirName === 'projects') {
+          output = <p className="text-[11px] font-mono text-rose-500">rmdir: failed to remove &apos;projects&apos;: System directory protected</p>;
+        } else if (virtualDirs.includes(dirName)) {
+          setVirtualDirs((prev) => prev.filter((d) => d !== dirName));
+          if (currentDir === `~/${dirName}`) {
+            setCurrentDir('~');
+          }
+          output = <p className="text-[11px] font-mono text-slate-400">rmdir: removed directory &apos;{dirName}&apos; [OK]</p>;
+        } else {
+          output = <p className="text-[11px] font-mono text-rose-500">rmdir: failed to remove &apos;{dirName}&apos;: No such file or directory</p>;
+        }
+        break;
+      }
 
       case 'rm': {
         if (fullArg.includes('-rf /') || fullArg.includes('-fr /') || fullArg === '-rf *') {
           output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;/&apos;: Permission denied. Nice try! MoizOS integrity protected.</p>;
         } else {
-          const target = (arg1.startsWith('-') ? arg2 : arg1).replace(/^\.\//, '');
+          const target = (arg1.startsWith('-') ? arg2 : arg1).replace(/^\.\//, '').replace(/\/+$/, '');
           if (!target) {
-            output = <p className="text-[11px] font-mono text-amber-500">usage: rm [-rf] &lt;file&gt;</p>;
+            output = <p className="text-[11px] font-mono text-amber-500">usage: rm [-rf] &lt;file|directory&gt;</p>;
+          } else if (target === 'projects') {
+            output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;projects&apos;: System directory protected</p>;
+          } else if (virtualDirs.includes(target) && (parts.includes('-r') || parts.includes('-rf') || parts.includes('-fr'))) {
+            setVirtualDirs((prev) => prev.filter((d) => d !== target));
+            if (currentDir === `~/${target}`) setCurrentDir('~');
+            output = <p className="text-[11px] font-mono text-slate-400">rm: removed directory &apos;{target}&apos; from virtual filesystem</p>;
           } else if (virtualFiles[target] !== undefined) {
             setVirtualFiles((prev) => {
               const nextFiles = { ...prev };
@@ -1245,18 +1458,40 @@ export default function InteractiveTerminal() {
         break;
 
       case 'history':
-        output = (
-          <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-400">
-            {commandHistoryList.slice(-15).map((cmdItem, i) => (
-              <p key={i}>{i + 1}  {cmdItem}</p>
-            ))}
-          </div>
-        );
+        if (arg1 === '-c') {
+          setCommandHistoryList([]);
+          output = <p className="text-[11px] font-mono text-slate-400">history: buffer cleared</p>;
+        } else {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+              {commandHistoryList.slice(-20).map((cmdItem, i) => (
+                <p key={i}>{i + 1}  {cmdItem}</p>
+              ))}
+            </div>
+          );
+        }
         break;
 
       case 'ping': {
         const targetHost = arg1 || 'moiz.paris';
         output = <RealPingOutput targetHost={targetHost} />;
+        break;
+      }
+
+      case 'traceroute':
+      case 'tracepath': {
+        const targetHost = arg1 || 'moiz.paris';
+        const isLocal = targetHost === '127.0.0.1' || targetHost === 'localhost';
+        const targetIp = isLocal ? '127.0.0.1' : targetHost.includes('google') ? '142.250.74.206' : '76.76.21.21';
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+            <p className="font-semibold text-slate-500">traceroute to {targetHost} ({targetIp}), 30 hops max, 60 byte packets</p>
+            <p> 1  gateway.paris.local (192.168.1.1)  0.942 ms  0.880 ms  0.865 ms</p>
+            <p> 2  10.42.0.1 (idf-core-peering.orange.fr)  3.412 ms  3.280 ms  3.190 ms</p>
+            <p> 3  prs-b1-link.telia.net (62.115.112.4)  5.812 ms  5.640 ms  5.520 ms</p>
+            <p className="text-emerald-500"> 4  anycast.edge ({targetIp})  11.240 ms  10.980 ms  11.104 ms [Destination reached]</p>
+          </div>
+        );
         break;
       }
 
@@ -1281,6 +1516,31 @@ export default function InteractiveTerminal() {
       \`-’      Humidity: 52%
      /   \\     UV Index: 3 (Moderate)`}</pre>
               <p className="text-[10px] text-slate-400">wttr.in/Paris • HTTP/2 200 OK</p>
+            </div>
+          );
+        } else if (arg1.includes('8000') || fullArg.includes('8000')) {
+          output = (
+            <div className="rounded-lg bg-slate-100 p-2 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
+              <pre>{JSON.stringify({
+                service: 'doctor-iq-api',
+                status: 'healthy',
+                version: '2.4.0',
+                ocr_pipeline: 'MedGemma-7B',
+                workers: 4,
+                uptime_sec: 364800,
+              }, null, 2)}</pre>
+            </div>
+          );
+        } else if (arg1.includes('4000') || fullArg.includes('4000') || arg1.includes('8501')) {
+          output = (
+            <div className="rounded-lg bg-slate-100 p-2 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
+              <pre>{JSON.stringify({
+                service: 'brackets-genie-multi-agent',
+                status: 'ready',
+                agents_count: 5,
+                orchestrator: 'LangGraph',
+                streaming_protocol: 'SSE',
+              }, null, 2)}</pre>
             </div>
           );
         } else if (arg1.includes('profile') || arg1.includes('api')) {
@@ -1613,8 +1873,52 @@ export default function InteractiveTerminal() {
               <p className="pl-2 text-slate-900 dark:text-white font-semibold">feat: enrolled at EPITECH Paris (MSc Information Technology)</p>
             </div>
           );
+        } else if (arg1 === 'diff') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-slate-400">diff --git a/skills.ts b/skills.ts</p>
+              <p className="text-slate-400">index e4b8910..8c3149a 100644</p>
+              <p className="text-indigo-400">@@ -14,6 +14,8 @@ export const capabilities = &#123;</p>
+              <p className="text-emerald-500">+   ai_orchestration: [&apos;LangGraph&apos;, &apos;MedGemma&apos;, &apos;Multi-Agent&apos;],</p>
+              <p className="text-emerald-500">+   devops_delivery: [&apos;Docker&apos;, &apos;Kubernetes&apos;, &apos;Terraform&apos;, &apos;CI/CD&apos;],</p>
+              <p className="text-emerald-500">+   availability: &apos;Available for CDI / Alternance in Paris&apos;</p>
+            </div>
+          );
+        } else if (arg1 === 'branch') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px]">
+              <p className="text-emerald-500 font-bold">* main</p>
+              <p className="text-slate-500 dark:text-slate-400">  feat/epitech-msc-paris</p>
+              <p className="text-slate-500 dark:text-slate-400">  production-ready</p>
+            </div>
+          );
+        } else if (arg1 === 'commit') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-emerald-500">[main 9d12a8f] {fullArg.replace(/^commit\s*(-m\s*)?/, '').replace(/^["']|["']$/g, '') || 'update portfolio code'}</p>
+              <p className="text-slate-400"> 2 files changed, 28 insertions(+), 0 deletions(-)</p>
+            </div>
+          );
+        } else if (arg1 === 'push') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-slate-400">Enumerating objects: 5, done.</p>
+              <p className="text-slate-400">Writing objects: 100% (5/5), 1.42 KiB | 1.42 MiB/s, done.</p>
+              <p className="text-emerald-500">To github.com:amoiz0468/Portfolio.git</p>
+              <p className="text-emerald-500">   e4b8910..8c3149a  main -&gt; main</p>
+            </div>
+          );
+        } else if (arg1 === 'pull') {
+          output = <p className="text-[11px] font-mono text-emerald-500">Already up to date. (Fast-forward to HEAD)</p>;
+        } else if (arg1 === 'remote') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+              <p>origin  https://github.com/amoiz0468/Portfolio.git (fetch)</p>
+              <p>origin  https://github.com/amoiz0468/Portfolio.git (push)</p>
+            </div>
+          );
         } else {
-          output = <p className="text-[11px] text-slate-400">git: try &apos;git status&apos; or &apos;git log&apos;</p>;
+          output = <p className="text-[11px] font-mono text-slate-400">git: subcommands: status, log, diff, branch, commit, push, pull, remote</p>;
         }
         break;
 
@@ -1665,12 +1969,38 @@ export default function InteractiveTerminal() {
       case 'pnpm':
       case 'yarn':
       case 'bun':
-        output = (
-          <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
-            <p className="text-emerald-500">{base}: audit completed.</p>
-            <p>0 vulnerabilities found across 42 packages. Production ready.</p>
-          </div>
-        );
+        if (arg1 === 'test' || arg2 === 'test') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-emerald-500 font-bold">&#10004; 100/100 tests passed (unit, integration, e2e, security)</p>
+              <p className="text-slate-400">Duration: 756ms | 5 test suites | 0 failures | 0 warnings</p>
+            </div>
+          );
+        } else if (arg1 === 'run' && (arg2 === 'build' || arg2 === 'dev')) {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-indigo-400 font-bold">&#9650; Next.js 14.2.35 ({arg2})</p>
+              <p className="text-emerald-500">&#10004; Compiled successfully in 1.1s</p>
+              <p className="text-slate-400">&#10004; Static pages: 6/6 generated</p>
+            </div>
+          );
+        } else if (arg1 === 'build') {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-indigo-400 font-bold">&#9650; Next.js 14.2.35 production build</p>
+              <p className="text-emerald-500">&#10004; Compiled successfully</p>
+              <p className="text-slate-400">&#10004; First Load JS shared by all: 166 kB (optimized)</p>
+            </div>
+          );
+        } else {
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="text-emerald-500">{base}: audit completed [OK]</p>
+              <p>0 vulnerabilities found across 42 packages. Production ready.</p>
+              <p className="text-slate-400 text-[10px]">Scripts: npm test, npm run build, npm run dev</p>
+            </div>
+          );
+        }
         break;
 
       case 'pip':
@@ -2388,7 +2718,7 @@ ${botBar}
     }
   }
 
-  setHistory((prev) => [...prev, { command: raw, output, time: now, dir: currentDir }]);
+  setHistory((prev) => [...prev.slice(-80), { command: raw, output, time: now, dir: currentDir }]);
   setInputVal('');
 };
 
@@ -2412,6 +2742,135 @@ ${botBar}
       } else {
         setHistoryIndex(nextIdx);
         setInputVal(commandHistoryList[nextIdx] || '');
+      }
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      const current = inputVal.trim();
+      if (!current) return;
+
+      const words = current.split(/\s+/);
+      const isFirstWord = words.length === 1;
+      const lastToken = words[words.length - 1].toLowerCase();
+
+      const ALL_COMMANDS = [
+        'help', 'ls', 'll', 'cat', 'tree', 'cd', 'nano', 'vim', 'emacs',
+        'docker', 'ping', 'traceroute', 'whoami', 'skills', 'projects', 'contact', 'hire',
+        'clear', 'alias', 'unalias', 'cp', 'mv', 'rm', 'rmdir', 'mkdir', 'touch', 'grep',
+        'head', 'tail', 'wc', 'echo', 'date', 'uptime', 'uname', 'hostname',
+        'netstat', 'ss', 'ps', 'top', 'curl', 'status', 'github', 'linkedin',
+        'day', 'dark', 'joke', 'quote', 'weather', 'bc', 'cal', 'df', 'du',
+        'base64', 'ssh', 'systemctl', 'git', 'npm', 'kubectl'
+      ];
+
+      const ALL_PROJECTS = [
+        'doctor-iq', 'brackets-genie', 'vif-food-solidarity',
+        'ledgeroo-fintech', 'trinity-suite', 'time-manager'
+      ];
+
+      const ALL_FILES = Object.keys(virtualFiles);
+
+      if (isFirstWord) {
+        if (current.startsWith('./')) {
+          const stem = current.slice(2).toLowerCase();
+          const matchProj = [...ALL_PROJECTS, ...ALL_FILES].find((p) => p.toLowerCase().startsWith(stem));
+          if (matchProj) setInputVal(`./${matchProj}`);
+        } else {
+          const matchCmd = ALL_COMMANDS.find((c) => c.startsWith(lastToken));
+          if (matchCmd) setInputVal(matchCmd + ' ');
+        }
+      } else {
+        const firstCmd = words[0].toLowerCase();
+        if (['cat', 'nano', 'vim', 'emacs', 'rm', 'cp', 'mv', 'touch', 'head', 'tail', 'wc', 'grep'].includes(firstCmd)) {
+          const matchFile = ALL_FILES.find((f) => f.toLowerCase().startsWith(lastToken));
+          if (matchFile) {
+            words[words.length - 1] = matchFile;
+            setInputVal(words.join(' '));
+          }
+        } else if (firstCmd === 'cd' || firstCmd === 'rmdir') {
+          const matchDir = virtualDirs.find((d) => d.toLowerCase().startsWith(lastToken));
+          if (matchDir) {
+            words[words.length - 1] = matchDir;
+            setInputVal(words.join(' '));
+          }
+        } else if (firstCmd === 'docker') {
+          const dockerSubs = ['ps', 'images', 'build', 'run', 'logs', 'stats', 'compose', 'stop', 'restart', 'exec', 'volume', 'network', 'info'];
+          const matchSub = dockerSubs.find((s) => s.startsWith(lastToken));
+          if (matchSub) {
+            words[words.length - 1] = matchSub;
+            setInputVal(words.join(' ') + ' ');
+          }
+        } else if (firstCmd === 'git') {
+          const gitSubs = ['status', 'log', 'diff', 'branch', 'commit', 'push', 'pull', 'remote'];
+          const matchSub = gitSubs.find((s) => s.startsWith(lastToken));
+          if (matchSub) {
+            words[words.length - 1] = matchSub;
+            setInputVal(words.join(' ') + ' ');
+          }
+        } else if (firstCmd === 'npm' || firstCmd === 'pnpm' || firstCmd === 'yarn' || firstCmd === 'bun') {
+          const npmSubs = ['test', 'run', 'build', 'dev', 'audit', 'install'];
+          const matchSub = npmSubs.find((s) => s.startsWith(lastToken));
+          if (matchSub) {
+            words[words.length - 1] = matchSub;
+            setInputVal(words.join(' ') + ' ');
+          }
+        } else if (firstCmd === 'systemctl') {
+          const sysSubs = ['status', 'restart', 'start', 'stop', 'is-active'];
+          const matchSub = sysSubs.find((s) => s.startsWith(lastToken));
+          if (matchSub) {
+            words[words.length - 1] = matchSub;
+            setInputVal(words.join(' ') + ' ');
+          }
+        } else if (firstCmd === 'kubectl' || firstCmd === 'k') {
+          const k8sSubs = ['get', 'describe', 'logs', 'apply', 'delete', 'cluster-info'];
+          const matchSub = k8sSubs.find((s) => s.startsWith(lastToken));
+          if (matchSub) {
+            words[words.length - 1] = matchSub;
+            setInputVal(words.join(' ') + ' ');
+          }
+        }
+      }
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+      e.preventDefault();
+      const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
+      setHistory((prev) => [
+        ...prev.slice(-80),
+        {
+          command: `${inputVal}^C`,
+          output: null,
+          time: now,
+          dir: currentDir,
+        },
+      ]);
+      setInputVal('');
+      setHistoryIndex(null);
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
+      e.preventDefault();
+      setHistory([]);
+      setInputVal('');
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') {
+      e.preventDefault();
+      setInputVal('');
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+      e.preventDefault();
+      inputRef.current?.setSelectionRange(0, 0);
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+      e.preventDefault();
+      const len = inputVal.length;
+      inputRef.current?.setSelectionRange(len, len);
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'w') {
+      e.preventDefault();
+      setInputVal((prev) => {
+        const trimmed = prev.trimEnd();
+        const lastSpace = trimmed.lastIndexOf(' ');
+        return lastSpace === -1 ? '' : trimmed.slice(0, lastSpace + 1);
+      });
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      const el = inputRef.current;
+      if (el && typeof el.selectionStart === 'number') {
+        setInputVal((prev) => prev.slice(0, el.selectionStart || 0));
+      } else {
+        setInputVal('');
       }
     }
   };
@@ -2647,10 +3106,24 @@ ${botBar}
                         e.preventDefault();
                         setVimMode('NORMAL');
                         setEditorStatusMsg('-- NORMAL --');
-                      } else if (vimMode === 'NORMAL' && e.key === 'i') {
-                        e.preventDefault();
-                        setVimMode('INSERT');
-                        setEditorStatusMsg('-- INSERT --');
+                      } else if (vimMode === 'NORMAL') {
+                        if (e.key === 'i' || e.key === 'a') {
+                          e.preventDefault();
+                          setVimMode('INSERT');
+                          setEditorStatusMsg('-- INSERT --');
+                        } else if (e.key === 'o') {
+                          e.preventDefault();
+                          setEditorBuffer((prev) => prev + '\n');
+                          setVimMode('INSERT');
+                          setEditorStatusMsg('-- INSERT --');
+                        } else if (e.key === 'u') {
+                          e.preventDefault();
+                          setEditorStatusMsg('Already at newest change');
+                        } else if (e.key === 'Z' && e.shiftKey) {
+                          // Allow ZZ (save & exit) or ZQ (discard)
+                          e.preventDefault();
+                          closeEditor(true);
+                        }
                       }
                     } else if (activeEditor === 'nano') {
                       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x') {
