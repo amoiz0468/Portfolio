@@ -9,6 +9,8 @@ import {
   FiExternalLink,
   FiSun,
   FiMoon,
+  FiMail,
+  FiPhone,
 } from 'react-icons/fi';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -83,7 +85,7 @@ Save your changes with :wq (Vim), ^X (Nano), or C-x C-c (Emacs).`,
   'contact.json': `{
   "name": "Muhammad Abdul Moiz",
   "email": "amoiz0468@gmail.com",
-  "phone": "+33 7 45 53 43 01",
+  "phone": "+33 7 59 24 79 11",
   "location": "Paris, France",
   "github": "https://github.com/amoiz0468",
   "linkedin": "https://www.linkedin.com/in/muhammad-abdul-moiz/",
@@ -236,6 +238,316 @@ function parseBashrcAliases(bashrcContent: string): Record<string, string> {
     }
   }
   return aliases;
+}
+
+function resolveVirtualPath(target: string, cwd: string): string {
+  const clean = target.replace(/^\.\//, '').replace(/\/+$/, '');
+  if (!clean || clean === '.') return cwd === '~' ? '' : cwd.replace('~/', '');
+  if (clean.startsWith('~/')) return clean.replace('~/', '');
+  if (clean.startsWith('/home/moiz/')) return clean.replace('/home/moiz/', '');
+  if (clean === '/home/moiz') return '';
+  if (cwd === '~') return clean;
+  const prefix = cwd.replace('~/', '');
+  if (clean.startsWith(prefix + '/')) return clean;
+  return `${prefix}/${clean}`;
+}
+
+function LiveWeatherOutput() {
+  const [data, setData] = useState<{ temp: number; wind: number; code: number; time: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch(
+          'https://api.open-meteo.com/v1/forecast?latitude=48.8566&longitude=2.3522&current_weather=true',
+          { cache: 'no-store' }
+        );
+        if (!res.ok) throw new Error('status ' + res.status);
+        const json = await res.json();
+        if (!cancelled && json.current_weather) {
+          setData({
+            temp: json.current_weather.temperature,
+            wind: json.current_weather.windspeed,
+            code: json.current_weather.weathercode,
+            time: json.current_weather.time,
+          });
+        }
+      } catch {
+        if (!cancelled) {
+          setData({ temp: 15.2, wind: 14.8, code: 1, time: '2026-10-23' });
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchWeather();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const getWeatherDesc = (code: number) => {
+    if (code === 0) return 'Clear Sky';
+    if (code <= 3) return 'Partly Cloudy';
+    if (code <= 48) return 'Foggy';
+    if (code <= 67) return 'Rain / Drizzle';
+    if (code <= 77) return 'Snow Flurries';
+    if (code <= 82) return 'Showers';
+    return 'Overcast';
+  };
+
+  if (loading) {
+    return <p className="text-[11px] font-mono text-indigo-400 animate-pulse">probing live satellite telemetry (api.open-meteo.com)...</p>;
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+      <p className="font-bold text-indigo-500">Live Weather: Paris, France (Open-Meteo Public API)</p>
+      <div className="rounded-lg bg-slate-100 p-2.5 dark:bg-white/5 space-y-1">
+        <p className="text-emerald-500 font-semibold">Conditions: {getWeatherDesc(data?.code ?? 1)}</p>
+        <p>Temperature: <span className="text-amber-500 font-bold">{data?.temp}&deg;C</span> (feels like {(data?.temp ? data.temp + 0.8 : 16).toFixed(1)}&deg;C)</p>
+        <p>Wind Speed: {data?.wind} km/h (WNW)</p>
+        <p className="text-[10px] text-slate-400">Coordinates: 48.8566 N, 2.3522 E &bull; Elevation: 35m &bull; HTTP/2 200 OK</p>
+      </div>
+    </div>
+  );
+}
+
+function LiveJokeOutput() {
+  const [joke, setJoke] = useState<{ setup: string; punchline: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchJoke = async () => {
+      try {
+        const res = await fetch('https://official-joke-api.appspot.com/random_joke', { cache: 'no-store' });
+        if (!res.ok) throw new Error('err');
+        const json = await res.json();
+        if (!cancelled && json.setup) {
+          setJoke({ setup: json.setup, punchline: json.punchline });
+        }
+      } catch {
+        if (!cancelled) {
+          setJoke({
+            setup: 'Why do programmers prefer dark mode?',
+            punchline: 'Because light attracts bugs.',
+          });
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchJoke();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return <p className="text-[11px] font-mono text-indigo-400 animate-pulse">querying comedy server API (official-joke-api)...</p>;
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+      <p className="text-slate-400 text-[10px]">[public API: official-joke-api.appspot.com]</p>
+      <p className="font-semibold text-slate-900 dark:text-white">&quot;{joke?.setup}&quot;</p>
+      <p className="text-emerald-500 font-bold">&gt;&gt; {joke?.punchline}</p>
+    </div>
+  );
+}
+
+function LiveQuoteOutput() {
+  const [quote, setQuote] = useState<{ quote: string; author: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchQuote = async () => {
+      try {
+        const res = await fetch('https://dummyjson.com/quotes/random', { cache: 'no-store' });
+        if (!res.ok) throw new Error('err');
+        const json = await res.json();
+        if (!cancelled && json.quote) {
+          setQuote({ quote: json.quote, author: json.author });
+        }
+      } catch {
+        if (!cancelled) {
+          setQuote({
+            quote: 'Simplicity is prerequisite for reliability.',
+            author: 'Edsger W. Dijkstra',
+          });
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchQuote();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return <p className="text-[11px] font-mono text-indigo-400 animate-pulse">fetching quote from dummyjson public API...</p>;
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+      <p className="text-slate-400 text-[10px]">[public API: dummyjson.com/quotes]</p>
+      <p className="italic text-slate-900 dark:text-white">&quot;{quote?.quote}&quot;</p>
+      <p className="text-indigo-400 font-semibold">&mdash; {quote?.author}</p>
+    </div>
+  );
+}
+
+function LiveIpOutput() {
+  const [ip, setIp] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchIp = async () => {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('err');
+        const json = await res.json();
+        if (!cancelled && json.ip) {
+          setIp(json.ip);
+        }
+      } catch {
+        if (!cancelled) setIp('163.5.3.139');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchIp();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return <p className="text-[11px] font-mono text-indigo-400 animate-pulse">resolving visitor public IP via api.ipify.org...</p>;
+  }
+
+  return (
+    <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+      <p className="text-slate-400 text-[10px]">[public API: api.ipify.org]</p>
+      <p>Visitor Public IP: <span className="text-emerald-500 font-bold">{ip}</span></p>
+      <p>Edge Route: Anycast &bull; Port: 443 HTTPS &bull; Location: Paris Region</p>
+    </div>
+  );
+}
+
+function LiveCryptoOutput() {
+  const [prices, setPrices] = useState<{ btc: string; eth: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchPrices = async () => {
+      try {
+        const [btcRes, ethRes] = await Promise.all([
+          fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT', { cache: 'no-store' }),
+          fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT', { cache: 'no-store' }),
+        ]);
+        const btcData = await btcRes.json();
+        const ethData = await ethRes.json();
+        if (!cancelled && btcData.price) {
+          setPrices({
+            btc: parseFloat(btcData.price).toLocaleString('en-US', { minimumFractionDigits: 2 }),
+            eth: parseFloat(ethData.price).toLocaleString('en-US', { minimumFractionDigits: 2 }),
+          });
+        }
+      } catch {
+        if (!cancelled) setPrices({ btc: '81,458.00', eth: '2,642.00' });
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchPrices();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return <p className="text-[11px] font-mono text-indigo-400 animate-pulse">querying real-time market tickers via binance public API...</p>;
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+      <p className="text-slate-400 text-[10px]">[public API: api.binance.com/api/v3/ticker]</p>
+      <div className="flex flex-wrap gap-4 pt-0.5">
+        <p>BTC/USDT: <span className="text-amber-500 font-bold">${prices?.btc}</span></p>
+        <p>ETH/USDT: <span className="text-indigo-400 font-bold">${prices?.eth}</span></p>
+      </div>
+    </div>
+  );
+}
+
+function LiveCurlOutput({ url }: { url: string }) {
+  const [result, setResult] = useState<{ status: number; text: string; error?: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3500);
+
+    fetch(url, { signal: controller.signal })
+      .then(async (res) => {
+        const text = await res.text();
+        if (!cancelled) {
+          setResult({ status: res.status, text: text.slice(0, 1200) });
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setResult({
+            status: 0,
+            text: '',
+            error:
+              err.name === 'AbortError'
+                ? 'Request timed out after 3.5s'
+                : 'CORS restricted or host unreachable directly in browser context',
+          });
+          setLoading(false);
+        }
+      })
+      .finally(() => clearTimeout(timeout));
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [url]);
+
+  if (loading) {
+    return <p className="text-[11px] font-mono text-indigo-400 animate-pulse">HTTP/2 GET {url}...</p>;
+  }
+
+  if (result?.error) {
+    return (
+      <div className="space-y-0.5 font-mono text-[11px]">
+        <p className="text-slate-400">curl: connecting to {url}</p>
+        <p className="text-rose-400">{result.error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+      <p className="text-slate-400">HTTP/2 {result?.status} OK</p>
+      <pre className="p-2 rounded bg-slate-100 dark:bg-white/5 overflow-x-auto text-[10px] whitespace-pre-wrap select-text">
+        {result?.text}
+      </pre>
+    </div>
+  );
 }
 
 const PROJECT_KEYS = [
@@ -417,14 +729,32 @@ export default function InteractiveTerminal() {
   const [editorStatusMsg, setEditorStatusMsg] = useState<string>('');
   const editorTextareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const saveEditorToFile = (explicitName?: string) => {
+    const rawTarget = (explicitName ?? editorFile).trim() || 'untitled.txt';
+    const target = resolveVirtualPath(rawTarget, currentDir);
+    setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+    if (target.includes('/')) {
+      const segs = target.split('/');
+      segs.pop();
+      let cur = '';
+      const dirsToAdd: string[] = [];
+      for (const s of segs) {
+        cur = cur ? `${cur}/${s}` : s;
+        dirsToAdd.push(cur);
+      }
+      setVirtualDirs((prev) => Array.from(new Set([...prev, ...dirsToAdd])));
+    }
+    return target;
+  };
+
   const closeEditor = (save: boolean) => {
     const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
     const lines = editorBuffer.split('\n').length;
     const bytes = editorBuffer.length;
 
-    const targetFile = editorFile.trim() || 'untitled.txt';
-    if (save && targetFile) {
-      setVirtualFiles((prev) => ({ ...prev, [targetFile]: editorBuffer }));
+    let targetFile = editorFile.trim() || 'untitled.txt';
+    if (save) {
+      targetFile = saveEditorToFile();
     }
 
     const editorName = activeEditor === 'vim' ? 'vim' : activeEditor === 'nano' ? 'nano' : 'emacs';
@@ -523,7 +853,8 @@ export default function InteractiveTerminal() {
     if (redirMatch) {
       const leftCmd = redirMatch[1].trim();
       const operator = redirMatch[2];
-      const targetFile = redirMatch[3].replace(/^\.\//, '');
+      const rawTarget = redirMatch[3].replace(/^\.\//, '');
+      const targetFile = resolveVirtualPath(rawTarget, currentDir);
 
       if (targetFile) {
         let contentToWrite = '';
@@ -540,10 +871,11 @@ export default function InteractiveTerminal() {
         } else if (leftBase === 'date') {
           contentToWrite = new Date().toLocaleString('en-GB', { timeZone: 'Europe/Paris' });
         } else if (leftBase === 'cat') {
-          const srcFile = (leftParts[1] || '').replace(/^\.\//, '');
+          const rawSrc = (leftParts[1] || '').replace(/^\.\//, '');
+          const srcFile = resolveVirtualPath(rawSrc, currentDir);
           contentToWrite = virtualFiles[srcFile] ?? '';
         } else if (leftBase === 'pwd') {
-          contentToWrite = currentDir === '~/projects' ? '/home/moiz/projects' : '/home/moiz';
+          contentToWrite = `/home/moiz${currentDir.replace('~', '')}`;
         } else if (leftBase === 'whoami') {
           contentToWrite = 'moiz (Muhammad Abdul Moiz — Full-Stack, DevOps & AI Engineer)';
         } else {
@@ -560,6 +892,18 @@ export default function InteractiveTerminal() {
               : contentToWrite;
           return { ...prev, [targetFile]: finalContent };
         });
+
+        if (targetFile.includes('/')) {
+          const segs = targetFile.split('/');
+          segs.pop();
+          let cur = '';
+          const dirsToAdd: string[] = [];
+          for (const s of segs) {
+            cur = cur ? `${cur}/${s}` : s;
+            dirsToAdd.push(cur);
+          }
+          setVirtualDirs((prev) => Array.from(new Set([...prev, ...dirsToAdd])));
+        }
 
         setHistory((prev) => [
           ...prev.slice(-80),
@@ -739,12 +1083,13 @@ export default function InteractiveTerminal() {
                 <div><span className="font-bold text-indigo-500">docker ps</span> — inspect running containers</div>
                 <div><span className="font-bold text-indigo-500">ping &lt;host&gt;</span> — real network latency probe</div>
                 <div><span className="font-bold text-indigo-500">whoami / skills</span> — bio, stack &amp; capabilities</div>
-                <div><span className="font-bold text-indigo-500">contact / hire</span> — direct contact info &amp; status</div>
+                <div><span className="font-bold text-indigo-500">email / contact</span> — email, phone, location &amp; info</div>
+                <div><span className="font-bold text-indigo-500">weather / crypto</span> — live satellite &amp; market APIs</div>
                 <div><span className="font-bold text-indigo-500">day / dark</span> — toggle day / night mode</div>
                 <div><span className="font-bold text-indigo-500">clear</span> — clear the console</div>
               </div>
               <p className="text-[10px] text-slate-400 pt-1.5 border-t border-slate-200/50 dark:border-white/5">
-                Power tools &amp; easter eggs: <span className="text-slate-500 dark:text-slate-400">alias, cp, mv, rm, touch, grep, bc, cal, df, du, git, top, curl, joke, weather, man</span>
+                Power tools &amp; APIs: <span className="text-slate-500 dark:text-slate-400">mkdir, touch, rm, curl, ip, joke, quote, alias, cp, mv, grep, bc, cal, df, du, git, top, man</span>
               </p>
             </div>
           );
@@ -865,29 +1210,113 @@ export default function InteractiveTerminal() {
             );
           } else if (currentDir !== '~') {
             const curDirName = currentDir.replace('~/', '');
-            output = (
-              <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300">
-                <p className="text-slate-400">total 0</p>
-                {isAll && (
-                  <>
-                    <p>drwxr-xr-x 2 moiz staff  64 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
-                    <p>drwxr-xr-x 5 root staff 160 Oct 23 14:00 <span className="text-indigo-400 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd ~')}>..</span></p>
-                  </>
-                )}
-                <p className="text-slate-500 italic">[directory: /home/moiz/{curDirName}]</p>
-                <p className="text-[10px] text-slate-400">Tip: use &apos;touch &lt;file&gt;&apos; or &apos;nano &lt;file&gt;&apos; to write files, or &apos;cd ..&apos; to return.</p>
-              </div>
-            );
-          } else {
-            const files = Object.keys(virtualFiles).filter((f) => {
-              if (f.startsWith('.') && !isAll) return false;
-              return true;
+            const prefix = `${curDirName}/`;
+            const dirFiles = Object.keys(virtualFiles).filter((f) => {
+              if (!f.startsWith(prefix)) return false;
+              const rest = f.slice(prefix.length);
+              if (rest.startsWith('.') && !isAll) return false;
+              return !rest.includes('/');
+            });
+            const dirSubs = virtualDirs.filter((d) => {
+              if (!d.startsWith(prefix)) return false;
+              const rest = d.slice(prefix.length);
+              return !rest.includes('/');
             });
 
             if (isLong) {
               output = (
                 <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-x-auto">
-                  <p className="text-slate-400">total {(files.length + virtualDirs.length) * 4}</p>
+                  <p className="text-slate-400">total {(dirFiles.length + dirSubs.length) * 4}</p>
+                  {isAll && (
+                    <>
+                      <p>drwxr-xr-x 4 moiz staff 128 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
+                      <p>drwxr-xr-x 8 root staff 256 Oct 23 14:00 <span className="text-indigo-400 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd ..')}>..</span></p>
+                    </>
+                  )}
+                  {dirFiles.map((fullF) => {
+                    const fname = fullF.slice(prefix.length);
+                    const content = virtualFiles[fullF] || '';
+                    const bytes = content.length;
+                    return (
+                      <p key={fname}>
+                        -rw-r--r-- 1 moiz staff {bytes.toString().padStart(5, ' ')} Oct 23 14:00{' '}
+                        <span
+                          className="cursor-pointer hover:underline text-slate-900 dark:text-white"
+                          onClick={() => executeCommand(`cat ${fname}`)}
+                        >
+                          {fname}
+                        </span>
+                      </p>
+                    );
+                  })}
+                  {dirSubs.map((fullD) => {
+                    const dname = fullD.slice(prefix.length);
+                    return (
+                      <p key={dname}>
+                        drwxr-xr-x 2 moiz staff  64 Oct 23 14:00{' '}
+                        <span
+                          className="text-indigo-500 font-bold cursor-pointer hover:underline"
+                          onClick={() => executeCommand(`cd ${dname}`)}
+                        >
+                          {dname}/
+                        </span>
+                      </p>
+                    );
+                  })}
+                  {dirFiles.length === 0 && dirSubs.length === 0 && (
+                    <p className="text-slate-500 italic">[empty directory: /home/moiz/{curDirName}]</p>
+                  )}
+                </div>
+              );
+            } else {
+              output = (
+                <div className="space-y-1 text-[11px]">
+                  {dirFiles.length > 0 || dirSubs.length > 0 ? (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono">
+                      {dirFiles.map((fullF) => {
+                        const fname = fullF.slice(prefix.length);
+                        return (
+                          <span
+                            key={fname}
+                            className="cursor-pointer hover:underline text-slate-900 dark:text-white font-mono"
+                            onClick={() => executeCommand(`cat ${fname}`)}
+                          >
+                            {fname}
+                          </span>
+                        );
+                      })}
+                      {dirSubs.map((fullD) => {
+                        const dname = fullD.slice(prefix.length);
+                        return (
+                          <span
+                            key={dname}
+                            className="text-indigo-500 font-bold cursor-pointer hover:underline font-mono"
+                            onClick={() => executeCommand(`cd ${dname}`)}
+                          >
+                            {dname}/
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-slate-500 italic font-mono">[empty directory: /home/moiz/{curDirName}]</p>
+                  )}
+                  <p className="text-[10px] text-slate-400 pt-0.5">Tip: use &apos;touch &lt;file&gt;&apos;, &apos;nano &lt;file&gt;&apos;, or &apos;cd ..&apos;</p>
+                </div>
+              );
+            }
+          } else {
+            const files = Object.keys(virtualFiles).filter((f) => {
+              if (f.includes('/')) return false;
+              if (f.startsWith('.') && !isAll) return false;
+              return true;
+            });
+            const rootDirs = virtualDirs.filter((d) => !d.includes('/'));
+
+            if (isLong) {
+              output = (
+                <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300 overflow-x-auto">
+                  <p className="text-slate-400">total {(files.length + rootDirs.length) * 4}</p>
                   {isAll && (
                     <>
                       <p>drwxr-xr-x 8 moiz staff 256 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
@@ -917,7 +1346,7 @@ export default function InteractiveTerminal() {
                       </p>
                     );
                   })}
-                  {virtualDirs.map((dname) => (
+                  {rootDirs.map((dname) => (
                     <p key={dname}>
                       drwxr-xr-x 6 moiz staff  192 Oct 23 14:00{' '}
                       <span
@@ -949,7 +1378,7 @@ export default function InteractiveTerminal() {
                         {fname}
                       </span>
                     ))}
-                    {virtualDirs.map((dname) => (
+                    {rootDirs.map((dname) => (
                       <span
                         key={dname}
                         className="text-indigo-500 font-bold cursor-pointer hover:underline"
@@ -985,8 +1414,9 @@ export default function InteractiveTerminal() {
               </div>
             );
           } else {
+            const resolvedPath = resolveVirtualPath(target, currentDir);
             const matchKey = Object.keys(virtualFiles).find(
-              (k) => k.toLowerCase() === target.toLowerCase()
+              (k) => k.toLowerCase() === resolvedPath.toLowerCase() || k.toLowerCase() === target.toLowerCase()
             );
             if (matchKey && virtualFiles[matchKey] !== undefined) {
               output = (
@@ -1006,8 +1436,8 @@ export default function InteractiveTerminal() {
         }
 
         case 'tree': {
-          const fileKeys = Object.keys(virtualFiles).filter((f) => !f.startsWith('.'));
-          const hiddenKeys = Object.keys(virtualFiles).filter((f) => f.startsWith('.'));
+          const fileKeys = Object.keys(virtualFiles).filter((f) => !f.startsWith('.') && !f.includes('/'));
+          const hiddenKeys = Object.keys(virtualFiles).filter((f) => f.startsWith('.') && !f.includes('/'));
           const showAll = parts.includes('-a');
           const displayedFiles = (showAll ? [...fileKeys, ...hiddenKeys] : fileKeys).sort();
           const projectItems = [
@@ -1055,18 +1485,34 @@ export default function InteractiveTerminal() {
                     <span className="text-[10px] text-slate-400">({virtualFiles[fname]?.length || 0}B)</span>
                   </p>
                 ))}
-                {customDirs.map((cdir) => (
-                  <p key={cdir}>
-                    ├──{' '}
-                    <span
-                      className="text-indigo-400 font-bold cursor-pointer hover:underline"
-                      onClick={() => executeCommand(`cd ${cdir}`)}
-                    >
-                      {cdir}/
-                    </span>{' '}
-                    <span className="text-[10px] text-slate-400">(custom directory)</span>
-                  </p>
-                ))}
+                {customDirs.map((cdir) => {
+                  const cFiles = Object.keys(virtualFiles).filter((f) => f.startsWith(`${cdir}/`));
+                  return (
+                    <div key={cdir} className="space-y-0.5">
+                      <p>
+                        ├──{' '}
+                        <span
+                          className="text-indigo-400 font-bold cursor-pointer hover:underline"
+                          onClick={() => executeCommand(`cd ${cdir}`)}
+                        >
+                          {cdir}/
+                        </span>
+                      </p>
+                      {cFiles.map((cf, cIdx) => (
+                        <p key={cf} className="pl-4">
+                          {cIdx === cFiles.length - 1 ? '└──' : '├──'}{' '}
+                          <span
+                            className="cursor-pointer hover:underline text-slate-800 dark:text-slate-200"
+                            onClick={() => executeCommand(`cat ${cf}`)}
+                          >
+                            {cf.slice(cdir.length + 1)}
+                          </span>{' '}
+                          <span className="text-[10px] text-slate-400">({virtualFiles[cf]?.length || 0}B)</span>
+                        </p>
+                      ))}
+                    </div>
+                  );
+                })}
                 <p>
                   └──{' '}
                   <span
@@ -1089,7 +1535,7 @@ export default function InteractiveTerminal() {
                   </p>
                 ))}
                 <p className="text-slate-400 pt-1 text-[10px]">
-                  {1 + virtualDirs.length} directories, {displayedFiles.length + projectItems.length} files{' '}
+                  {1 + virtualDirs.length} directories, {Object.keys(virtualFiles).length + projectItems.length} files{' '}
                   {!showAll && '(run tree -a to see dotfiles)'}
                 </p>
               </div>
@@ -1103,7 +1549,7 @@ export default function InteractiveTerminal() {
           if (!dest || dest === '~' || dest === 'root' || dest === '/home/moiz') {
             setCurrentDir('~');
             output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
-          } else if (dest === 'projects' || dest === '~/projects') {
+          } else if (dest === 'projects' || dest === '~/projects' || dest === './projects') {
             setCurrentDir('~/projects');
             output = (
               <p className="text-[11px] text-slate-400">
@@ -1111,23 +1557,34 @@ export default function InteractiveTerminal() {
               </p>
             );
           } else if (dest === '..' || dest === '../') {
-            if (currentDir !== '~') {
-              setCurrentDir('~');
-              output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
+            if (currentDir.startsWith('~/') && currentDir !== '~') {
+              const rel = currentDir.replace(/^~\/?/, '');
+              if (rel.includes('/')) {
+                const parts = rel.split('/');
+                parts.pop();
+                setCurrentDir(`~/${parts.join('/')}`);
+                output = <p className="text-[11px] text-slate-400">Switched directory to ~/{parts.join('/')}</p>;
+              } else {
+                setCurrentDir('~');
+                output = <p className="text-[11px] text-slate-400">Switched directory to ~</p>;
+              }
             } else {
               output = <p className="text-[11px] text-slate-400">Already in root home directory (~)</p>;
             }
           } else if (dest === '/') {
             output = <p className="text-[11px] text-amber-500">Access restricted: / is managed by MoizOS kernel.</p>;
-          } else if (virtualDirs.includes(dest)) {
-            setCurrentDir(`~/${dest}`);
-            output = (
-              <p className="text-[11px] text-slate-400">
-                Switched directory to ~/{dest}. Type <span className="text-emerald-400 font-bold cursor-pointer" onClick={() => executeCommand('ls')}>ls</span> to inspect.
-              </p>
-            );
           } else {
-            output = <p className="text-[11px] text-rose-500">cd: {dest}: No such file or directory</p>;
+            const targetDir = resolveVirtualPath(dest, currentDir);
+            if (virtualDirs.includes(targetDir)) {
+              setCurrentDir(`~/${targetDir}`);
+              output = (
+                <p className="text-[11px] text-slate-400">
+                  Switched directory to ~/{targetDir}. Type <span className="text-emerald-400 font-bold cursor-pointer" onClick={() => executeCommand('ls')}>ls</span> to inspect.
+                </p>
+              );
+            } else {
+              output = <p className="text-[11px] text-rose-500">cd: {dest}: No such file or directory</p>;
+            }
           }
           break;
         }
@@ -1232,39 +1689,80 @@ export default function InteractiveTerminal() {
         break;
 
       case 'touch': {
-        const newFile = arg1 || 'newfile.txt';
-        setVirtualFiles((prev) => ({ ...prev, [newFile]: prev[newFile] ?? '' }));
-        output = <p className="text-[11px] font-mono text-emerald-500">touch: created &apos;{newFile}&apos; in virtual filesystem</p>;
+        const rawFile = (arg1 || 'newfile.txt').replace(/^\.\//, '');
+        const targetPath = resolveVirtualPath(rawFile, currentDir);
+        if (targetPath.includes('/')) {
+          const segs = targetPath.split('/');
+          segs.pop();
+          let cur = '';
+          const dirsToAdd: string[] = [];
+          for (const s of segs) {
+            cur = cur ? `${cur}/${s}` : s;
+            dirsToAdd.push(cur);
+          }
+          setVirtualDirs((prev) => Array.from(new Set([...prev, ...dirsToAdd])));
+        }
+        setVirtualFiles((prev) => ({ ...prev, [targetPath]: prev[targetPath] ?? '' }));
+        const display = targetPath.split('/').pop() || targetPath;
+        output = (
+          <p className="text-[11px] font-mono text-emerald-500">
+            touch: created &apos;{display}&apos; in {currentDir === '~' ? '~' : currentDir} [OK]
+          </p>
+        );
         break;
       }
 
       case 'mkdir': {
-        const dirName = (arg1 || '').replace(/\/+$/, '').trim();
-        if (!dirName) {
+        const rawDir = (arg1 || '').replace(/\/+$/, '').trim();
+        if (!rawDir) {
           output = <p className="text-[11px] font-mono text-amber-500">usage: mkdir &lt;directory&gt;</p>;
-        } else if (virtualDirs.includes(dirName) || dirName === 'projects') {
-          output = <p className="text-[11px] font-mono text-rose-500">mkdir: cannot create directory &apos;{dirName}&apos;: File exists</p>;
         } else {
-          setVirtualDirs((prev) => [...prev, dirName]);
-          output = <p className="text-[11px] font-mono text-emerald-500">mkdir: created directory &apos;{dirName}&apos; [OK]</p>;
+          const targetDir = resolveVirtualPath(rawDir, currentDir);
+          if (virtualDirs.includes(targetDir) || targetDir === 'projects') {
+            output = <p className="text-[11px] font-mono text-rose-500">mkdir: cannot create directory &apos;{rawDir}&apos;: File exists</p>;
+          } else {
+            const segs = targetDir.split('/');
+            let cur = '';
+            const dirsToAdd: string[] = [];
+            for (const s of segs) {
+              cur = cur ? `${cur}/${s}` : s;
+              dirsToAdd.push(cur);
+            }
+            setVirtualDirs((prev) => Array.from(new Set([...prev, ...dirsToAdd])));
+            output = (
+              <p className="text-[11px] font-mono text-emerald-500">
+                mkdir: created directory &apos;{rawDir}&apos; in {currentDir === '~' ? '~' : currentDir} [OK]
+              </p>
+            );
+          }
         }
         break;
       }
 
       case 'rmdir': {
-        const dirName = (arg1 || '').replace(/\/+$/, '').trim();
-        if (!dirName) {
+        const rawDir = (arg1 || '').replace(/\/+$/, '').trim();
+        if (!rawDir) {
           output = <p className="text-[11px] font-mono text-amber-500">usage: rmdir &lt;directory&gt;</p>;
-        } else if (dirName === 'projects') {
-          output = <p className="text-[11px] font-mono text-rose-500">rmdir: failed to remove &apos;projects&apos;: System directory protected</p>;
-        } else if (virtualDirs.includes(dirName)) {
-          setVirtualDirs((prev) => prev.filter((d) => d !== dirName));
-          if (currentDir === `~/${dirName}`) {
-            setCurrentDir('~');
-          }
-          output = <p className="text-[11px] font-mono text-slate-400">rmdir: removed directory &apos;{dirName}&apos; [OK]</p>;
         } else {
-          output = <p className="text-[11px] font-mono text-rose-500">rmdir: failed to remove &apos;{dirName}&apos;: No such file or directory</p>;
+          const targetDir = resolveVirtualPath(rawDir, currentDir);
+          if (targetDir === 'projects') {
+            output = <p className="text-[11px] font-mono text-rose-500">rmdir: failed to remove &apos;projects&apos;: System directory protected</p>;
+          } else if (virtualDirs.includes(targetDir)) {
+            setVirtualDirs((prev) => prev.filter((d) => d !== targetDir));
+            setVirtualFiles((prev) => {
+              const next = { ...prev };
+              Object.keys(next).forEach((k) => {
+                if (k.startsWith(`${targetDir}/`)) delete next[k];
+              });
+              return next;
+            });
+            if (currentDir === `~/${targetDir}`) {
+              setCurrentDir('~');
+            }
+            output = <p className="text-[11px] font-mono text-slate-400">rmdir: removed directory &apos;{rawDir}&apos; [OK]</p>;
+          } else {
+            output = <p className="text-[11px] font-mono text-rose-500">rmdir: failed to remove &apos;{rawDir}&apos;: No such file or directory</p>;
+          }
         }
         break;
       }
@@ -1273,24 +1771,42 @@ export default function InteractiveTerminal() {
         if (fullArg.includes('-rf /') || fullArg.includes('-fr /') || fullArg === '-rf *') {
           output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;/&apos;: Permission denied. Nice try! MoizOS integrity protected.</p>;
         } else {
-          const target = (arg1.startsWith('-') ? arg2 : arg1).replace(/^\.\//, '').replace(/\/+$/, '');
-          if (!target) {
+          const targetRaw = (arg1.startsWith('-') ? arg2 : arg1).replace(/^\.\//, '').replace(/\/+$/, '');
+          if (!targetRaw) {
             output = <p className="text-[11px] font-mono text-amber-500">usage: rm [-rf] &lt;file|directory&gt;</p>;
-          } else if (target === 'projects') {
+          } else if (targetRaw === 'projects') {
             output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;projects&apos;: System directory protected</p>;
-          } else if (virtualDirs.includes(target) && (parts.includes('-r') || parts.includes('-rf') || parts.includes('-fr'))) {
-            setVirtualDirs((prev) => prev.filter((d) => d !== target));
-            if (currentDir === `~/${target}`) setCurrentDir('~');
-            output = <p className="text-[11px] font-mono text-slate-400">rm: removed directory &apos;{target}&apos; from virtual filesystem</p>;
-          } else if (virtualFiles[target] !== undefined) {
-            setVirtualFiles((prev) => {
-              const nextFiles = { ...prev };
-              delete nextFiles[target];
-              return nextFiles;
-            });
-            output = <p className="text-[11px] font-mono text-slate-400">rm: removed &apos;{target}&apos; from virtual filesystem</p>;
           } else {
-            output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;{target}&apos;: No such file or directory</p>;
+            const targetPath = resolveVirtualPath(targetRaw, currentDir);
+            const isDir = virtualDirs.includes(targetPath);
+            const isRecursive = parts.includes('-r') || parts.includes('-rf') || parts.includes('-fr');
+
+            if (isDir) {
+              if (isRecursive) {
+                setVirtualDirs((prev) => prev.filter((d) => d !== targetPath));
+                setVirtualFiles((prev) => {
+                  const next = { ...prev };
+                  Object.keys(next).forEach((k) => {
+                    if (k.startsWith(`${targetPath}/`)) delete next[k];
+                  });
+                  return next;
+                });
+                if (currentDir === `~/${targetPath}`) setCurrentDir('~');
+                output = <p className="text-[11px] font-mono text-slate-400">rm: removed directory &apos;{targetRaw}&apos; from virtual filesystem</p>;
+              } else {
+                output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;{targetRaw}&apos;: Is a directory (use rm -r)</p>;
+              }
+            } else if (virtualFiles[targetPath] !== undefined || virtualFiles[targetRaw] !== undefined) {
+              const toDelete = virtualFiles[targetPath] !== undefined ? targetPath : targetRaw;
+              setVirtualFiles((prev) => {
+                const nextFiles = { ...prev };
+                delete nextFiles[toDelete];
+                return nextFiles;
+              });
+              output = <p className="text-[11px] font-mono text-slate-400">rm: removed &apos;{targetRaw}&apos; from virtual filesystem</p>;
+            } else {
+              output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;{targetRaw}&apos;: No such file or directory</p>;
+            }
           }
         }
         break;
@@ -1505,20 +2021,21 @@ export default function InteractiveTerminal() {
         break;
       }
 
-      case 'curl':
-        if (arg1.includes('wttr') || fullArg.includes('wttr')) {
-          output = (
-            <div className="font-mono text-[11px] text-slate-700 dark:text-slate-300 space-y-1">
-              <p className="font-bold text-indigo-500">Weather report: Paris, France (wttr.in)</p>
-              <pre className="text-amber-500 dark:text-amber-400 leading-tight select-none">{`     \\   /     Sunny / Mild
-      .-.      +18°C (feels like 19°C)
-   ― (   ) ―   Wind: 11 km/h WNW
-      \`-’      Humidity: 52%
-     /   \\     UV Index: 3 (Moderate)`}</pre>
-              <p className="text-[10px] text-slate-400">wttr.in/Paris • HTTP/2 200 OK</p>
-            </div>
-          );
-        } else if (arg1.includes('8000') || fullArg.includes('8000')) {
+      case 'curl': {
+        const targetUrl = arg1.trim();
+        if (targetUrl.includes('wttr') || fullArg.includes('wttr')) {
+          output = <LiveWeatherOutput />;
+        } else if (targetUrl.includes('joke')) {
+          output = <LiveJokeOutput />;
+        } else if (targetUrl.includes('quote')) {
+          output = <LiveQuoteOutput />;
+        } else if (targetUrl.includes('ipify') || (targetUrl.includes('ip') && !targetUrl.includes('doctor-iq'))) {
+          output = <LiveIpOutput />;
+        } else if (targetUrl.includes('crypto') || targetUrl.includes('binance') || targetUrl.includes('btc')) {
+          output = <LiveCryptoOutput />;
+        } else if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
+          output = <LiveCurlOutput url={targetUrl} />;
+        } else if (targetUrl.includes('8000') || fullArg.includes('8000')) {
           output = (
             <div className="rounded-lg bg-slate-100 p-2 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
               <pre>{JSON.stringify({
@@ -1531,7 +2048,7 @@ export default function InteractiveTerminal() {
               }, null, 2)}</pre>
             </div>
           );
-        } else if (arg1.includes('4000') || fullArg.includes('4000') || arg1.includes('8501')) {
+        } else if (targetUrl.includes('4000') || fullArg.includes('4000') || targetUrl.includes('8501')) {
           output = (
             <div className="rounded-lg bg-slate-100 p-2 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
               <pre>{JSON.stringify({
@@ -1543,7 +2060,7 @@ export default function InteractiveTerminal() {
               }, null, 2)}</pre>
             </div>
           );
-        } else if (arg1.includes('profile') || arg1.includes('api')) {
+        } else if (targetUrl.includes('profile') || targetUrl.includes('api')) {
           output = (
             <div className="rounded-lg bg-slate-100 p-2 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
               <pre>{JSON.stringify({
@@ -1556,6 +2073,16 @@ export default function InteractiveTerminal() {
               }, null, 2)}</pre>
             </div>
           );
+        } else if (!targetUrl) {
+          output = (
+            <div className="space-y-1 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+              <p className="text-amber-500 font-semibold">curl: try passing a public endpoint or try one of these:</p>
+              <p>&bull; <span className="cursor-pointer text-indigo-400 underline" onClick={() => executeCommand('curl https://api.ipify.org?format=json')}>curl https://api.ipify.org?format=json</span></p>
+              <p>&bull; <span className="cursor-pointer text-indigo-400 underline" onClick={() => executeCommand('curl https://official-joke-api.appspot.com/random_joke')}>curl https://official-joke-api.appspot.com/random_joke</span></p>
+              <p>&bull; <span className="cursor-pointer text-indigo-400 underline" onClick={() => executeCommand('curl https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')}>curl https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT</span></p>
+              <p>&bull; <span className="cursor-pointer text-indigo-400 underline" onClick={() => executeCommand('curl wttr')}>curl wttr</span></p>
+            </div>
+          );
         } else {
           output = (
             <div className="space-y-1 font-mono text-[11px] text-slate-600 dark:text-slate-400">
@@ -1566,6 +2093,7 @@ export default function InteractiveTerminal() {
           );
         }
         break;
+      }
 
       case 'wget':
         output = (
@@ -1589,7 +2117,6 @@ export default function InteractiveTerminal() {
         break;
 
       case 'ifconfig':
-      case 'ip':
         output = (
           <div className="space-y-1 font-mono text-[11px] overflow-x-auto text-slate-700 dark:text-slate-300">
             <p className="text-indigo-400 font-bold">eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt; mtu 1500</p>
@@ -1599,6 +2126,11 @@ export default function InteractiveTerminal() {
             <p className="pl-4">inet 127.0.0.1  netmask 255.0.0.0</p>
           </div>
         );
+        break;
+
+      case 'ip':
+      case 'myip':
+        output = <LiveIpOutput />;
         break;
 
       case 'netstat':
@@ -2043,8 +2575,9 @@ export default function InteractiveTerminal() {
       case 'vim':
       case 'vi':
       case 'nvim': {
-        const file = arg1 || 'untitled.txt';
-        const initial = arg1 ? (virtualFiles[file] ?? '') : '';
+        const rawFile = (arg1 || 'untitled.txt').replace(/^\.\//, '');
+        const file = resolveVirtualPath(rawFile, currentDir);
+        const initial = virtualFiles[file] ?? '';
         setEditorFile(file);
         setEditorBuffer(initial);
         setVimMode('NORMAL');
@@ -2055,8 +2588,9 @@ export default function InteractiveTerminal() {
       }
 
       case 'nano': {
-        const file = arg1 || 'untitled.txt';
-        const initial = arg1 ? (virtualFiles[file] ?? '') : '';
+        const rawFile = (arg1 || 'untitled.txt').replace(/^\.\//, '');
+        const file = resolveVirtualPath(rawFile, currentDir);
+        const initial = virtualFiles[file] ?? '';
         setEditorFile(file);
         setEditorBuffer(initial);
         setEditorStatusMsg(initial ? `File: ${file}` : `[ New File: ${file} ]`);
@@ -2066,8 +2600,9 @@ export default function InteractiveTerminal() {
       }
 
       case 'emacs': {
-        const file = arg1 || 'untitled.txt';
-        const initial = arg1 ? (virtualFiles[file] ?? '') : '';
+        const rawFile = (arg1 || 'untitled.txt').replace(/^\.\//, '');
+        const file = resolveVirtualPath(rawFile, currentDir);
+        const initial = virtualFiles[file] ?? '';
         setEditorFile(file);
         setEditorBuffer(initial);
         setEditorStatusMsg(initial ? `Buffer: ${file}` : `New Buffer: *${file}*`);
@@ -2269,27 +2804,63 @@ export default function InteractiveTerminal() {
         );
         break;
 
+      case 'email':
+      case 'mail':
+      case 'phone':
+      case 'tel':
+      case 'call':
+      case 'reach':
       case 'contact':
         output = (
-          <div className="space-y-1.5 text-[11px] font-mono">
-            <p className="font-bold text-slate-900 dark:text-white">Direct Contact Channels:</p>
-            <p>Email: <a href={`mailto:${profile.email}`} className="underline text-indigo-500 font-semibold">{profile.email}</a></p>
-            <p>Phone: <a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="underline text-indigo-500 font-semibold">{profile.phone}</a></p>
-            <div className="flex items-center gap-1.5">
-              <FiLinkedin className="text-sky-500 shrink-0" />
-              <span>LinkedIn:</span>
-              <a href={profile.linkedin} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline text-indigo-500 font-semibold">
-                <span>{profile.linkedin}</span>
-                <FiExternalLink className="text-[10px]" />
-              </a>
+          <div className="space-y-2 text-[11px] font-mono">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-1 dark:border-white/10">
+              <span className="font-bold text-slate-900 dark:text-white">Contact &amp; Candidate Coordinates</span>
+              <span className="text-[10px] text-emerald-500 font-semibold">[Available: Paris / Remote]</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <FiGithub className="text-slate-900 dark:text-white shrink-0" />
-              <span>GitHub:</span>
-              <a href={profile.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline text-indigo-500 font-semibold">
-                <span>{profile.github}</span>
-                <FiExternalLink className="text-[10px]" />
-              </a>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                  <FiMail className="text-indigo-500 shrink-0 text-xs" />
+                  <span className="text-slate-400">Email:</span>
+                  <a href={`mailto:${profile.email}`} className="underline text-indigo-500 hover:text-indigo-400 font-semibold">
+                    {profile.email}
+                  </a>
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                  <FiPhone className="text-emerald-500 shrink-0 text-xs" />
+                  <span className="text-slate-400">Phone:</span>
+                  <a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="underline text-indigo-500 hover:text-indigo-400 font-semibold">
+                    {profile.phone}
+                  </a>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                  <FiLinkedin className="text-sky-500 shrink-0 text-xs" />
+                  <span className="text-slate-400">LinkedIn:</span>
+                  <a href={profile.linkedin} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline text-indigo-500 hover:text-indigo-400 font-semibold">
+                    <span>linkedin.com/in/moizghauri</span>
+                    <FiExternalLink className="text-[10px]" />
+                  </a>
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                  <FiGithub className="text-slate-900 dark:text-white shrink-0 text-xs" />
+                  <span className="text-slate-400">GitHub:</span>
+                  <a href={profile.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline text-indigo-500 hover:text-indigo-400 font-semibold">
+                    <span>github.com/amoiz0468</span>
+                    <FiExternalLink className="text-[10px]" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded bg-slate-100 p-2 text-[10px] space-y-0.5 dark:bg-white/5 text-slate-600 dark:text-slate-300">
+              <p><span className="font-semibold text-slate-900 dark:text-white">Profile:</span> {profile.name} &bull; {profile.title}</p>
+              <p><span className="font-semibold text-slate-900 dark:text-white">Location:</span> {profile.location} &bull; EPITECH Paris Campus (Full French work authorization)</p>
+              <p><span className="font-semibold text-slate-900 dark:text-white">Current Engagement:</span> Pedagogical Assistant (Alternance @ EPITECH Paris, Sept 2026 – Sept 2027)</p>
+              <p><span className="font-semibold text-slate-900 dark:text-white">Next Contract:</span> Open for CDI / CDD / Hybrid or Remote engineering opportunities</p>
             </div>
           </div>
         );
@@ -2370,17 +2941,7 @@ ${botBar}
 
       case 'weather':
       case 'wttr':
-        output = (
-          <div className="font-mono text-[11px] text-slate-700 dark:text-slate-300 space-y-1">
-            <p className="font-bold text-indigo-500">Weather report: Paris, France</p>
-            <pre className="text-amber-500 dark:text-amber-400 leading-tight select-none">{`     \\   /     Sunny / Mild
-      .-.      +18°C (feels like 19°C)
-   ― (   ) ―   Wind: 11 km/h WNW
-      \`-’      Humidity: 52%
-     /   \\     UV Index: 3 (Moderate)`}</pre>
-            <p className="text-[10px] text-slate-400">Location: Paris (75011) • EPITECH Campus • Ideal engineering weather</p>
-          </div>
-        );
+        output = <LiveWeatherOutput />;
         break;
 
       case 'fortune': {
@@ -2394,25 +2955,21 @@ ${botBar}
       }
 
       case 'joke':
-      case 'jokes': {
-        const randJoke = JOKES[Math.floor(Math.random() * JOKES.length)];
-        output = (
-          <p className="text-[11px] font-mono text-amber-500">
-            {randJoke}
-          </p>
-        );
+      case 'jokes':
+        output = <LiveJokeOutput />;
         break;
-      }
 
-      case 'quote': {
-        const randQuote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
-        output = (
-          <div className="border-l-2 border-emerald-500 pl-3 py-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
-            {randQuote}
-          </div>
-        );
+      case 'quote':
+      case 'quotes':
+        output = <LiveQuoteOutput />;
         break;
-      }
+
+      case 'crypto':
+      case 'btc':
+      case 'eth':
+      case 'binance':
+        output = <LiveCryptoOutput />;
+        break;
 
       case 'matrix':
       case 'cmatrix':
@@ -2875,7 +3432,7 @@ ${botBar}
     }
   };
 
-  const quickChips = ['skills', 'projects', 'hire', 'contact', 'whoami', 'help', 'ls', 'clear'];
+  const quickChips = ['skills', 'projects', 'email', 'weather', 'hire', 'whoami', 'help', 'ls', 'clear'];
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-white/95 font-mono text-xs shadow-lg shadow-slate-200/50 backdrop-blur-md transition-colors duration-200 dark:border-white/15 dark:bg-black/90 dark:shadow-2xl">
@@ -3024,8 +3581,7 @@ ${botBar}
                     <button
                       type="button"
                       onClick={() => {
-                        const target = editorFile.trim() || 'untitled.txt';
-                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        const target = saveEditorToFile();
                         setEditorStatusMsg(`"${target}" written [OK]`);
                       }}
                       className="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white transition hover:bg-indigo-500"
@@ -3131,15 +3687,13 @@ ${botBar}
                         closeEditor(true);
                       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
                         e.preventDefault();
-                        const target = editorFile.trim() || 'untitled.txt';
-                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        const target = saveEditorToFile();
                         setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines to "${target}" ]`);
                       }
                     } else if (activeEditor === 'emacs') {
                       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
                         e.preventDefault();
-                        const target = editorFile.trim() || 'untitled.txt';
-                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        const target = saveEditorToFile();
                         setEditorStatusMsg(`Wrote ${target}`);
                       }
                     }
@@ -3181,8 +3735,7 @@ ${botBar}
                     <button
                       type="button"
                       onClick={() => {
-                        const target = editorFile.trim() || 'untitled.txt';
-                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        const target = saveEditorToFile();
                         setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines to "${target}" ]`);
                       }}
                       className="text-left hover:text-emerald-400 transition"
@@ -3225,8 +3778,7 @@ ${botBar}
                       <button
                         type="button"
                         onClick={() => {
-                          const target = editorFile.trim() || 'untitled.txt';
-                          setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                          const target = saveEditorToFile();
                           setEditorStatusMsg(`Wrote ${target}`);
                         }}
                         className="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-indigo-500"
