@@ -1,6 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { FiTerminal, FiActivity, FiCornerDownLeft } from 'react-icons/fi';
+import {
+  FiTerminal,
+  FiActivity,
+  FiCornerDownLeft,
+  FiGithub,
+  FiLinkedin,
+  FiExternalLink,
+  FiSun,
+  FiMoon,
+} from 'react-icons/fi';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { profile } from '../data/portfolio';
@@ -186,6 +195,9 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
               <div><span className="font-bold text-indigo-500">whoami</span> — bio, origin &amp; background</div>
               <div><span className="font-bold text-indigo-500">skills</span> — view full-stack, DevOps &amp; AI stack</div>
               <div><span className="font-bold text-indigo-500">projects</span> — view featured apps &amp; systems</div>
+              <div><span className="font-bold text-indigo-500">github</span> — open Moiz GitHub profile link</div>
+              <div><span className="font-bold text-indigo-500">linkedin</span> — open Moiz LinkedIn profile link</div>
+              <div><span className="font-bold text-indigo-500">day / dark</span> — toggle day / night mode</div>
               <div><span className="font-bold text-indigo-500">docker ps</span> — inspect running project containers</div>
               <div><span className="font-bold text-indigo-500">git status</span> — check repository status</div>
               <div><span className="font-bold text-indigo-500">top / htop</span> — live process &amp; CPU stats</div>
@@ -196,7 +208,7 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
               <div><span className="font-bold text-indigo-500">clear</span> — clear the console screen</div>
             </div>
             <p className="text-[10px] text-slate-400 pt-1.5 border-t border-slate-200/50 dark:border-white/5">
-              Hidden easter eggs: <span className="text-slate-500 dark:text-slate-400">theme dark/light, fr/en, matrix, sl, cowsay, fortune, joke, quote, coffee, beer, weather, sudo, man moiz</span>
+              Hidden easter eggs: <span className="text-slate-500 dark:text-slate-400">theme day/dark, mode, fr/en, matrix, sl, cowsay, fortune, joke, quote, coffee, beer, weather, sudo, man moiz</span>
             </p>
           </div>
         );
@@ -1056,13 +1068,71 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
         );
         break;
 
+      case 'github':
+      case 'gh':
+        output = (
+          <div className="space-y-1.5 text-[11px] font-mono">
+            <div className="flex items-center gap-2">
+              <FiGithub className="text-slate-900 dark:text-white text-sm shrink-0" />
+              <span className="font-bold text-slate-900 dark:text-white">GitHub Profile:</span>
+              <a
+                href={profile.github}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                <span>{profile.github}</span>
+                <FiExternalLink className="text-[10px]" />
+              </a>
+            </div>
+            <p className="text-slate-600 dark:text-slate-400 pl-5">
+              Production microservices, LangGraph multi-agent orchestration, Docker pipelines, and Next.js full-stack systems.
+            </p>
+          </div>
+        );
+        break;
+
+      case 'linkedin':
+      case 'li':
+        output = (
+          <div className="space-y-1.5 text-[11px] font-mono">
+            <div className="flex items-center gap-2">
+              <FiLinkedin className="text-sky-500 text-sm shrink-0" />
+              <span className="font-bold text-slate-900 dark:text-white">LinkedIn Profile:</span>
+              <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                <span>{profile.linkedin}</span>
+                <FiExternalLink className="text-[10px]" />
+              </a>
+            </div>
+            <p className="text-slate-600 dark:text-slate-400 pl-5">
+              Connect with Muhammad Abdul Moiz for MSc IT alternance, software engineering opportunities, and technical collaborations in Paris.
+            </p>
+          </div>
+        );
+        break;
+
       case 'theme':
-        if (arg1 === 'dark') {
+        if (arg1 === 'dark' || arg1 === 'night') {
           setTheme('dark');
-          output = <p className="text-[11px] font-mono text-emerald-500">[OK] Switched portfolio theme to dark mode.</p>;
-        } else if (arg1 === 'light') {
+          output = (
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-500">
+              <FiMoon className="text-indigo-400" />
+              <span>[OK] Switched portfolio theme to dark mode.</span>
+            </div>
+          );
+        } else if (arg1 === 'light' || arg1 === 'day') {
           setTheme('light');
-          output = <p className="text-[11px] font-mono text-emerald-500">[OK] Switched portfolio theme to light mode.</p>;
+          output = (
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-500">
+              <FiSun className="text-amber-500" />
+              <span>[OK] Switched portfolio theme to day mode.</span>
+            </div>
+          );
         } else if (arg1 === 'toggle') {
           toggleTheme();
           output = <p className="text-[11px] font-mono text-emerald-500">[OK] Toggled portfolio theme.</p>;
@@ -1070,20 +1140,63 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
           output = (
             <div className="space-y-0.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
               <p>Current active theme: <span className="font-bold text-indigo-500">{theme}</span></p>
-              <p className="text-slate-400">Usage: &apos;theme dark&apos; | &apos;theme light&apos; | &apos;theme toggle&apos;</p>
+              <p className="text-slate-400">Usage: &apos;theme dark&apos; | &apos;theme day&apos; | &apos;dark&apos; | &apos;day&apos; | &apos;mode&apos;</p>
             </div>
           );
         }
         break;
 
       case 'dark':
+      case 'darkmode':
+      case 'night':
+      case 'nightmode':
         setTheme('dark');
-        output = <p className="text-[11px] font-mono text-emerald-500">[OK] Switched portfolio theme to dark mode.</p>;
+        output = (
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-500">
+            <FiMoon className="text-indigo-400" />
+            <span>[OK] Switched portfolio theme to dark mode.</span>
+          </div>
+        );
         break;
 
       case 'light':
+      case 'lightmode':
+      case 'day':
+      case 'daymode':
         setTheme('light');
-        output = <p className="text-[11px] font-mono text-emerald-500">[OK] Switched portfolio theme to light mode.</p>;
+        output = (
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-500">
+            <FiSun className="text-amber-500" />
+            <span>[OK] Switched portfolio theme to day mode.</span>
+          </div>
+        );
+        break;
+
+      case 'mode':
+        if (arg1 === 'dark' || arg1 === 'night') {
+          setTheme('dark');
+          output = (
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-500">
+              <FiMoon className="text-indigo-400" />
+              <span>[OK] Switched portfolio theme to dark mode.</span>
+            </div>
+          );
+        } else if (arg1 === 'light' || arg1 === 'day') {
+          setTheme('light');
+          output = (
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-emerald-500">
+              <FiSun className="text-amber-500" />
+              <span>[OK] Switched portfolio theme to day mode.</span>
+            </div>
+          );
+        } else {
+          toggleTheme();
+          output = (
+            <p className="text-[11px] font-mono text-emerald-500">
+              [OK] Switched mode to {theme === 'dark' ? 'day' : 'dark'} mode.
+            </p>
+          );
+        }
         break;
 
       case 'lang':
@@ -1142,12 +1255,26 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
 
       case 'contact':
         output = (
-          <div className="space-y-1 text-[11px]">
+          <div className="space-y-1.5 text-[11px] font-mono">
             <p className="font-bold text-slate-900 dark:text-white">Direct Contact Channels:</p>
-            <p>Email: <a href={`mailto:${profile.email}`} className="underline text-indigo-500">{profile.email}</a></p>
-            <p>Phone: <a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="underline text-indigo-500">{profile.phone}</a></p>
-            <p>LinkedIn: <a href={profile.linkedin} target="_blank" rel="noreferrer" className="underline text-indigo-500">{profile.linkedin}</a></p>
-            <p>GitHub: <a href={profile.github} target="_blank" rel="noreferrer" className="underline text-indigo-500">{profile.github}</a></p>
+            <p>Email: <a href={`mailto:${profile.email}`} className="underline text-indigo-500 font-semibold">{profile.email}</a></p>
+            <p>Phone: <a href={`tel:${profile.phone.replace(/\s+/g, '')}`} className="underline text-indigo-500 font-semibold">{profile.phone}</a></p>
+            <div className="flex items-center gap-1.5">
+              <FiLinkedin className="text-sky-500 shrink-0" />
+              <span>LinkedIn:</span>
+              <a href={profile.linkedin} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline text-indigo-500 font-semibold">
+                <span>{profile.linkedin}</span>
+                <FiExternalLink className="text-[10px]" />
+              </a>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <FiGithub className="text-slate-900 dark:text-white shrink-0" />
+              <span>GitHub:</span>
+              <a href={profile.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline text-indigo-500 font-semibold">
+                <span>{profile.github}</span>
+                <FiExternalLink className="text-[10px]" />
+              </a>
+            </div>
           </div>
         );
         break;
