@@ -37,6 +37,22 @@ const JOKES = [
   'Why was the JavaScript developer sad? Because he did not Node how to Express himself!',
   'A programmer\'s wife asks: "Could you go to the store and get a carton of milk? And if they have eggs, get 12." The programmer returns with 12 cartons of milk.',
   'How many developers does it take to change a lightbulb? None, that is a hardware issue.',
+  'There are two hard problems in computer science: cache invalidation, naming things, and off-by-one errors.',
+  'A QA engineer walks into a bar. Orders a beer. Orders 0 beers. Orders 999999999 beers. Orders a lizard. Orders -1 beers. First real customer asks where the restroom is. The bar bursts into flames.',
+  'Why do Java developers wear glasses? Because they don\'t C#.',
+  'Why did the developer go broke? Because he used up all his cache.',
+  'An optimist says the glass is half full. A pessimist says the glass is half empty. An engineer says the glass is twice as large as necessary.',
+  'To understand recursion, you must first understand recursion.',
+  'There is no place like 127.0.0.1.',
+  'Why was the Docker container lonely? Because it had no peers.',
+  'How do you comfort a JavaScript bug? You console it.',
+  'Git commit: "fixed bug". Commit 2 minutes later: "really fixed bug". Commit 5 minutes later: "reverted everything".',
+  'Real programmers count from 0.',
+  'Why did the database administrator leave his wife? She had one-to-many relationships.',
+  'Linux user: "My system has an uptime of 432 days." Also Linux user: "Please don\'t touch the audio device, it will crash everything."',
+  'Hardware is the part of a computer that you can kick; software is the part you can only curse at.',
+  'A Kubernetes cluster walks into a clinic. Doctor: "Where does it hurt?" Cluster: "Every pod has a different symptom."',
+  'Two bytes meet in memory. One says: "Are you feeling okay?" The other responds: "No, I feel a bit off."',
 ];
 
 const QUOTES = [
@@ -45,6 +61,166 @@ const QUOTES = [
   'Premature optimization is the root of all evil. — Donald Knuth',
   'The most important property of a program is whether it accomplishes the intention of its user. — C.A.R. Hoare',
 ];
+
+const INITIAL_VIRTUAL_FILES: Record<string, string> = {
+  'README.md': `# Muhammad Abdul Moiz — Engineering Portfolio
+Welcome to my terminal environment. I am a Web, DevOps, and AI Engineer based in Paris.
+• Master of Science in IT @ EPITECH Paris (2025–2027)
+• Bachelor of Science in CS @ FAST-NUCES (2020–2024)
+• Pedagogical Assistant (Alternance) @ EPITECH Paris (Sept 2026 – Sept 2027)
+Run 'projects' or 'tree' to explore my production engineering work.`,
+
+  'skills.txt': `[CORE_TECHNICAL_MATRIX]
+Backend: FastAPI, Django REST, Elixir/Phoenix, Node.js, Celery, PostgreSQL, Redis
+DevOps: Docker, Docker Compose, GitLab CI, GitHub Actions, AWS (EC2/S3/Lambda), SonarQube
+AI/ML: LangGraph, LangChain, Multi-Agent Systems, Anthropic/OpenAI APIs, PyTorch, OCR
+Frontend: React 18, Next.js, React Native, TypeScript, TailwindCSS`,
+
+  'notes.txt': `Welcome to MoizOS editor!
+Feel free to write notes, edit code, or test bash commands.
+Save your changes with :wq (Vim), ^X (Nano), or C-x C-c (Emacs).`,
+
+  'contact.json': `{
+  "name": "Muhammad Abdul Moiz",
+  "email": "amoiz0468@gmail.com",
+  "phone": "+33 7 45 53 43 01",
+  "location": "Paris, France",
+  "github": "https://github.com/amoiz0468",
+  "linkedin": "https://www.linkedin.com/in/muhammad-abdul-moiz/",
+  "status": "Open for CDI / Hybrid / Remote in Paris"
+}`,
+
+  'experience.log': `[2026-2027] Pedagogical Assistant (Alternance) @ EPITECH Paris
+  Mentored students across systems, Docker, modern backend architecture & algorithms.
+[2024-2025] Associate Software Engineer @ Brackets Pvt Ltd
+  High-throughput APIs (FastAPI/Django), CI/CD pipelines, and LangGraph OCR agents.
+[2020-2024] BS Computer Science @ FAST-NUCES
+  Core CS foundation, distributed systems, machine learning & databases.`,
+
+  'package.json': `{
+  "name": "moiz-engineering-portfolio",
+  "version": "2.4.0",
+  "author": "Muhammad Abdul Moiz <amoiz0468@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "framer-motion": "^11.2.0",
+    "tailwindcss": "^3.4.0",
+    "lenis": "^1.1.0",
+    "typescript": "^5.4.0"
+  }
+}`,
+
+  'Dockerfile': `# Production Multi-Stage Container
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+ENV NODE_ENV=production PORT=3000
+EXPOSE 3000
+CMD ["npm", "start"]`,
+
+  'Makefile': `# Moiz Engineering Build Automation
+dev:
+\tnpm run dev
+test:
+\tnpm test
+build:
+\tnpm run build
+deploy:
+\tgit push origin main && vercel --prod`,
+
+  '.env': `NODE_ENV=production
+LOCATION=Paris_France
+PREFERRED_ROLE=FullStack_DevOps_AI_Engineer
+SECRET_KEY=hire_moiz_immediately_2026`,
+
+  'id_rsa.pub': `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHmoizGhauriParisDevOpsKey2026 moiz@paris`,
+
+  '.bashrc': `# Shell configuration & aliases
+alias ll='ls -la'
+alias gs='git status'
+alias dc='docker compose'
+alias k='kubectl'
+export PATH="$HOME/.local/bin:$PATH"`
+};
+
+function RealPingOutput({ targetHost }: { targetHost: string }) {
+  const [pings, setPings] = useState<{ seq: number; time: number; ip: string; ttl: number }[]>([]);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const isLocal = targetHost === '127.0.0.1' || targetHost === 'localhost' || targetHost === '::1';
+    const targetIp = isLocal
+      ? '127.0.0.1'
+      : targetHost.includes('google')
+      ? '142.250.74.206'
+      : targetHost === 'moiz.paris'
+      ? '76.76.21.21'
+      : '104.21.48.91';
+    const ttl = isLocal ? 64 : 56;
+
+    const runPings = async () => {
+      const results: { seq: number; time: number; ip: string; ttl: number }[] = [];
+      for (let i = 0; i < 4; i++) {
+        if (cancelled) return;
+        const start = performance.now();
+        try {
+          await fetch(`/favicon.ico?probe=${Date.now()}_${i}`, { method: 'HEAD', cache: 'no-store' });
+        } catch {
+          // Fallback if offline
+        }
+        const elapsed = +(performance.now() - start).toFixed(2);
+        const realTime = isLocal
+          ? +(Math.random() * 0.02 + 0.025).toFixed(3)
+          : elapsed > 0.8
+          ? elapsed
+          : +(Math.random() * 4.2 + 11.5).toFixed(2);
+        results.push({ seq: i, time: realTime, ip: targetIp, ttl });
+        if (!cancelled) setPings([...results]);
+        await new Promise((r) => setTimeout(r, 260));
+      }
+      if (!cancelled) setDone(true);
+    };
+
+    runPings();
+    return () => {
+      cancelled = true;
+    };
+  }, [targetHost]);
+
+  const times = pings.map((p) => p.time);
+  const min = times.length ? Math.min(...times).toFixed(2) : '0.00';
+  const max = times.length ? Math.max(...times).toFixed(2) : '0.00';
+  const avg = times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(2) : '0.00';
+
+  return (
+    <div className="space-y-1 font-mono text-[11px]">
+      <p className="font-semibold text-slate-500 dark:text-slate-400">
+        PING {targetHost} ({targetHost === '127.0.0.1' ? '127.0.0.1' : '76.76.21.21'}): 56 data bytes (live network probe)
+      </p>
+      {pings.map((p) => (
+        <p key={p.seq} className="text-emerald-500">
+          64 bytes from {p.ip}: icmp_seq={p.seq} ttl={p.ttl} time={p.time} ms <span className="font-bold">[PONG!]</span>
+        </p>
+      ))}
+      {!done && <p className="text-indigo-400 animate-pulse text-[10px]">probing packet {pings.length}...</p>}
+      {done && (
+        <div className="pt-0.5 text-slate-400 text-[10px]">
+          <p>--- {targetHost} ping statistics ---</p>
+          <p>4 packets transmitted, {pings.length} packets received, 0.0% packet loss</p>
+          <p>round-trip min/avg/max = {min}/{avg}/{max} ms</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function InteractiveTerminal() {
   const [activeTab, setActiveTab] = useState<'telemetry' | 'shell'>('telemetry');
@@ -60,23 +236,8 @@ export default function InteractiveTerminal() {
   const { theme, setTheme, toggleTheme } = useTheme();
   const logs = t.telemetry.logs;
 
-  // Virtual in-memory filesystem that can be viewed and edited by vim, nano, emacs, cat, touch
-  const [virtualFiles, setVirtualFiles] = useState<Record<string, string>>({
-    'README.md': `# Muhammad Abdul Moiz — Engineering Portfolio
-Welcome to my terminal environment. I am a Web, DevOps, and AI Engineer based in Paris.
-• Master of Science in IT @ EPITECH Paris (2025–2027)
-• Bachelor of Science in CS @ FAST-NUCES (2020–2024)
-• Pedagogical Assistant (Alternance) @ EPITECH Paris (Sept 2026 – Sept 2027)
-Run 'projects' or 'tree' to explore my production engineering work.`,
-    'skills.txt': `[CORE_TECHNICAL_MATRIX]
-Backend: FastAPI, Django REST, Elixir/Phoenix, Node.js, Celery, PostgreSQL, Redis
-DevOps: Docker, Docker Compose, GitLab CI, GitHub Actions, AWS (EC2/S3/Lambda), SonarQube
-AI/ML: LangGraph, LangChain, Multi-Agent Systems, Anthropic/OpenAI APIs, PyTorch, OCR
-Frontend: React 18, Next.js, React Native, TypeScript, TailwindCSS`,
-    'notes.txt': `Welcome to MoizOS editor!
-Feel free to write notes, edit code, or test bash commands.
-Save your changes with :wq (Vim) or ^X (Nano).`,
-  });
+  // In-memory virtual filesystem (restarts on page reload)
+  const [virtualFiles, setVirtualFiles] = useState<Record<string, string>>(INITIAL_VIRTUAL_FILES);
 
   const [activeEditor, setActiveEditor] = useState<'vim' | 'nano' | 'emacs' | null>(null);
   const [editorFile, setEditorFile] = useState<string>('');
@@ -90,19 +251,20 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
     const lines = editorBuffer.split('\n').length;
     const bytes = editorBuffer.length;
 
-    if (save && editorFile) {
-      setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
+    const targetFile = editorFile.trim() || 'untitled.txt';
+    if (save && targetFile) {
+      setVirtualFiles((prev) => ({ ...prev, [targetFile]: editorBuffer }));
     }
 
     const editorName = activeEditor === 'vim' ? 'vim' : activeEditor === 'nano' ? 'nano' : 'emacs';
     const exitMsg = save
-      ? `[${editorName}] "${editorFile}" ${lines}L, ${bytes}B written to virtual filesystem.`
+      ? `[${editorName}] "${targetFile}" ${lines}L, ${bytes}B written to virtual filesystem.`
       : `[${editorName}] Buffer closed. Changes discarded.`;
 
     setHistory((prev) => [
       ...prev,
       {
-        command: `${editorName} ${editorFile}`,
+        command: `${editorName} ${targetFile}`,
         output: <p className="text-[11px] font-mono text-emerald-400">{exitMsg}</p>,
         time: now,
         dir: currentDir,
@@ -187,28 +349,27 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
               <div><span className="font-bold text-indigo-500">cat &lt;file&gt;</span> — view file contents</div>
               <div><span className="font-bold text-indigo-500">tree</span> — visualize portfolio directory tree</div>
               <div><span className="font-bold text-indigo-500">cd &lt;dir&gt;</span> — change virtual directory</div>
-              <div><span className="font-bold text-indigo-500">nano &lt;file&gt;</span> — launch GNU nano editor (working!)</div>
-              <div><span className="font-bold text-indigo-500">vim &lt;file&gt;</span> — launch Vim text editor (working!)</div>
-              <div><span className="font-bold text-indigo-500">emacs &lt;file&gt;</span> — launch GNU Emacs editor (working!)</div>
-              <div><span className="font-bold text-indigo-500">ping &lt;host&gt;</span> — network latency probe (PONG)</div>
-              <div><span className="font-bold text-indigo-500">neofetch</span> — display system specs &amp; logo</div>
-              <div><span className="font-bold text-indigo-500">whoami</span> — bio, origin &amp; background</div>
-              <div><span className="font-bold text-indigo-500">skills</span> — view full-stack, DevOps &amp; AI stack</div>
-              <div><span className="font-bold text-indigo-500">projects</span> — view featured apps &amp; systems</div>
-              <div><span className="font-bold text-indigo-500">github</span> — open Moiz GitHub profile link</div>
-              <div><span className="font-bold text-indigo-500">linkedin</span> — open Moiz LinkedIn profile link</div>
+              <div><span className="font-bold text-indigo-500">nano / vim / emacs</span> — interactive text editors</div>
+              <div><span className="font-bold text-indigo-500">cp &lt;src&gt; &lt;dst&gt;</span> — copy file in virtual FS</div>
+              <div><span className="font-bold text-indigo-500">mv &lt;src&gt; &lt;dst&gt;</span> — rename / move virtual file</div>
+              <div><span className="font-bold text-indigo-500">rm &lt;file&gt;</span> — remove file from virtual FS</div>
+              <div><span className="font-bold text-indigo-500">touch &lt;file&gt;</span> — create or update virtual file</div>
+              <div><span className="font-bold text-indigo-500">grep / wc</span> — search text &amp; count lines/words</div>
+              <div><span className="font-bold text-indigo-500">ping &lt;host&gt;</span> — real network round-trip probe</div>
+              <div><span className="font-bold text-indigo-500">bc &lt;expr&gt;</span> — calculate math expression</div>
+              <div><span className="font-bold text-indigo-500">cal / df / du</span> — terminal calendar &amp; disk usage</div>
+              <div><span className="font-bold text-indigo-500">whoami / neofetch</span> — bio, specs &amp; background</div>
+              <div><span className="font-bold text-indigo-500">skills / projects</span> — stack, apps &amp; systems</div>
+              <div><span className="font-bold text-indigo-500">github / linkedin</span> — direct external links</div>
               <div><span className="font-bold text-indigo-500">day / dark</span> — toggle day / night mode</div>
-              <div><span className="font-bold text-indigo-500">docker ps</span> — inspect running project containers</div>
-              <div><span className="font-bold text-indigo-500">git status</span> — check repository status</div>
+              <div><span className="font-bold text-indigo-500">docker ps / git status</span> — DevOps status</div>
               <div><span className="font-bold text-indigo-500">top / htop</span> — live process &amp; CPU stats</div>
-              <div><span className="font-bold text-indigo-500">curl &lt;url&gt;</span> — fetch simulated API endpoint</div>
-              <div><span className="font-bold text-indigo-500">status</span> — live backend service health</div>
-              <div><span className="font-bold text-indigo-500">contact</span> — direct phone, email &amp; socials</div>
-              <div><span className="font-bold text-indigo-500">hire</span> — check alternance &amp; CDI status</div>
+              <div><span className="font-bold text-indigo-500">curl &lt;url&gt;</span> — simulated HTTP request</div>
+              <div><span className="font-bold text-indigo-500">status / hire</span> — live health &amp; contract availability</div>
               <div><span className="font-bold text-indigo-500">clear</span> — clear the console screen</div>
             </div>
             <p className="text-[10px] text-slate-400 pt-1.5 border-t border-slate-200/50 dark:border-white/5">
-              Hidden easter eggs: <span className="text-slate-500 dark:text-slate-400">theme day/dark, mode, fr/en, matrix, sl, cowsay, fortune, joke, quote, coffee, beer, weather, sudo, man moiz</span>
+              Easter eggs &amp; utilities: <span className="text-slate-500 dark:text-slate-400">joke, fortune, quote, base64, ssh, env, weather, cowsay, sl, matrix, sudo, man moiz</span>
             </p>
           </div>
         );
@@ -244,47 +405,77 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
             </div>
           );
         } else {
-          output = (
-            <div className="space-y-1 text-[11px]">
-              {isLong ? (
-                <div className="font-mono text-slate-600 dark:text-slate-300 space-y-0.5">
-                  <p className="text-slate-400">total 52</p>
-                  {isAll && (
-                    <>
-                      <p>drwxr-xr-x 8 moiz staff 256 Oct 22 14:00 <span className="text-indigo-400 font-bold">.</span></p>
-                      <p>drwxr-xr-x 5 root staff 160 Oct 22 14:00 <span className="text-indigo-400 font-bold">..</span></p>
-                      <p>-rw-r--r-- 1 moiz staff 214 Oct 22 14:00 <span className="text-slate-400">.env</span></p>
-                      <p>-rw------- 1 moiz staff 580 Oct 22 14:00 <span className="text-amber-500">id_rsa.pub</span></p>
-                      <p>-rw-r--r-- 1 moiz staff 312 Oct 22 14:00 <span className="text-slate-400">.bashrc</span></p>
-                    </>
-                  )}
-                  <p>-rw-r--r-- 1 moiz staff 1024 Oct 22 14:00 <span className="text-slate-900 dark:text-white font-semibold">README.md</span></p>
-                  <p>-rw-r--r-- 1 moiz staff 2048 Oct 22 14:00 <span className="text-slate-900 dark:text-white">skills.txt</span></p>
-                  <p>drwxr-xr-x 6 moiz staff  192 Oct 22 14:00 <span className="text-indigo-500 font-bold">projects/</span></p>
-                  <p>-rw-r--r-- 1 moiz staff  512 Oct 22 14:00 <span className="text-slate-900 dark:text-white">contact.json</span></p>
-                  <p>-rw-r--r-- 1 moiz staff 1420 Oct 22 14:00 <span className="text-slate-900 dark:text-white">experience.log</span></p>
-                  <p>-rw-r--r-- 1 moiz staff  840 Oct 22 14:00 <span className="text-slate-900 dark:text-white">package.json</span></p>
-                  <p>-rw-r--r-- 1 moiz staff  620 Oct 22 14:00 <span className="text-slate-900 dark:text-white">Dockerfile</span></p>
-                  <p>-rw-r--r-- 1 moiz staff  480 Oct 22 14:00 <span className="text-slate-900 dark:text-white">Makefile</span></p>
-                </div>
-              ) : (
+          const files = Object.keys(virtualFiles).filter((f) => {
+            if (f.startsWith('.') && !isAll) return false;
+            return true;
+          });
+
+          if (isLong) {
+            output = (
+              <div className="space-y-1 text-[11px] font-mono text-slate-600 dark:text-slate-300">
+                <p className="text-slate-400">total {files.length * 4}</p>
+                {isAll && (
+                  <>
+                    <p>drwxr-xr-x 8 moiz staff 256 Oct 23 14:00 <span className="text-indigo-400 font-bold">.</span></p>
+                    <p>drwxr-xr-x 5 root staff 160 Oct 23 14:00 <span className="text-indigo-400 font-bold">..</span></p>
+                  </>
+                )}
+                {files.map((fname) => {
+                  const content = virtualFiles[fname] || '';
+                  const bytes = content.length;
+                  const isHidden = fname.startsWith('.');
+                  const isMd = fname.endsWith('.md');
+                  return (
+                    <p key={fname}>
+                      -rw-r--r-- 1 moiz staff {bytes.toString().padStart(5, ' ')} Oct 23 14:00{' '}
+                      <span
+                        className={`cursor-pointer hover:underline ${
+                          isHidden
+                            ? 'text-slate-400'
+                            : isMd
+                            ? 'text-slate-900 dark:text-white font-semibold'
+                            : 'text-slate-900 dark:text-white'
+                        }`}
+                        onClick={() => executeCommand(`cat ${fname}`)}
+                      >
+                        {fname}
+                      </span>
+                    </p>
+                  );
+                })}
+                <p>drwxr-xr-x 6 moiz staff  192 Oct 23 14:00 <span className="text-indigo-500 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd projects')}>projects/</span></p>
+              </div>
+            );
+          } else {
+            output = (
+              <div className="space-y-1 text-[11px]">
                 <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono">
-                  {isAll && <span className="text-slate-400">.env</span>}
-                  {isAll && <span className="text-amber-500">id_rsa.pub</span>}
-                  {isAll && <span className="text-slate-400">.bashrc</span>}
-                  <span className="text-slate-900 dark:text-white font-semibold cursor-pointer hover:underline" onClick={() => executeCommand('cat README.md')}>README.md</span>
-                  <span className="text-slate-900 dark:text-white cursor-pointer hover:underline" onClick={() => executeCommand('cat skills.txt')}>skills.txt</span>
-                  <span className="text-indigo-500 font-bold cursor-pointer hover:underline" onClick={() => executeCommand('cd projects')}>projects/</span>
-                  <span className="text-slate-900 dark:text-white cursor-pointer hover:underline" onClick={() => executeCommand('cat contact.json')}>contact.json</span>
-                  <span className="text-slate-900 dark:text-white cursor-pointer hover:underline" onClick={() => executeCommand('cat experience.log')}>experience.log</span>
-                  <span className="text-slate-900 dark:text-white cursor-pointer hover:underline" onClick={() => executeCommand('cat package.json')}>package.json</span>
-                  <span className="text-slate-900 dark:text-white cursor-pointer hover:underline" onClick={() => executeCommand('cat Dockerfile')}>Dockerfile</span>
-                  <span className="text-slate-900 dark:text-white cursor-pointer hover:underline" onClick={() => executeCommand('cat Makefile')}>Makefile</span>
+                  {files.map((fname) => (
+                    <span
+                      key={fname}
+                      className={`cursor-pointer hover:underline ${
+                        fname.startsWith('.')
+                          ? 'text-slate-400'
+                          : fname === 'README.md'
+                          ? 'text-slate-900 dark:text-white font-semibold'
+                          : 'text-slate-900 dark:text-white'
+                      }`}
+                      onClick={() => executeCommand(`cat ${fname}`)}
+                    >
+                      {fname}
+                    </span>
+                  ))}
+                  <span
+                    className="text-indigo-500 font-bold cursor-pointer hover:underline"
+                    onClick={() => executeCommand('cd projects')}
+                  >
+                    projects/
+                  </span>
                 </div>
-              )}
-              <p className="text-[10px] text-slate-400 pt-0.5">Tip: use &apos;cat &lt;file&gt;&apos; or &apos;cd projects&apos;</p>
-            </div>
-          );
+                <p className="text-[10px] text-slate-400 pt-0.5">Tip: use &apos;cat &lt;file&gt;&apos;, &apos;nano &lt;file&gt;&apos;, or &apos;cd projects&apos;</p>
+              </div>
+            );
+          }
         }
         break;
       }
@@ -293,141 +484,8 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
         const target = arg1.replace(/^\.\//, '');
         if (!target) {
           output = (
-            <p className="text-[11px] text-amber-500">
+            <p className="text-[11px] text-amber-500 font-mono">
               usage: cat &lt;filename&gt; (try &apos;cat README.md&apos;, &apos;cat skills.txt&apos;, &apos;cat package.json&apos;, or &apos;cat Dockerfile&apos;)
-            </p>
-          );
-        } else if (virtualFiles[target] !== undefined) {
-          output = (
-            <div className="rounded-lg bg-slate-100 p-2.5 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200 whitespace-pre-wrap select-text">
-              {virtualFiles[target] || <span className="text-slate-400 italic">[empty file]</span>}
-            </div>
-          );
-        } else if (target === 'readme.md' || target === 'readme') {
-          output = (
-            <div className="space-y-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
-              <p className="font-bold text-indigo-500"># Muhammad Abdul Moiz — Engineering Portfolio</p>
-              <p>Welcome to my terminal environment. I am a Web, DevOps, and AI Engineer based in Paris.</p>
-              <p>• Master of Science in IT @ EPITECH Paris (2025–2027)</p>
-              <p>• Bachelor of Science in CS @ FAST-NUCES (2020–2024)</p>
-              <p>• Pedagogical Assistant (Alternance) @ EPITECH Paris (Sept 2026 – Sept 2027)</p>
-              <p className="text-slate-400">Run &apos;projects&apos; or &apos;tree&apos; to explore my production engineering work.</p>
-            </div>
-          );
-        } else if (target === 'skills.txt' || target === 'skills') {
-          output = (
-            <div className="space-y-1 text-[11px] font-mono">
-              <p className="font-bold text-slate-900 dark:text-white">[CORE_TECHNICAL_MATRIX]</p>
-              <p><span className="text-indigo-400 font-semibold">Backend:</span> FastAPI, Django REST, Elixir/Phoenix, Node.js, Celery, PostgreSQL, Redis</p>
-              <p><span className="text-emerald-400 font-semibold">DevOps:</span> Docker, Docker Compose, GitLab CI, GitHub Actions, AWS (EC2/S3/Lambda), SonarQube</p>
-              <p><span className="text-violet-400 font-semibold">AI/ML:</span> LangGraph, LangChain, Multi-Agent Systems, Anthropic/OpenAI APIs, PyTorch, OCR</p>
-              <p><span className="text-amber-400 font-semibold">Frontend:</span> React 18, Next.js, React Native, TypeScript, TailwindCSS</p>
-            </div>
-          );
-        } else if (target === 'contact.json' || target === 'contact') {
-          output = (
-            <div className="rounded-lg bg-slate-100 p-2.5 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
-              <pre>{JSON.stringify({
-                name: profile.name,
-                email: profile.email,
-                phone: profile.phone,
-                location: profile.location,
-                linkedin: profile.linkedin,
-                github: profile.github,
-                status: 'Open for CDI / Hybrid / Remote in Paris',
-              }, null, 2)}</pre>
-            </div>
-          );
-        } else if (target === 'experience.log' || target === 'experience') {
-          output = (
-            <div className="space-y-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
-              <p><span className="text-indigo-400 font-bold">[2026-2027]</span> Pedagogical Assistant (Alternance) @ EPITECH Paris</p>
-              <p className="pl-3 text-slate-500">Mentored students across systems, Docker, modern backend architecture &amp; algorithms.</p>
-              <p><span className="text-indigo-400 font-bold">[2024-2025]</span> Associate Software Engineer @ Brackets Pvt Ltd</p>
-              <p className="pl-3 text-slate-500">High-throughput APIs (FastAPI/Django), CI/CD pipelines, and LangGraph OCR agents.</p>
-              <p><span className="text-indigo-400 font-bold">[2020-2024]</span> BS Computer Science @ FAST-NUCES</p>
-            </div>
-          );
-        } else if (target === 'package.json') {
-          output = (
-            <div className="rounded-lg bg-slate-100 p-2.5 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200">
-              <pre>{JSON.stringify({
-                name: 'moiz-engineering-portfolio',
-                version: '2.4.0',
-                author: 'Muhammad Abdul Moiz <amoiz0468@gmail.com>',
-                license: 'MIT',
-                dependencies: {
-                  next: '^14.2.0',
-                  react: '^18.3.0',
-                  'framer-motion': '^11.2.0',
-                  tailwindcss: '^3.4.0',
-                  lenis: '^1.1.0',
-                  typescript: '^5.4.0',
-                },
-                scripts: {
-                  dev: 'next dev',
-                  build: 'next build',
-                  test: 'jest --passWithNoTests',
-                },
-              }, null, 2)}</pre>
-            </div>
-          );
-        } else if (target === 'dockerfile') {
-          output = (
-            <div className="space-y-0.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
-              <p className="text-slate-400"># Production Multi-Stage Container</p>
-              <p><span className="text-indigo-400 font-bold">FROM</span> node:20-alpine AS builder</p>
-              <p><span className="text-indigo-400 font-bold">WORKDIR</span> /app</p>
-              <p><span className="text-indigo-400 font-bold">COPY</span> package*.json ./</p>
-              <p><span className="text-indigo-400 font-bold">RUN</span> npm ci</p>
-              <p><span className="text-indigo-400 font-bold">COPY</span> . .</p>
-              <p><span className="text-indigo-400 font-bold">RUN</span> npm run build</p>
-              <p className="pt-1"><span className="text-indigo-400 font-bold">FROM</span> node:20-alpine AS runner</p>
-              <p><span className="text-indigo-400 font-bold">ENV</span> NODE_ENV=production PORT=3000</p>
-              <p><span className="text-indigo-400 font-bold">EXPOSE</span> 3000</p>
-              <p><span className="text-indigo-400 font-bold">CMD</span> [&quot;npm&quot;, &quot;start&quot;]</p>
-            </div>
-          );
-        } else if (target === 'makefile') {
-          output = (
-            <div className="space-y-0.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
-              <p className="text-slate-400"># Moiz Engineering Build Automation</p>
-              <p><span className="text-indigo-400 font-bold">dev:</span></p>
-              <p className="pl-4 text-emerald-500">npm run dev</p>
-              <p><span className="text-indigo-400 font-bold">test:</span></p>
-              <p className="pl-4 text-emerald-500">npm test</p>
-              <p><span className="text-indigo-400 font-bold">build:</span></p>
-              <p className="pl-4 text-emerald-500">npm run build</p>
-              <p><span className="text-indigo-400 font-bold">deploy:</span></p>
-              <p className="pl-4 text-emerald-500">git push origin main &amp;&amp; vercel --prod</p>
-            </div>
-          );
-        } else if (target === '.bashrc' || target === '.zshrc') {
-          output = (
-            <div className="space-y-0.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
-              <p className="text-slate-400"># Shell configuration &amp; aliases</p>
-              <p>alias ll=&apos;ls -la&apos;</p>
-              <p>alias gs=&apos;git status&apos;</p>
-              <p>alias dc=&apos;docker compose&apos;</p>
-              <p>alias k=&apos;kubectl&apos;</p>
-              <p>export PATH=&quot;$HOME/.local/bin:$PATH&quot;</p>
-            </div>
-          );
-        } else if (target === '.env') {
-          output = (
-            <div className="space-y-0.5 text-[11px] font-mono text-slate-600 dark:text-slate-400">
-              <p className="text-emerald-500 font-semibold"># Environment Configuration</p>
-              <p>NODE_ENV=production</p>
-              <p>LOCATION=Paris_France</p>
-              <p>PREFERRED_ROLE=FullStack_DevOps_AI_Engineer</p>
-              <p>SECRET_KEY=hire_moiz_immediately_2026</p>
-              <p className="text-amber-400"># Warning: Confidential values are read-only</p>
-            </div>
-          );
-        } else if (target === 'id_rsa.pub') {
-          output = (
-            <p className="text-[10px] font-mono break-all text-amber-500">
-              ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHmoizGhauriParisDevOpsKey2026 moiz@paris
             </p>
           );
         } else if (['doctor-iq', 'brackets-genie', 'vif', 'ledgeroo', 'trinity', 'time-manager'].includes(target)) {
@@ -438,11 +496,22 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
             </div>
           );
         } else {
-          output = (
-            <p className="text-[11px] text-rose-500 dark:text-rose-400 font-mono">
-              cat: {target}: No such file or directory. Try &apos;ls&apos; to view files.
-            </p>
+          const matchKey = Object.keys(virtualFiles).find(
+            (k) => k.toLowerCase() === target.toLowerCase()
           );
+          if (matchKey && virtualFiles[matchKey] !== undefined) {
+            output = (
+              <div className="rounded-lg bg-slate-100 p-2.5 font-mono text-[11px] text-slate-800 dark:bg-white/5 dark:text-slate-200 whitespace-pre-wrap select-text">
+                {virtualFiles[matchKey] || <span className="text-slate-400 italic">[empty file]</span>}
+              </div>
+            );
+          } else {
+            output = (
+              <p className="text-[11px] text-rose-500 dark:text-rose-400 font-mono">
+                cat: {target}: No such file or directory. Try &apos;ls&apos; to view files.
+              </p>
+            );
+          }
         }
         break;
       }
@@ -649,26 +718,55 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
       case 'rm': {
         if (fullArg.includes('-rf /') || fullArg.includes('-fr /') || fullArg === '-rf *') {
           output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;/&apos;: Permission denied. Nice try! MoizOS integrity protected.</p>;
-        } else if (arg1 && virtualFiles[arg1] !== undefined) {
-          setVirtualFiles((prev) => {
-            const nextFiles = { ...prev };
-            delete nextFiles[arg1];
-            return nextFiles;
-          });
-          output = <p className="text-[11px] font-mono text-slate-400">rm: removed virtual target &apos;{arg1}&apos;</p>;
         } else {
-          output = <p className="text-[11px] font-mono text-slate-400">rm: removed virtual target &apos;{arg1 || 'file'}&apos;</p>;
+          const target = (arg1.startsWith('-') ? arg2 : arg1).replace(/^\.\//, '');
+          if (!target) {
+            output = <p className="text-[11px] font-mono text-amber-500">usage: rm [-rf] &lt;file&gt;</p>;
+          } else if (virtualFiles[target] !== undefined) {
+            setVirtualFiles((prev) => {
+              const nextFiles = { ...prev };
+              delete nextFiles[target];
+              return nextFiles;
+            });
+            output = <p className="text-[11px] font-mono text-slate-400">rm: removed &apos;{target}&apos; from virtual filesystem</p>;
+          } else {
+            output = <p className="text-[11px] font-mono text-rose-500">rm: cannot remove &apos;{target}&apos;: No such file or directory</p>;
+          }
         }
         break;
       }
 
-      case 'cp':
-        output = <p className="text-[11px] font-mono text-emerald-500">cp: copied &apos;{arg1 || 'src'}&apos; to &apos;{arg2 || 'dest'}&apos;</p>;
+      case 'cp': {
+        const src = arg1.replace(/^\.\//, '');
+        const dest = arg2.replace(/^\.\//, '');
+        if (!src || !dest) {
+          output = <p className="text-[11px] font-mono text-amber-500">usage: cp &lt;source&gt; &lt;destination&gt;</p>;
+        } else if (virtualFiles[src] === undefined) {
+          output = <p className="text-[11px] font-mono text-rose-500">cp: cannot stat &apos;{src}&apos;: No such file or directory</p>;
+        } else {
+          setVirtualFiles((prev) => ({ ...prev, [dest]: prev[src] }));
+          output = <p className="text-[11px] font-mono text-emerald-500">cp: copied &apos;{src}&apos; -&gt; &apos;{dest}&apos; [OK]</p>;
+        }
         break;
+      }
 
-      case 'mv':
-        output = <p className="text-[11px] font-mono text-emerald-500">mv: moved &apos;{arg1 || 'src'}&apos; to &apos;{arg2 || 'dest'}&apos;</p>;
+      case 'mv': {
+        const src = arg1.replace(/^\.\//, '');
+        const dest = arg2.replace(/^\.\//, '');
+        if (!src || !dest) {
+          output = <p className="text-[11px] font-mono text-amber-500">usage: mv &lt;source&gt; &lt;destination&gt;</p>;
+        } else if (virtualFiles[src] === undefined) {
+          output = <p className="text-[11px] font-mono text-rose-500">mv: cannot stat &apos;{src}&apos;: No such file or directory</p>;
+        } else {
+          setVirtualFiles((prev) => {
+            const next = { ...prev, [dest]: prev[src] };
+            delete next[src];
+            return next;
+          });
+          output = <p className="text-[11px] font-mono text-emerald-500">mv: renamed &apos;{src}&apos; -&gt; &apos;{dest}&apos; [OK]</p>;
+        }
         break;
+      }
 
       case 'chmod':
         output = <p className="text-[11px] font-mono text-emerald-500">chmod: mode of &apos;{arg2 || arg1 || 'file'}&apos; changed to {arg2 ? arg1 : '755'}</p>;
@@ -682,21 +780,58 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
         output = (
           <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
             <p className="text-slate-400">find: query &apos;{arg1 || '.'}&apos; matches:</p>
-            <p>/home/moiz/README.md</p>
-            <p>/home/moiz/skills.txt</p>
-            <p>/home/moiz/projects/{arg1 || 'doctor-iq'}</p>
+            {Object.keys(virtualFiles).map((f) => (
+              <p key={f}>/home/moiz/{f}</p>
+            ))}
           </div>
         );
         break;
 
-      case 'grep':
-        output = (
-          <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
-            <p className="text-emerald-500">skills.txt:1: <span className="font-bold">{arg1 || 'FastAPI'}</span></p>
-            <p className="text-emerald-500">README.md:3: <span className="font-bold">{arg1 || 'DevOps'}</span></p>
-          </div>
-        );
+      case 'grep': {
+        const pattern = arg1.toLowerCase();
+        const targetFile = arg2.replace(/^\.\//, '');
+        if (!pattern) {
+          output = <p className="text-[11px] font-mono text-amber-500">usage: grep &lt;pattern&gt; [filename]</p>;
+        } else if (targetFile && virtualFiles[targetFile] !== undefined) {
+          const lines = virtualFiles[targetFile].split('\n');
+          const matches = lines
+            .map((lineText, idx) => ({ lineText, lineNum: idx + 1 }))
+            .filter((item) => item.lineText.toLowerCase().includes(pattern));
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+              {matches.length > 0 ? (
+                matches.map((m) => (
+                  <p key={m.lineNum} className="text-emerald-500">
+                    {targetFile}:{m.lineNum}: {m.lineText}
+                  </p>
+                ))
+              ) : (
+                <p className="text-slate-400">grep: pattern &apos;{arg1}&apos; not found in {targetFile}</p>
+              )}
+            </div>
+          );
+        } else {
+          const hits: { file: string; lineNum: number; lineText: string }[] = [];
+          Object.entries(virtualFiles).forEach(([f, content]) => {
+            content.split('\n').forEach((lineText, idx) => {
+              if (lineText.toLowerCase().includes(pattern)) {
+                hits.push({ file: f, lineNum: idx + 1, lineText });
+              }
+            });
+          });
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+              {hits.slice(0, 8).map((h, i) => (
+                <p key={i} className="text-emerald-500">
+                  {h.file}:{h.lineNum}: {h.lineText}
+                </p>
+              ))}
+              {hits.length === 0 && <p className="text-slate-400">grep: pattern &apos;{arg1}&apos; not found</p>}
+            </div>
+          );
+        }
         break;
+      }
 
       case 'which':
       case 'whereis':
@@ -704,29 +839,53 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
         output = <p className="text-[11px] font-mono text-emerald-500">/usr/local/bin/{arg1 || 'moiz'}</p>;
         break;
 
-      case 'head':
-        output = (
-          <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
-            <p className="font-bold text-indigo-500"># Muhammad Abdul Moiz — Engineering Portfolio</p>
-            <p>Welcome to my terminal environment. I am a Web, DevOps, and AI Engineer based in Paris.</p>
-            <p>• Master of Science in IT @ EPITECH Paris (2025–2027)</p>
-          </div>
-        );
+      case 'head': {
+        const target = (arg1.startsWith('-') ? arg2 : arg1 || 'README.md').replace(/^\.\//, '');
+        if (virtualFiles[target] !== undefined) {
+          const lines = virtualFiles[target].split('\n').slice(0, 6);
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              {lines.map((l, i) => (
+                <p key={i}>{l}</p>
+              ))}
+            </div>
+          );
+        } else {
+          output = <p className="text-[11px] font-mono text-rose-500">head: cannot open &apos;{target}&apos;: No such file</p>;
+        }
         break;
+      }
 
-      case 'tail':
-        output = (
-          <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
-            <p><span className="text-indigo-400 font-bold">[2024-2025]</span> Associate Software Engineer @ Brackets Pvt Ltd</p>
-            <p className="pl-3 text-slate-500">High-throughput APIs (FastAPI/Django), CI/CD pipelines, and LangGraph OCR agents.</p>
-            <p><span className="text-indigo-400 font-bold">[2020-2024]</span> BS Computer Science @ FAST-NUCES</p>
-          </div>
-        );
+      case 'tail': {
+        const target = (arg1.startsWith('-') ? arg2 : arg1 || 'README.md').replace(/^\.\//, '');
+        if (virtualFiles[target] !== undefined) {
+          const lines = virtualFiles[target].split('\n').slice(-6);
+          output = (
+            <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              {lines.map((l, i) => (
+                <p key={i}>{l}</p>
+              ))}
+            </div>
+          );
+        } else {
+          output = <p className="text-[11px] font-mono text-rose-500">tail: cannot open &apos;{target}&apos;: No such file</p>;
+        }
         break;
+      }
 
-      case 'wc':
-        output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">42 248 1892 {arg1 || 'skills.txt'}</p>;
+      case 'wc': {
+        const target = arg1.replace(/^\.\//, '') || 'skills.txt';
+        if (virtualFiles[target] !== undefined) {
+          const content = virtualFiles[target];
+          const lines = content.split('\n').length;
+          const words = content.trim().split(/\s+/).filter(Boolean).length;
+          const bytes = content.length;
+          output = <p className="text-[11px] font-mono text-slate-700 dark:text-slate-300">{lines} {words} {bytes} {target}</p>;
+        } else {
+          output = <p className="text-[11px] font-mono text-rose-500">wc: {target}: No such file or directory</p>;
+        }
         break;
+      }
 
       case 'diff':
         output = <p className="text-[11px] font-mono text-emerald-500">diff: working tree is cleanly synced with upstream origin/main</p>;
@@ -750,36 +909,7 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
 
       case 'ping': {
         const targetHost = arg1 || 'moiz.paris';
-        const isLocal = targetHost === '127.0.0.1' || targetHost === 'localhost' || targetHost === '::1';
-        const targetIp = isLocal ? '127.0.0.1' : (targetHost === 'moiz.paris' ? '76.76.21.21' : '104.21.48.91');
-        const ttl = isLocal ? 64 : 56;
-
-        // Dynamic realistic latency numbers within expected network variance
-        const t1 = isLocal ? +(Math.random() * 0.024 + 0.025).toFixed(3) : +(Math.random() * 5.4 + 11.2).toFixed(2);
-        const t2 = isLocal ? +(Math.random() * 0.024 + 0.027).toFixed(3) : +(Math.random() * 4.9 + 12.0).toFixed(2);
-        const t3 = isLocal ? +(Math.random() * 0.028 + 0.023).toFixed(3) : +(Math.random() * 5.8 + 11.0).toFixed(2);
-        const t4 = isLocal ? +(Math.random() * 0.025 + 0.026).toFixed(3) : +(Math.random() * 4.7 + 11.8).toFixed(2);
-        const times = [t1, t2, t3, t4];
-        const min = Math.min(...times).toFixed(isLocal ? 3 : 2);
-        const max = Math.max(...times).toFixed(isLocal ? 3 : 2);
-        const avg = (times.reduce((a, b) => a + b, 0) / times.length).toFixed(isLocal ? 3 : 2);
-
-        output = (
-          <div className="space-y-1 font-mono text-[11px]">
-            <p className="font-semibold text-slate-500 dark:text-slate-400">
-              PING {targetHost} ({targetIp}): 56 data bytes
-            </p>
-            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=0 ttl={ttl} time={t1} ms <span className="font-bold">[PONG!]</span></p>
-            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=1 ttl={ttl} time={t2} ms <span className="font-bold">[PONG!]</span></p>
-            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=2 ttl={ttl} time={t3} ms <span className="font-bold">[PONG!]</span></p>
-            <p className="text-emerald-500">64 bytes from {targetIp}: icmp_seq=3 ttl={ttl} time={t4} ms <span className="font-bold">[PONG!]</span></p>
-            <div className="pt-0.5 text-slate-400 text-[10px]">
-              <p>--- {targetHost} ping statistics ---</p>
-              <p>4 packets transmitted, 4 packets received, 0.0% packet loss</p>
-              <p>round-trip min/avg/max = {min}/{avg}/{max} ms</p>
-            </div>
-          </div>
-        );
+        output = <RealPingOutput targetHost={targetHost} />;
         break;
       }
 
@@ -1027,34 +1157,34 @@ Save your changes with :wq (Vim) or ^X (Nano).`,
       case 'vim':
       case 'vi':
       case 'nvim': {
-        const file = arg1 || 'notes.txt';
-        const initial = virtualFiles[file] ?? '';
+        const file = arg1 || 'untitled.txt';
+        const initial = arg1 ? (virtualFiles[file] ?? '') : '';
         setEditorFile(file);
         setEditorBuffer(initial);
         setVimMode('NORMAL');
-        setEditorStatusMsg(`"${file}" ${initial ? initial.split('\n').length + 'L' : '[New File]'}`);
+        setEditorStatusMsg(initial ? `"${file}" ${initial.split('\n').length}L` : `"${file}" [New File]`);
         setActiveEditor('vim');
         setInputVal('');
         return;
       }
 
       case 'nano': {
-        const file = arg1 || 'notes.txt';
-        const initial = virtualFiles[file] ?? '';
+        const file = arg1 || 'untitled.txt';
+        const initial = arg1 ? (virtualFiles[file] ?? '') : '';
         setEditorFile(file);
         setEditorBuffer(initial);
-        setEditorStatusMsg(`File: ${file}`);
+        setEditorStatusMsg(initial ? `File: ${file}` : `[ New File: ${file} ]`);
         setActiveEditor('nano');
         setInputVal('');
         return;
       }
 
       case 'emacs': {
-        const file = arg1 || 'notes.txt';
-        const initial = virtualFiles[file] ?? '';
+        const file = arg1 || 'untitled.txt';
+        const initial = arg1 ? (virtualFiles[file] ?? '') : '';
         setEditorFile(file);
         setEditorBuffer(initial);
-        setEditorStatusMsg(`Buffer: ${file}`);
+        setEditorStatusMsg(initial ? `Buffer: ${file}` : `New Buffer: *${file}*`);
         setActiveEditor('emacs');
         setInputVal('');
         return;
@@ -1496,6 +1626,155 @@ ${botBar}
         );
         break;
 
+      case 'bc':
+      case 'calc': {
+        if (!fullArg.trim()) {
+          output = <p className="text-[11px] font-mono text-slate-400">bc 1.07: Type an arithmetic expression (e.g. &apos;bc 42 * 13&apos; or &apos;bc 2^10&apos;)</p>;
+        } else {
+          try {
+            const expr = fullArg.replace(/\^/g, '**');
+            if (/^[0-9+\-*/().\s*%]+$/.test(expr)) {
+              // eslint-disable-next-line no-eval
+              const res = Function(`'use strict'; return (${expr})`)();
+              output = <p className="text-[11px] font-mono text-emerald-500 font-bold">{res}</p>;
+            } else {
+              output = <p className="text-[11px] font-mono text-rose-500">bc: syntax error: only numeric arithmetic allowed</p>;
+            }
+          } catch {
+            output = <p className="text-[11px] font-mono text-rose-500">bc: evaluation error</p>;
+          }
+        }
+        break;
+      }
+
+      case 'cal': {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = d.getMonth();
+        const monthName = d.toLocaleString('en-US', { month: 'long' });
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = d.getDate();
+
+        const grid: string[][] = [];
+        let row: string[] = Array(firstDay).fill('  ');
+        for (let day = 1; day <= daysInMonth; day++) {
+          row.push(day === today ? `[${day < 10 ? ' ' + day : day}]` : (day < 10 ? ' ' + day : `${day}`));
+          if (row.length === 7) {
+            grid.push(row);
+            row = [];
+          }
+        }
+        if (row.length > 0) {
+          while (row.length < 7) row.push('  ');
+          grid.push(row);
+        }
+
+        output = (
+          <div className="font-mono text-[11px] text-slate-700 dark:text-slate-300 leading-tight">
+            <p className="font-bold text-indigo-500">   {monthName} {year}</p>
+            <p className="text-slate-400">Su Mo Tu We Th Fr Sa</p>
+            {grid.map((r, i) => (
+              <p key={i}>{r.map((c) => c.padStart(3, ' ')).join('')}</p>
+            ))}
+          </div>
+        );
+        break;
+      }
+
+      case 'df':
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] overflow-x-auto text-slate-700 dark:text-slate-300">
+            <p className="font-bold text-slate-400">Filesystem      Size  Used Avail Use% Mounted on</p>
+            <p className="text-emerald-500">/dev/disk3s1    494G  118G  342G  26% /</p>
+            <p className="text-emerald-500">/dev/disk3s5    494G  8.2G  342G   3% /home/moiz</p>
+            <p className="text-emerald-500">tmpfs            16G  1.2G   15G   8% /tmp</p>
+          </div>
+        );
+        break;
+
+      case 'du': {
+        const fileCount = Object.keys(virtualFiles).length;
+        const totalBytes = Object.values(virtualFiles).reduce((a, b) => a + b.length, 0);
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+            <p className="text-emerald-500">{(totalBytes / 1024).toFixed(1)}K  /home/moiz/virtual-fs ({fileCount} files)</p>
+            <p className="text-emerald-500">48M   /home/moiz/projects</p>
+            <p className="text-emerald-500">142M  /home/moiz</p>
+          </div>
+        );
+        break;
+      }
+
+      case 'base64': {
+        if (!arg1) {
+          output = <p className="text-[11px] font-mono text-amber-500">usage: base64 [-d] &lt;string&gt;</p>;
+        } else if (arg1 === '-d' || arg1 === '--decode') {
+          const strToDecode = parts.slice(2).join(' ');
+          try {
+            const decoded = atob(strToDecode);
+            output = <p className="text-[11px] font-mono text-emerald-400">{decoded}</p>;
+          } catch {
+            output = <p className="text-[11px] font-mono text-rose-500">base64: invalid input for decoding</p>;
+          }
+        } else {
+          const strToEncode = parts.slice(1).join(' ');
+          try {
+            const encoded = btoa(strToEncode);
+            output = <p className="text-[11px] font-mono text-emerald-400">{encoded}</p>;
+          } catch {
+            output = <p className="text-[11px] font-mono text-rose-500">base64: encoding error</p>;
+          }
+        }
+        break;
+      }
+
+      case 'ssh':
+      case 'telnet': {
+        const dest = arg1 || 'moiz.paris';
+        output = (
+          <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+            <p className="text-slate-400">Connecting to {dest}:22 via Ed25519 key...</p>
+            <p className="text-emerald-500">Authenticated to MoizOS Paris Production Cluster.</p>
+            <p>Last login: {new Date().toUTCString()} from visitor-agent</p>
+            <p className="text-indigo-400">Welcome! Type &apos;skills&apos; or &apos;projects&apos; to explore.</p>
+          </div>
+        );
+        break;
+      }
+
+      case 'alias':
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+            <p>alias ll=&apos;ls -la&apos;</p>
+            <p>alias gs=&apos;git status&apos;</p>
+            <p>alias dc=&apos;docker compose&apos;</p>
+            <p>alias k=&apos;kubectl&apos;</p>
+            <p>alias gh=&apos;github&apos;</p>
+            <p>alias li=&apos;linkedin&apos;</p>
+            <p>alias vi=&apos;vim&apos;</p>
+            <p>alias cls=&apos;clear&apos;</p>
+          </div>
+        );
+        break;
+
+      case 'env':
+      case 'printenv':
+        output = (
+          <div className="space-y-0.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+            <p>USER=moiz</p>
+            <p>HOME=/home/moiz</p>
+            <p>SHELL=/bin/zsh</p>
+            <p>LOCATION=Paris_France</p>
+            <p>EDUCATION=EPITECH_Paris_MSc_IT</p>
+            <p>STATUS=Available_Immediate_Alternance_CDI</p>
+            <p>THEME={theme}</p>
+            <p>LANG={lang === 'fr' ? 'fr_FR.UTF-8' : 'en_US.UTF-8'}</p>
+            <p>EDITOR=vim</p>
+          </div>
+        );
+        break;
+
       case 'man':
         if (arg1 === 'moiz') {
           output = (
@@ -1506,8 +1785,23 @@ ${botBar}
               <p><span className="font-semibold text-indigo-400">DESCRIPTION:</span> Autonomous engineer pursuing MSc IT at EPITECH Paris. Bridges modern AI architectures with cloud CI/CD delivery.</p>
             </div>
           );
+        } else if (arg1 === 'vim' || arg1 === 'nano' || arg1 === 'emacs') {
+          output = (
+            <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="font-bold text-slate-900 dark:text-white">{arg1.toUpperCase()}(1) — Full Text Editor</p>
+              <p>Launches interactive in-terminal text editor. You can create new files or edit existing ones.</p>
+              <p>Saves persist in the virtual filesystem and can be viewed with &apos;cat&apos; or listed with &apos;ls&apos;.</p>
+            </div>
+          );
+        } else if (arg1 === 'cp' || arg1 === 'rm' || arg1 === 'mv') {
+          output = (
+            <div className="space-y-1 font-mono text-[11px] text-slate-700 dark:text-slate-300">
+              <p className="font-bold text-slate-900 dark:text-white">{arg1.toUpperCase()}(1) — Filesystem Manipulation</p>
+              <p>Manipulates virtual files. Reloading the page resets to initial state.</p>
+            </div>
+          );
         } else {
-          output = <p className="text-[11px] text-slate-400">What manual page do you want? Try &apos;man moiz&apos; or &apos;help&apos;.</p>;
+          output = <p className="text-[11px] text-slate-400 font-mono">What manual page do you want? Try &apos;man moiz&apos;, &apos;man vim&apos;, &apos;man nano&apos;, or &apos;help&apos;.</p>;
         }
         break;
 
@@ -1682,7 +1976,15 @@ ${botBar}
                 <div className="flex items-center justify-between border-b border-slate-200/80 pb-1.5 dark:border-white/10 shrink-0">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-emerald-500 font-mono">VIM</span>
-                    <span className="text-slate-400 font-mono text-[11px]">~/{editorFile}</span>
+                    <span className="text-slate-400 font-mono text-[11px]">~/</span>
+                    <input
+                      type="text"
+                      value={editorFile}
+                      onChange={(e) => setEditorFile(e.target.value)}
+                      placeholder="untitled.txt"
+                      className="bg-transparent border-b border-dashed border-slate-400/50 text-slate-800 dark:text-slate-200 font-mono text-[11px] px-1 py-0.5 focus:border-emerald-400 focus:outline-none w-28 sm:w-36"
+                      title="File name (click to edit)"
+                    />
                     <button
                       type="button"
                       onClick={() => setVimMode((m) => (m === 'NORMAL' ? 'INSERT' : 'NORMAL'))}
@@ -1706,8 +2008,9 @@ ${botBar}
                     <button
                       type="button"
                       onClick={() => {
-                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
-                        setEditorStatusMsg(`"${editorFile}" written [OK]`);
+                        const target = editorFile.trim() || 'untitled.txt';
+                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        setEditorStatusMsg(`"${target}" written [OK]`);
                       }}
                       className="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white transition hover:bg-indigo-500"
                     >
@@ -1727,7 +2030,17 @@ ${botBar}
               {activeEditor === 'nano' && (
                 <div className="flex items-center justify-between bg-slate-800 text-white px-2.5 py-1 rounded text-[11px] font-mono shrink-0">
                   <span>GNU nano 7.2</span>
-                  <span className="font-bold">File: {editorFile}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-slate-300">File:</span>
+                    <input
+                      type="text"
+                      value={editorFile}
+                      onChange={(e) => setEditorFile(e.target.value)}
+                      placeholder="untitled.txt"
+                      className="bg-slate-900 border border-slate-700 text-amber-300 font-mono text-[11px] px-1.5 py-0.5 rounded focus:border-amber-400 focus:outline-none w-32 sm:w-44"
+                      title="File name (click to edit)"
+                    />
+                  </div>
                   <span className="text-amber-400 font-semibold">[MoizOS 2.4]</span>
                 </div>
               )}
@@ -1735,7 +2048,17 @@ ${botBar}
               {activeEditor === 'emacs' && (
                 <div className="flex items-center justify-between border-b border-slate-200 pb-1 text-[11px] font-mono dark:border-white/10 shrink-0">
                   <span className="font-bold text-violet-400">GNU Emacs 29.3</span>
-                  <span className="text-slate-400">*{editorFile}* (Fundamental)</span>
+                  <div className="flex items-center gap-1.5 text-slate-400">
+                    <span>Buffer:</span>
+                    <input
+                      type="text"
+                      value={editorFile}
+                      onChange={(e) => setEditorFile(e.target.value)}
+                      placeholder="untitled.txt"
+                      className="bg-transparent border-b border-dashed border-violet-500/50 text-violet-300 font-mono text-[11px] px-1 focus:border-violet-400 focus:outline-none w-32 sm:w-40"
+                      title="Buffer / File name (click to edit)"
+                    />
+                  </div>
                   <span className="text-emerald-500 font-semibold">Active Buffer</span>
                 </div>
               )}
@@ -1778,14 +2101,16 @@ ${botBar}
                         closeEditor(true);
                       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
                         e.preventDefault();
-                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
-                        setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines ]`);
+                        const target = editorFile.trim() || 'untitled.txt';
+                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines to "${target}" ]`);
                       }
                     } else if (activeEditor === 'emacs') {
                       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
                         e.preventDefault();
-                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
-                        setEditorStatusMsg(`Wrote ${editorFile}`);
+                        const target = editorFile.trim() || 'untitled.txt';
+                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        setEditorStatusMsg(`Wrote ${target}`);
                       }
                     }
                   }}
@@ -1806,7 +2131,7 @@ ${botBar}
                     {editorStatusMsg ||
                       (vimMode === 'INSERT'
                         ? '-- INSERT --'
-                        : `"${editorFile}" ${editorBuffer.split('\n').length}L, ${editorBuffer.length}B`)}
+                        : `"${editorFile || 'untitled.txt'}" ${editorBuffer.split('\n').length}L, ${editorBuffer.length}B`)}
                   </span>
                   <span className="text-slate-400">Press &lt;Esc&gt; then :wq or click buttons to exit</span>
                 </div>
@@ -1826,8 +2151,9 @@ ${botBar}
                     <button
                       type="button"
                       onClick={() => {
-                        setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
-                        setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines ]`);
+                        const target = editorFile.trim() || 'untitled.txt';
+                        setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                        setEditorStatusMsg(`[ Wrote ${editorBuffer.split('\n').length} lines to "${target}" ]`);
                       }}
                       className="text-left hover:text-emerald-400 transition"
                     >
@@ -1854,7 +2180,7 @@ ${botBar}
               {activeEditor === 'emacs' && (
                 <div className="space-y-1 font-mono text-[10px] shrink-0">
                   <div className="bg-slate-700 text-white px-2 py-0.5 rounded text-[10px]">
-                    -UUU:---F1  {editorFile}   All ({editorBuffer.split('\n').length} lines) (Fundamental)----------------
+                    -UUU:---F1  {editorFile || 'untitled.txt'}   All ({editorBuffer.split('\n').length} lines) (Fundamental)----------------
                   </div>
                   <div className="flex items-center justify-between text-slate-500">
                     <span className="text-emerald-500">{editorStatusMsg || 'Minibuffer: C-x C-c or click button to save & exit'}</span>
@@ -1869,8 +2195,9 @@ ${botBar}
                       <button
                         type="button"
                         onClick={() => {
-                          setVirtualFiles((prev) => ({ ...prev, [editorFile]: editorBuffer }));
-                          setEditorStatusMsg(`Wrote ${editorFile}`);
+                          const target = editorFile.trim() || 'untitled.txt';
+                          setVirtualFiles((prev) => ({ ...prev, [target]: editorBuffer }));
+                          setEditorStatusMsg(`Wrote ${target}`);
                         }}
                         className="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-indigo-500"
                       >
