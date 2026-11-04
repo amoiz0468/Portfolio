@@ -42,20 +42,20 @@ export default function About() {
           </div>
         </Reveal>
 
-        <div className="mt-8 sm:mt-10 grid gap-6 lg:grid-cols-2">
-          <Reveal>
+        <div className="mt-8 sm:mt-10 grid items-stretch gap-6 lg:grid-cols-2 lg:auto-rows-fr">
+          <Reveal className="h-full">
             <div className="flex h-full flex-col justify-between rounded-[2.5rem] border border-slate-200/90 bg-white/90 p-8 shadow-[0_10px_30px_rgba(0,0,0,0.05)] backdrop-blur-md transform-gpu dark:border-white/10 dark:bg-slate-900/80 dark:shadow-xl">
-              <div>
+              <div className="flex h-full flex-col">
                 <SectionTitle
                   eyebrow={aboutPage.academicEyebrow}
                   eyebrowIcon={<FiBookOpen />}
                   title={aboutPage.academicTitle}
                 />
-                <div className="mt-8 space-y-4">
+                <div className="mt-8 flex flex-1 flex-col gap-4">
                   {educationSection.items.map((item) => (
                     <div
                       key={item.title}
-                      className="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-indigo-400/40"
+                      className="flex flex-1 flex-col justify-center rounded-2xl border border-slate-200 bg-slate-50/80 p-5 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-indigo-400/40"
                     >
                       <p className="font-bold text-slate-900 dark:text-white">{item.title}</p>
                       <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{item.school}</p>
@@ -69,23 +69,25 @@ export default function About() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.08}>
+          <Reveal delay={0.08} className="h-full">
             <div className="flex h-full flex-col justify-between rounded-[2.5rem] border border-slate-200/90 bg-white/90 p-8 shadow-[0_10px_30px_rgba(0,0,0,0.05)] backdrop-blur-md transform-gpu dark:border-white/10 dark:bg-slate-900/80 dark:shadow-xl">
-              <div>
-                <SectionTitle
-                  eyebrow={aboutPage.valuesEyebrow}
-                  eyebrowIcon={<FiGlobe />}
-                  title={aboutPage.valuesTitle}
-                />
-                <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                  {skillsSection.values.map((value) => (
-                    <div
-                      key={value}
-                      className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-xs font-medium text-slate-700 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-indigo-400/40"
-                    >
-                      {value}
-                    </div>
-                  ))}
+              <div className="flex h-full flex-col justify-between">
+                <div>
+                  <SectionTitle
+                    eyebrow={aboutPage.valuesEyebrow}
+                    eyebrowIcon={<FiGlobe />}
+                    title={aboutPage.valuesTitle}
+                  />
+                  <div className="mt-8 grid auto-rows-fr items-stretch gap-3 sm:grid-cols-2">
+                    {skillsSection.values.map((value) => (
+                      <div
+                        key={value}
+                        className="flex h-full items-center rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-xs font-medium text-slate-700 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-indigo-400/40"
+                      >
+                        {value}
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="mt-6 rounded-2xl border border-indigo-200/80 bg-indigo-50/50 p-5 dark:border-white/10 dark:bg-slate-900/60">
@@ -116,9 +118,9 @@ export default function About() {
             />
           </Reveal>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {passionsSection.passions.map((passion, pIdx) => (
-              <Reveal key={passion.title} delay={pIdx * 0.06}>
+              <Reveal key={passion.title} delay={pIdx * 0.06} className="h-full">
                 <SpotlightCard className="flex h-full flex-col justify-between transition hover:-translate-y-1">
                   <div>
                     <div className="flex items-center justify-between">

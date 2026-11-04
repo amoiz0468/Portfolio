@@ -43,9 +43,9 @@ export default function AppleSkillsSection() {
       </Reveal>
 
       {/* 4 Core Domain Cards */}
-      <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-14 grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 xl:grid-cols-4">
         {skillGroups.map((group, groupIdx) => (
-          <Reveal key={group.title} delay={groupIdx * 0.08}>
+          <Reveal key={group.title} delay={groupIdx * 0.08} className="h-full">
             <SpotlightCard className="group flex h-full flex-col justify-between transition-all duration-300 hover:-translate-y-1.5">
               <div>
                 <div className="flex items-center justify-between">
@@ -85,41 +85,47 @@ export default function AppleSkillsSection() {
       </div>
 
       {/* Languages & Values Mini-Bento */}
-      <div className="mt-8 grid gap-6 md:grid-cols-2">
-        <Reveal delay={0.1}>
-          <SpotlightCard>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-300">
-              {spokenLanguagesTitle}
-            </span>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {languages.map((l) => (
-                <div
-                  key={l.language}
-                  className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-center transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-indigo-400/30"
-                >
-                  <p className="text-base font-bold text-slate-900 dark:text-white">{l.language}</p>
-                  <p className="mt-1 text-xs font-semibold text-indigo-600 dark:text-indigo-300">{l.level}</p>
-                  <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">{l.proficiency}</p>
-                </div>
-              ))}
+      <div className="mt-8 grid items-stretch gap-6 md:grid-cols-2 md:auto-rows-fr">
+        <Reveal delay={0.1} className="h-full">
+          <SpotlightCard className="h-full">
+            <div className="flex h-full flex-col">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-300">
+                {spokenLanguagesTitle}
+              </span>
+              <div className="mt-5 grid flex-1 auto-rows-fr items-stretch gap-3 sm:grid-cols-3">
+                {languages.map((l) => (
+                  <div
+                    key={l.language}
+                    className="flex h-full flex-col items-center justify-center rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-center transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-indigo-400/30"
+                  >
+                    <p className="text-base font-bold text-slate-900 dark:text-white">{l.language}</p>
+                    <p className="mt-1 text-xs font-semibold text-indigo-600 dark:text-indigo-300">{l.level}</p>
+                    <p className="mt-1.5 flex min-h-[2.75rem] items-start justify-center text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                      {l.proficiency}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </SpotlightCard>
         </Reveal>
 
-        <Reveal delay={0.16}>
-          <SpotlightCard>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-300">
-              {engineeringValuesTitle}
-            </span>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {values.map((v) => (
-                <span
-                  key={v}
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-medium text-slate-700 transition-colors duration-200 hover:border-indigo-400 hover:text-indigo-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-indigo-400/30 dark:hover:text-white"
-                >
-                  {v}
-                </span>
-              ))}
+        <Reveal delay={0.16} className="h-full">
+          <SpotlightCard className="h-full">
+            <div className="flex h-full flex-col">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-300">
+                {engineeringValuesTitle}
+              </span>
+              <div className="mt-5 flex flex-1 flex-wrap content-start gap-2">
+                {values.map((v) => (
+                  <span
+                    key={v}
+                    className="rounded-full border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-medium text-slate-700 transition-colors duration-200 hover:border-indigo-400 hover:text-indigo-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-indigo-400/30 dark:hover:text-white"
+                  >
+                    {v}
+                  </span>
+                ))}
+              </div>
             </div>
           </SpotlightCard>
         </Reveal>

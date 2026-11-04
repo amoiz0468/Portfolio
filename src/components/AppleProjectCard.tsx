@@ -55,7 +55,7 @@ export default function AppleProjectCard({ project, index, onSelect }: AppleProj
             </div>
 
             {/* Normalized Title: Exactly 2 lines height so descriptions align horizontally */}
-            <h3 className="mt-4 flex items-center min-h-[3.25rem] text-xl sm:text-2xl font-black tracking-tight text-slate-900 transition-colors duration-200 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-200 line-clamp-2 leading-snug">
+            <h3 className="mt-4 flex items-center min-h-[3.5rem] sm:min-h-[4.125rem] text-xl sm:text-2xl font-black tracking-tight text-slate-900 transition-colors duration-200 group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-200 line-clamp-2 leading-snug">
               {project.title}
             </h3>
 
@@ -67,7 +67,7 @@ export default function AppleProjectCard({ project, index, onSelect }: AppleProj
 
           {/* Bottom Row: Tech Stack with uniform baseline height */}
           <div className="mt-6 border-t border-slate-200/80 dark:border-white/10 pt-4">
-            <div className="flex flex-wrap items-center gap-1.5 min-h-[2.5rem]">
+            <div className="flex flex-wrap content-start items-center gap-1.5 min-h-[3.5rem]">
               {project.stack.slice(0, 4).map((item) => (
                 <span
                   key={item}

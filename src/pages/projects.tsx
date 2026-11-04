@@ -38,7 +38,7 @@ export default function ProjectsPage() {
             />
           </Reveal>
 
-          <div className="mt-8 sm:mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
+          <div className="mt-8 sm:mt-10 grid auto-rows-fr gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
             {projectsList.map((project, index) => (
               <AppleProjectCard
                 key={project.title}

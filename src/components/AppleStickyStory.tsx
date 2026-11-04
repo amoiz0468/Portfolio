@@ -164,7 +164,7 @@ export default function AppleStickyStory() {
           <div
             ref={mobileCarouselRef}
             onScroll={handleMobileScroll}
-            className="mt-6 -mx-4 px-4 flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-2 pt-1 overscroll-x-contain touch-auto"
+            className="mt-6 -mx-4 px-4 flex items-stretch gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none pb-2 pt-1 overscroll-x-contain touch-auto"
           >
             {storiesData.map((story, idx) => {
               const Icon = STORY_ICONS[idx % STORY_ICONS.length];

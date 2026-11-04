@@ -180,7 +180,7 @@ export default function ContactPage() {
 
         <div className="mt-8 sm:mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-stretch">
           {/* Left Column: Direct Links, Instant Copy & Fallbacks */}
-          <Reveal delay={0.05}>
+          <Reveal delay={0.05} className="h-full">
             <div className="flex h-full flex-col justify-between rounded-3xl border border-slate-200/90 bg-white/90 p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)] backdrop-blur-md transform-gpu dark:border-white/10 dark:bg-slate-900/80 dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
               <div>
                 <div className="flex items-center justify-between">
@@ -290,134 +290,138 @@ export default function ContactPage() {
           </Reveal>
 
           {/* Right Column: Web3Forms Secured Form */}
-          <Reveal delay={0.08}>
-            <div className="rounded-3xl border border-slate-200/90 bg-white/90 p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)] backdrop-blur-md transform-gpu dark:border-white/10 dark:bg-slate-900/80 dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Honeypot anti-bot protection input (invisible to humans) */}
-                <input
-                  type="checkbox"
-                  name="botcheck"
-                  className="hidden"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  aria-hidden="true"
-                />
-
-                {/* Name */}
-                <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    {contactPage.formName}
-                  </label>
+          <Reveal delay={0.08} className="h-full">
+            <div className="flex h-full flex-col justify-between rounded-3xl border border-slate-200/90 bg-white/90 p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)] backdrop-blur-md transform-gpu dark:border-white/10 dark:bg-slate-900/80 dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)]">
+              <form onSubmit={handleSubmit} className="flex h-full flex-col justify-between gap-4">
+                <div className="space-y-4">
+                  {/* Honeypot anti-bot protection input (invisible to humans) */}
                   <input
-                    name="name"
-                    type="text"
-                    required
-                    maxLength={100}
-                    placeholder={contactPage.formNamePlaceholder}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400/60 dark:focus:bg-white/[0.08]"
+                    type="checkbox"
+                    name="botcheck"
+                    className="hidden"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
                   />
-                </div>
 
-                {/* Email */}
-                <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    {contactPage.formEmail}
-                  </label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    maxLength={254}
-                    placeholder={contactPage.formEmailPlaceholder}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400/60 dark:focus:bg-white/[0.08]"
-                  />
-                </div>
-
-                {/* Message */}
-                <div>
-                  <div className="mb-1.5 flex items-center justify-between">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                      {contactPage.formMessage}
+                  {/* Name */}
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      {contactPage.formName}
                     </label>
-                    <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                      {messageLength} / 4000 {contactPage.charactersRemaining}
-                    </span>
+                    <input
+                      name="name"
+                      type="text"
+                      required
+                      maxLength={100}
+                      placeholder={contactPage.formNamePlaceholder}
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400/60 dark:focus:bg-white/[0.08]"
+                    />
                   </div>
-                  <textarea
-                    name="message"
-                    rows={4}
-                    required
-                    maxLength={4000}
-                    onChange={(e) => setMessageLength(e.target.value.length)}
-                    placeholder={contactPage.formMessagePlaceholder}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400/60 dark:focus:bg-white/[0.08]"
-                  />
+
+                  {/* Email */}
+                  <div>
+                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      {contactPage.formEmail}
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      maxLength={254}
+                      placeholder={contactPage.formEmailPlaceholder}
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400/60 dark:focus:bg-white/[0.08]"
+                    />
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <div className="mb-1.5 flex items-center justify-between">
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                        {contactPage.formMessage}
+                      </label>
+                      <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                        {messageLength} / 4000 {contactPage.charactersRemaining}
+                      </span>
+                    </div>
+                    <textarea
+                      name="message"
+                      rows={5}
+                      required
+                      maxLength={4000}
+                      onChange={(e) => setMessageLength(e.target.value.length)}
+                      placeholder={contactPage.formMessagePlaceholder}
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-indigo-400/60 dark:focus:bg-white/[0.08]"
+                    />
+                  </div>
                 </div>
 
-                {/* Success Banner */}
-                {status === 'success' && (
-                  <div
-                    role="alert"
-                    className="flex items-start gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-300"
-                  >
-                    <FiCheckCircle className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" size={18} />
-                    <div className="flex-1">
-                      <p className="font-semibold">{contactPage.formSuccess}</p>
+                <div className="space-y-4">
+                  {/* Success Banner */}
+                  {status === 'success' && (
+                    <div
+                      role="alert"
+                      className="flex items-start gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-800 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-emerald-300"
+                    >
+                      <FiCheckCircle className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" size={18} />
+                      <div className="flex-1">
+                        <p className="font-semibold">{contactPage.formSuccess}</p>
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Error Banner with Interactive Fallback */}
-                {status === 'error' && (
-                  <div
-                    role="alert"
-                    className="space-y-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-800 dark:border-rose-400/30 dark:bg-rose-500/15 dark:text-rose-300"
-                  >
-                    <div className="flex items-start gap-2.5">
-                      <FiAlertCircle className="mt-0.5 shrink-0 text-rose-600 dark:text-rose-400" size={18} />
-                      <p className="font-medium">{errorMessage || contactPage.formError}</p>
-                    </div>
-                    {/* Fallback Action Buttons */}
-                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-rose-200/50 dark:border-rose-500/20">
-                      <a
-                        href={`mailto:${profile.email}?subject=Portfolio%20Inquiry`}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-rose-300 bg-white/90 px-3 py-1.5 text-xs font-semibold text-rose-800 shadow-sm transition hover:bg-white dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-200 dark:hover:bg-rose-900/60"
-                      >
-                        <FiMail size={13} />
-                        <span>{contactPage.openMailApp}</span>
-                      </a>
-                      <button
-                        type="button"
-                        onClick={handleCopyEmail}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-rose-300 bg-white/90 px-3 py-1.5 text-xs font-semibold text-rose-800 shadow-sm transition hover:bg-white dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-200 dark:hover:bg-rose-900/60"
-                      >
-                        {copied ? <FiCheck size={13} /> : <FiCopy size={13} />}
-                        <span>{copied ? contactPage.emailCopied : contactPage.copyEmail}</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Submit Button */}
-                <motion.button
-                  whileHover={status !== 'loading' ? { scale: 1.015 } : undefined}
-                  whileTap={status !== 'loading' ? { scale: 0.985 } : undefined}
-                  type="submit"
-                  disabled={status === 'loading'}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 py-3.5 text-sm font-semibold text-white shadow-[0_0_25px_rgba(79,70,229,0.3)] transition hover:shadow-[0_0_35px_rgba(79,70,229,0.5)] disabled:cursor-not-allowed disabled:opacity-70"
-                >
-                  {status === 'loading' ? (
-                    <>
-                      <FiLoader className="animate-spin" size={16} />
-                      <span>{contactPage.formSubmitting}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{contactPage.formSubmit}</span>
-                      <FiSend size={15} />
-                    </>
                   )}
-                </motion.button>
+
+                  {/* Error Banner with Interactive Fallback */}
+                  {status === 'error' && (
+                    <div
+                      role="alert"
+                      className="space-y-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-800 dark:border-rose-400/30 dark:bg-rose-500/15 dark:text-rose-300"
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <FiAlertCircle className="mt-0.5 shrink-0 text-rose-600 dark:text-rose-400" size={18} />
+                        <p className="font-medium">{errorMessage || contactPage.formError}</p>
+                      </div>
+                      {/* Fallback Action Buttons */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-rose-200/50 dark:border-rose-500/20">
+                        <a
+                          href={`mailto:${profile.email}?subject=Portfolio%20Inquiry`}
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-300 bg-white/90 px-3 py-1.5 text-xs font-semibold text-rose-800 shadow-sm transition hover:bg-white dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-200 dark:hover:bg-rose-900/60"
+                        >
+                          <FiMail size={13} />
+                          <span>{contactPage.openMailApp}</span>
+                        </a>
+                        <button
+                          type="button"
+                          onClick={handleCopyEmail}
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-300 bg-white/90 px-3 py-1.5 text-xs font-semibold text-rose-800 shadow-sm transition hover:bg-white dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-200 dark:hover:bg-rose-900/60"
+                        >
+                          {copied ? <FiCheck size={13} /> : <FiCopy size={13} />}
+                          <span>{copied ? contactPage.emailCopied : contactPage.copyEmail}</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <motion.button
+                    whileHover={status !== 'loading' ? { scale: 1.015 } : undefined}
+                    whileTap={status !== 'loading' ? { scale: 0.985 } : undefined}
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 py-3.5 text-sm font-semibold text-white shadow-[0_0_25px_rgba(79,70,229,0.3)] transition hover:shadow-[0_0_35px_rgba(79,70,229,0.5)] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {status === 'loading' ? (
+                      <>
+                        <FiLoader className="animate-spin" size={16} />
+                        <span>{contactPage.formSubmitting}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>{contactPage.formSubmit}</span>
+                        <FiSend size={15} />
+                      </>
+                    )}
+                  </motion.button>
+                </div>
               </form>
             </div>
           </Reveal>

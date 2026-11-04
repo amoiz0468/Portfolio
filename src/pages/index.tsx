@@ -97,10 +97,10 @@ export default function Home() {
         {/* 2. STATS & METRICS */}
         <section id="stats" className="border-y border-slate-200/90 bg-white/70 py-6 sm:py-20 backdrop-blur-md dark:border-white/[0.08] dark:bg-white/[0.02] transition-colors duration-200">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-6 lg:grid-cols-4">
+            <div className="grid auto-rows-fr grid-cols-2 items-stretch gap-2.5 sm:gap-6 lg:grid-cols-4">
               {statsList.map((stat, index) => (
-                <Reveal key={stat.label} delay={index * 0.08}>
-                  <SpotlightCard className="text-left sm:text-center transition-all duration-300 hover:-translate-y-1.5 p-3 sm:p-7 rounded-[1.25rem] sm:rounded-[2rem] active:scale-[0.98]">
+                <Reveal key={stat.label} delay={index * 0.08} className="h-full">
+                  <SpotlightCard className="h-full text-left sm:text-center transition-all duration-300 hover:-translate-y-1.5 p-3 sm:p-7 rounded-[1.25rem] sm:rounded-[2rem] active:scale-[0.98]">
                     <div className="flex items-center justify-between">
                       <span className="flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl bg-indigo-50 ring-1 ring-indigo-200 text-xs sm:text-base text-indigo-600 dark:bg-white/5 dark:ring-white/10 dark:text-indigo-400">
                         {getStatIcon(index)}
@@ -109,12 +109,14 @@ export default function Home() {
                         0{index + 1}
                       </span>
                     </div>
-                    <p className="mt-2 sm:mt-5 text-xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
-                      {stat.value}
-                    </p>
-                    <p className="mt-0.5 sm:mt-2 text-[10px] sm:text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 line-clamp-1 sm:line-clamp-none">
-                      {stat.label}
-                    </p>
+                    <div className="mt-2 sm:mt-5 flex flex-1 flex-col justify-between">
+                      <p className="text-xl sm:text-4xl lg:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                        {stat.value}
+                      </p>
+                      <p className="mt-1 sm:mt-2 flex min-h-[1.75rem] sm:min-h-[2.25rem] items-start sm:items-center sm:justify-center text-[10px] sm:text-xs font-medium uppercase tracking-wider leading-snug text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {stat.label}
+                      </p>
+                    </div>
                   </SpotlightCard>
                 </Reveal>
               ))}
@@ -167,7 +169,7 @@ export default function Home() {
           </Reveal>
 
           {/* Staggered & Scroll-Linked Project Cards */}
-          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
+          <div className="mt-12 grid auto-rows-fr gap-6 md:grid-cols-2 xl:grid-cols-3 items-stretch">
             {filteredProjects.map((project, index) => (
               <AppleProjectCard
                 key={project.title}
@@ -252,20 +254,20 @@ export default function Home() {
 
         {/* 8. EDUCATION & HIGHLIGHTS */}
         <section className="content-auto mx-auto max-w-6xl px-4 py-14 sm:py-20 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-            <Reveal>
+          <div className="grid items-stretch gap-8 lg:grid-cols-2 lg:auto-rows-fr">
+            <Reveal className="h-full">
               <SpotlightCard className="flex h-full flex-col justify-between">
-                <div>
+                <div className="flex h-full flex-col">
                   <SectionTitle
                     eyebrow={t.educationSection.educationEyebrow}
                     eyebrowIcon={<FiBookOpen />}
                     title={t.educationSection.educationTitle}
                   />
-                  <div className="mt-8 space-y-4">
+                  <div className="mt-8 flex flex-1 flex-col gap-4">
                     {t.educationSection.items.map((edu) => (
                       <div
                         key={edu.title}
-                        className="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-indigo-400/40"
+                        className="flex flex-1 flex-col justify-center rounded-2xl border border-slate-200 bg-slate-50/80 p-5 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:hover:border-indigo-400/40"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <p className="font-bold text-slate-900 dark:text-white leading-snug">{edu.title}</p>
@@ -282,21 +284,21 @@ export default function Home() {
               </SpotlightCard>
             </Reveal>
 
-            <Reveal delay={0.1}>
+            <Reveal delay={0.1} className="h-full">
               <SpotlightCard className="flex h-full flex-col justify-between">
-                <div>
+                <div className="flex h-full flex-col">
                   <SectionTitle
                     eyebrow={t.educationSection.highlightsEyebrow}
                     eyebrowIcon={<FiAward />}
                     title={t.educationSection.highlightsTitle}
                   />
-                  <div className="mt-8 grid gap-4">
+                  <div className="mt-8 grid flex-1 auto-rows-fr items-stretch gap-4">
                     {t.educationSection.achievements.map((item, idx) => (
                       <div
                         key={item}
-                        className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-sm leading-relaxed text-slate-700 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-indigo-400/40"
+                        className="flex h-full items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-sm leading-relaxed text-slate-700 transition hover:border-indigo-400 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-indigo-400/40"
                       >
-                        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 font-mono text-xs font-bold dark:text-indigo-300">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 dark:bg-indigo-500/20 font-mono text-xs font-bold dark:text-indigo-300">
                           {idx + 1}
                         </span>
                         <span>{item}</span>
@@ -322,9 +324,9 @@ export default function Home() {
               />
             </Reveal>
 
-            <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-14 grid auto-rows-fr items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {t.passionsSection.passions.map((passion, pIdx) => (
-                <Reveal key={passion.title} delay={pIdx * 0.06}>
+                <Reveal key={passion.title} delay={pIdx * 0.06} className="h-full">
                   <SpotlightCard className="flex h-full flex-col justify-between transition-all duration-300 hover:-translate-y-1.5">
                     <div>
                       <div className="flex items-center justify-between">
