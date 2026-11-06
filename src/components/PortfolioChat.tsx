@@ -379,12 +379,12 @@ function renderInlineStyles(text: string): ReactNode {
 
       const handleLinkClick = isHash
         ? (e: React.MouseEvent) => {
-            const targetEl = document.querySelector(safeHref);
-            if (targetEl) {
-              e.preventDefault();
-              targetEl.scrollIntoView({ behavior: 'smooth' });
-            }
+          const targetEl = document.querySelector(safeHref);
+          if (targetEl) {
+            e.preventDefault();
+            targetEl.scrollIntoView({ behavior: 'smooth' });
           }
+        }
         : undefined;
 
       return (
@@ -658,7 +658,7 @@ export default function PortfolioChat() {
                   <div className="flex items-center gap-3">
                     <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-indigo-400/40">
                       <Image
-                        src="https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com/WhatsApp+Image+2025-09-25+at+5.49.35+PM.jpeg"
+                        src="https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com/my-image.png"
                         alt="Muhammad Abdul Moiz"
                         fill
                         sizes="36px"
@@ -720,9 +720,8 @@ export default function PortfolioChat() {
                     return (
                       <div
                         key={`${message.role}-${index}`}
-                        className={`flex flex-col gap-1.5 ${
-                          isAssistant ? 'items-start' : 'items-end'
-                        }`}
+                        className={`flex flex-col gap-1.5 ${isAssistant ? 'items-start' : 'items-end'
+                          }`}
                       >
                         <div className="flex items-center gap-1.5 px-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">
                           {isAssistant && (
@@ -735,11 +734,10 @@ export default function PortfolioChat() {
                         </div>
 
                         <div
-                          className={`group relative max-w-[92%] rounded-2xl text-xs leading-relaxed transition-all ${
-                            isAssistant
+                          className={`group relative max-w-[92%] rounded-2xl text-xs leading-relaxed transition-all ${isAssistant
                               ? 'rounded-tl-sm border border-slate-200 bg-white p-3.5 text-slate-800 shadow-sm dark:border-white/15 dark:bg-slate-900 dark:bg-gradient-to-b dark:from-slate-900/95 dark:via-slate-900/90 dark:to-slate-950/95 dark:text-slate-100 dark:shadow-[0_6px_25px_rgba(0,0,0,0.5)] backdrop-blur-xl'
                               : 'rounded-tr-sm bg-gradient-to-r from-indigo-600 to-violet-600 p-3 text-white shadow-md'
-                          }`}
+                            }`}
                         >
                           {isAssistant ? (
                             <FormattedText content={message.content} onPromptClick={sendMessage} />
