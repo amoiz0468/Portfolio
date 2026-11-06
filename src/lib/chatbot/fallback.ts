@@ -815,7 +815,7 @@ Moiz started his alternance as **Pedagogical Assistant at EPITECH Paris** in **S
   // 19. WHO ARE YOU / BIO
   if (/(who are you|about you|tell me about yourself|introduce yourself|bio|summary)/i.test(q)) {
     const bioVariants = [
-      `I'm **Muhammad Abdul Moiz**, a Software & Machine Learning Engineer based in Paris (born October 16, 2002, 23 years old). I was **born and raised in Pakistan** and currently reside in **Paris, France**.
+      `I'm **Muhammad Abdul Moiz**, a Software & AI Engineer based in Paris (born October 16, 2002, 23 years old). I was **born and raised in Pakistan** and currently reside in **Paris, France**.
 
 Currently pursuing an **MSc in IT at EPITECH Paris** while mentoring student cohorts as a **Pedagogical Assistant**. Previously, I was an **Associate Software Engineer at Brackets**, building high-throughput microservices, Dockerized pipelines, and multimodal OCR-to-LLM systems (*DoctorIQ*).
 
@@ -876,7 +876,7 @@ Please feel free to ask about his featured projects (DoctorIQ, Brackets Genie), 
 ? Why should a recruiter hire Muhammad Abdul Moiz for engineering roles?
 ~ Master of Science at EPITECH Paris & BSCS from FAST-NUCES (Pakistan)`,
 
-    `I represent Muhammad Abdul Moiz, a Software & Machine Learning Engineer based in Paris (born October 16, 2002, 23 years old; born and raised in Pakistan).
+    `I represent Muhammad Abdul Moiz, a Software & AI Engineer based in Paris (born October 16, 2002, 23 years old; born and raised in Pakistan).
 
 Feel free to ask me about:
 - **Core Engineering**: Python (FastAPI/Django) backends, Docker automation, and LangGraph agent pipelines.

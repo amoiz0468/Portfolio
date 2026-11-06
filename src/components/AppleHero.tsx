@@ -69,8 +69,8 @@ export default function AppleHero() {
           shouldReduceMotion || isMobile
             ? undefined
             : isFirefox
-            ? { opacity: heroOpacity }
-            : { scale: heroScale, opacity: heroOpacity }
+              ? { opacity: heroOpacity }
+              : { scale: heroScale, opacity: heroOpacity }
         }
         className="mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pt-14"
       >
@@ -205,22 +205,20 @@ export default function AppleHero() {
                   <button
                     type="button"
                     onClick={() => setHeroCardTab('specs')}
-                    className={`rounded-full px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] transition ${
-                      heroCardTab === 'specs'
+                    className={`rounded-full px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] transition ${heroCardTab === 'specs'
                         ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-300 shadow-sm'
                         : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                    }`}
+                      }`}
                   >
                     {t.hero.specsTag}
                   </button>
                   <button
                     type="button"
                     onClick={() => setHeroCardTab('live')}
-                    className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] transition ${
-                      heroCardTab === 'live'
+                    className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.15em] transition ${heroCardTab === 'live'
                         ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-300 shadow-sm'
                         : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                    }`}
+                      }`}
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>Live</span>
@@ -265,9 +263,9 @@ export default function AppleHero() {
                     <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
                       Paris, France
                     </span>
-                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                    {/* <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                       {t.hero.openToWork}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               </div>

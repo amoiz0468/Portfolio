@@ -250,19 +250,19 @@ export const translations: Record<Language, Translations> = {
       toggleLangAria: 'Switch to French language',
     },
     hero: {
-      availableBadge: 'Available for Web • AI • DevOps Roles',
+      availableBadge: 'Available for Web,AI & DevOps Solutions',
       headlinePart1: 'Engineering',
-      headlinePart2: 'Intelligence.',
+      headlinePart2: 'Intelligence &',
       headlinePart3: 'Architecting Scale.',
       summary:
-        'Software and Machine Learning Engineer pursuing an MSc in Information Technology at EPITECH Paris. Proven track record bridging technical engineering, modern web architectures, and automated DevOps infrastructure with operational delivery.',
+        'Software and AI Engineer pursuing an MSc in Information Technology at EPITECH Paris. Proven track record bridging technical engineering, modern web architectures, and automated DevOps infrastructure with operational delivery.',
       getInTouch: 'Get in Touch',
       viewInventions: 'View Inventions',
       askAi: 'Ask My AI',
       coreFocus: 'Core Focus',
       coreFocusValue: 'AI & SaaS Systems',
       primaryStack: 'Primary Stack',
-      primaryStackValue: 'Python / Django / FastAPI / Docker / AWS',
+      primaryStackValue: 'Python / Django / FastAPI / MERN / Docker / AWS',
       currentRole: 'Current Role',
       currentRoleValue: 'EPITECH Paris (Pedagogical Asst.)',
       openToWork: 'Open to Work',
@@ -565,13 +565,13 @@ export const translations: Record<Language, Translations> = {
       title: 'Passions, Disciplines & Creative Pursuits',
       subtitle: 'The activities that fuel curiosity, structured thinking, physical resilience, and well-rounded perspective.',
       passions: [
-        {
-          title: 'Cooking & Gastronomy',
-          subtitle: 'Culinary experimentation & hosting',
-          description:
-            'Passionate about hands-on cooking, blending authentic heritage spices with French bistro techniques. Believes good food is the ultimate medium for hospitality and bringing teams together.',
-          tag: 'Culinary Art',
-        },
+        // {
+        //   title: 'Cooking & Gastronomy',
+        //   subtitle: 'Culinary experimentation & hosting',
+        //   description:
+        //     'Passionate about hands-on cooking, blending authentic heritage spices with French bistro techniques. Believes good food is the ultimate medium for hospitality and bringing teams together.',
+        //   tag: 'Culinary Art',
+        // },
         {
           title: 'Traveling & Exploration',
           subtitle: 'Cultural journeys & discoveries',
@@ -586,13 +586,13 @@ export const translations: Record<Language, Translations> = {
             'Deep appreciation for classical and modern poetry, creative writing, and philosophical reflection that sharpens precision of language, metaphor, and mindful thought.',
           tag: 'Creative Writing',
         },
-        {
-          title: 'Photography',
-          subtitle: 'Urban geometry & visual framing',
-          description:
-            'Framing Parisian street scenes, architectural symmetry, and interplay of natural light and shadows through mindful visual composition.',
-          tag: 'Visual Arts',
-        },
+        // {
+        //   title: 'Photography',
+        //   subtitle: 'Urban geometry & visual framing',
+        //   description:
+        //     'Framing Parisian street scenes, architectural symmetry, and interplay of natural light and shadows through mindful visual composition.',
+        //   tag: 'Visual Arts',
+        // },
         {
           title: 'Sport & Fitness',
           subtitle: 'Strength training & endurance',
@@ -600,13 +600,13 @@ export const translations: Record<Language, Translations> = {
             'Dedicated to regular strength training, calisthenics, and cardiovascular conditioning. Builds mental discipline, physical resilience, and daily focus.',
           tag: 'Health & Vitality',
         },
-        {
-          title: 'Tech Deep Dives & ArXiv',
-          subtitle: 'Continuous curiosity beyond work',
-          description:
-            'Reading foundational AI research papers, distributed system post-mortems, and experimenting with new agentic frameworks in personal sandboxes.',
-          tag: 'Lifelong Learning',
-        },
+        // {
+        //   title: 'Tech Deep Dives & ArXiv',
+        //   subtitle: 'Continuous curiosity beyond work',
+        //   description:
+        //     'Reading foundational AI research papers, distributed system post-mortems, and experimenting with new agentic frameworks in personal sandboxes.',
+        //   tag: 'Lifelong Learning',
+        // },
       ],
     },
     aboutPage: {
@@ -689,7 +689,7 @@ Feel free to ask me anything about my background, engineering work at [Brackets 
     },
     footer: {
       brandBio:
-        'Software & Machine Learning Engineer based in Paris. Focused on production GenAI pipelines, high-throughput backend services, and automated DevOps infrastructure.',
+        'Software & AI Engineer based in Paris. Focused on production GenAI pipelines, high-throughput backend services, and automated DevOps infrastructure.',
       navHeading: 'Navigation',
       contactHeading: 'Direct Contact',
       backToTop: 'Back to top',

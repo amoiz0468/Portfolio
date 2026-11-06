@@ -174,13 +174,7 @@ export const availability = {
 };
 
 export const passions = [
-  {
-    title: 'Cooking & Gastronomy',
-    subtitle: 'Culinary experimentation & hosting',
-    description:
-      'Passionate about hands-on cooking, blending authentic heritage spices with French bistro techniques. Believes good food is the ultimate medium for hospitality and bringing teams together.',
-    tag: 'Culinary Art',
-  },
+
   {
     title: 'Traveling & Exploration',
     subtitle: 'Cultural journeys & discoveries',
