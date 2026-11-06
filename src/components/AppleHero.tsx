@@ -230,14 +230,14 @@ export default function AppleHero() {
               <div className="mt-4 sm:mt-6 flex flex-row items-center gap-4 sm:grid sm:grid-cols-[160px_1fr] sm:gap-6">
                 <motion.div
                   whileHover={{ scale: 1.03 }}
-                  className="relative h-20 w-20 sm:h-auto sm:w-full sm:aspect-[4/5] sm:max-w-[160px] shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.8rem] border border-slate-200 dark:border-white/20 bg-slate-100 dark:bg-slate-900 shadow-md dark:shadow-[0_10px_30px_rgba(0,0,0,0.6)]"
+                  className="relative h-20 w-20 sm:h-auto sm:w-full sm:aspect-[4/5] sm:max-w-[160px] shrink-0 overflow-hidden rounded-2xl sm:rounded-[1.8rem] border border-slate-200 dark:border-white/20 bg-gradient-to-b from-slate-100 via-indigo-50/60 to-slate-200 dark:from-indigo-950/90 dark:via-slate-800/90 dark:to-slate-950 shadow-md dark:shadow-[0_10px_30px_rgba(0,0,0,0.6)]"
                 >
                   <Image
-                    src="https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com/WhatsApp+Image+2025-09-25+at+5.49.35+PM.jpeg"
+                    src={profile.avatar}
                     alt="Muhammad Abdul Moiz"
                     fill
                     sizes="(max-width: 640px) 80px, 160px"
-                    className="object-cover object-[center_18%]"
+                    className="object-cover object-top"
                     priority
                   />
                 </motion.div>
@@ -263,9 +263,9 @@ export default function AppleHero() {
                     <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
                       Paris, France
                     </span>
-                    {/* <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                    <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
                       {t.hero.openToWork}
-                    </span> */}
+                    </span>
                   </div>
                 </div>
               </div>

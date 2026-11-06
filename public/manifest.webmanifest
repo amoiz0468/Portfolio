@@ -2,14 +2,18 @@
   "id": "/",
   "name": "Muhammad Abdul Moiz — AI & Software Engineer",
   "short_name": "Moiz",
-  "description": "Portfolio of Muhammad Abdul Moiz, Software & Machine Learning Engineer based in Paris.",
+  "description": "Portfolio of Muhammad Abdul Moiz, Software & AI Engineer based in Paris.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#090d16",
   "theme_color": "#4f46e5",
-  "categories": ["portfolio", "technology", "education"],
+  "categories": [
+    "portfolio",
+    "technology",
+    "education"
+  ],
   "icons": [
     {
       "src": "/icons/icon-192.png",

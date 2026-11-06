@@ -4,6 +4,7 @@ import { FiGithub, FiLinkedin, FiMail, FiPhone, FiArrowUp, FiSun, FiMoon, FiGlob
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { profile } from '../data/portfolio';
 
 export default function Footer() {
   const { lang, toggleLang, t } = useLanguage();
@@ -20,13 +21,13 @@ export default function Footer() {
           {/* Brand & Summary */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-indigo-400/40 shadow-[0_0_15px_rgba(99,102,241,0.35)]">
+              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-b from-slate-100 to-slate-200 dark:from-indigo-950/90 dark:via-slate-800/90 dark:to-slate-950 ring-2 ring-indigo-400/40 shadow-[0_0_15px_rgba(99,102,241,0.35)]">
                 <Image
-                  src="https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com/WhatsApp+Image+2025-09-25+at+5.49.35+PM.jpeg"
+                  src={profile.avatar}
                   alt="Muhammad Abdul Moiz"
                   fill
                   sizes="36px"
-                  className="object-cover"
+                  className="object-cover object-top"
                 />
               </div>
               <span className="text-base font-bold text-slate-900 dark:text-white">Muhammad Abdul Moiz</span>

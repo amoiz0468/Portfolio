@@ -1,6 +1,7 @@
 export const profile = {
   name: 'Muhammad Abdul Moiz',
   title: 'Web, DevOps & AI Engineer',
+  avatar: 'https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com/my-image.png',
   location: 'Paris, France',
   origin: 'Pakistan (born and raised in Pakistan, currently living in Paris, France)',
   phone: '+33 7 59 24 79 11',
@@ -8,7 +9,7 @@ export const profile = {
   linkedin: 'https://linkedin.com/in/moizghauri',
   github: 'https://github.com/amoiz0468',
   summary:
-    'Software and Machine Learning Engineer pursuing a Master of Science in Information Technology at EPITECH Paris. Proven track record bridging technical engineering, modern web architectures, and automated DevOps infrastructure with operational delivery.',
+    'Software and AI Engineer pursuing a Master of Science in Information Technology at EPITECH Paris. Proven track record bridging technical engineering, modern web architectures, and automated DevOps infrastructure with operational delivery.',
 };
 
 export const stats = [
@@ -174,7 +175,13 @@ export const availability = {
 };
 
 export const passions = [
-
+  {
+    title: 'Cooking & Gastronomy',
+    subtitle: 'Culinary experimentation & hosting',
+    description:
+      'Passionate about hands-on cooking, blending authentic heritage spices with French bistro techniques. Believes good food is the ultimate medium for hospitality and bringing teams together.',
+    tag: 'Culinary Art',
+  },
   {
     title: 'Traveling & Exploration',
     subtitle: 'Cultural journeys & discoveries',

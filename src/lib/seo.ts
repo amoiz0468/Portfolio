@@ -80,7 +80,7 @@ export function buildPersonJsonLd(lang: 'en' | 'fr' = 'en') {
         jobTitle: profile.title,
         description: profile.summary,
         url: absoluteUrl('/'),
-        image: absoluteUrl('/avatar.png'),
+        image: profile.avatar,
         email: `mailto:${profile.email}`,
         telephone: profile.phone,
         address: {

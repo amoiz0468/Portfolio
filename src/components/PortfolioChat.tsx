@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiMinus, FiRefreshCw, FiCopy, FiCheck, FiSend } from 'react-icons/fi';
 import { useLanguage } from '../context/LanguageContext';
+import { profile } from '../data/portfolio';
 
 // Inline lightweight SVGs (Icons & Logos)
 function ChatBubbleIcon(props: { className?: string }) {
@@ -656,13 +657,13 @@ export default function PortfolioChat() {
                 {/* Header Bar */}
                 <div className="mb-3 flex items-center justify-between border-b border-slate-200/80 dark:border-white/10 pb-3">
                   <div className="flex items-center gap-3">
-                    <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-indigo-400/40">
+                    <div className="relative h-9 w-9 overflow-hidden rounded-full bg-gradient-to-b from-slate-100 to-slate-200 dark:from-indigo-950/90 dark:via-slate-800/90 dark:to-slate-950 ring-2 ring-indigo-400/40">
                       <Image
-                        src="https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com/my-image.png"
+                        src={profile.avatar}
                         alt="Muhammad Abdul Moiz"
                         fill
                         sizes="36px"
-                        className="object-cover"
+                        className="object-cover object-top"
                       />
                     </div>
                     <div>

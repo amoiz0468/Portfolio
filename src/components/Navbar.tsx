@@ -15,6 +15,7 @@ import {
 } from 'react-icons/fi';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
+import { profile } from '../data/portfolio';
 
 export default function Navbar() {
   const router = useRouter();
@@ -78,11 +79,10 @@ export default function Navbar() {
       />
 
       <header
-        className={`sticky top-0 z-40 w-full transition-all duration-300 ${
-          isScrolled
+        className={`sticky top-0 z-40 w-full transition-all duration-300 ${isScrolled
             ? 'border-b border-slate-200/80 bg-white/85 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:border-white/[0.08] dark:bg-[#090d16]/90 dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-[20px]'
             : 'border-b border-slate-200/50 bg-white/60 dark:border-white/[0.04] dark:bg-[#090d16]/75 backdrop-blur-[16px]'
-        }`}
+          }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           {/* Logo / Brand */}
@@ -91,15 +91,15 @@ export default function Navbar() {
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-2 ring-indigo-400/40 shadow-[0_0_16px_rgba(99,102,241,0.35)]"
+              className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-b from-slate-100 to-slate-200 dark:from-indigo-950/90 dark:via-slate-800/90 dark:to-slate-950 ring-2 ring-indigo-400/40 shadow-[0_0_16px_rgba(99,102,241,0.35)]"
             >
               <Image
-                src="https://portfolio-image-moiz.s3.eu-north-1.amazonaws.com/WhatsApp+Image+2025-09-25+at+5.49.35+PM.jpeg"
+                src={profile.avatar}
                 alt="Muhammad Abdul Moiz"
                 fill
                 priority
                 sizes="36px"
-                className="object-cover"
+                className="object-cover object-top"
               />
             </motion.div>
             <div className="flex flex-col">
